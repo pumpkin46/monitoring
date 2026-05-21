@@ -1,0 +1,56 @@
+global:  
+  scrape_interval: 15s          # scrape every 15s  
+  evaluation_interval: 15s      # evaluate alert rules every 15s  
+  external_labels:  
+    monitor: "central-monitoring"  
+
+# Load alerting rules  
+rule_files:  
+  - /etc/prometheus/rules/*.yml  
+
+# Send alerts to Alertmanager  
+alerting:  
+  alertmanagers:  
+    - static_configs:  
+        - targets: ["alertmanager:9093"]  
+
+scrape_configs:  
+
+  # ── Prometheus itself ──────────────────────────────────────  
+  - job_name: prometheus  
+    static_configs:  
+      - targets: ["localhost:9090"]  
+
+  # ── HTTP endpoint probes ──────────────────────────────────  
+  - job_name: http-probes  
+    metrics_path: /probe  
+    params:  
+      module: [http_2xx]  
+    static_configs:  
+      - targets:  
+          - http://MANAGER_IP           # add your real URLs  
+          - http://RECEIVER_IP  
+          - http://WORKER_IP  
+          - http://COMPARISON_IP  
+          - http://PMS_API_IP/health  
+    relabel_configs:  
+      - source_labels: [__address__]  
+        target_label: __param_target  
+      - source_labels: [__param_target]  
+        target_label: instance  
+      - target_label: __address__  
+        replacement: blackbox:9115  
+
+  # ── MySQL (on any server that has a DB) ──────────────────  
+  # Uncomment if you have MySQL. Install mysqld_exporter on that server.  
+  # - job_name: mysql  
+  #   static_configs:  
+  #     - targets: ["DB_SERVER_IP:9104"]  
+  #       labels:  
+  #         server: db-server  
+
+  # ── Redis / Queue monitoring ──────────────────────────────  
+  # Uncomment if you use Redis. Install redis_exporter on that server.  
+  # - job_name: redis  
+  #   static_configs:  
+  #     - targets: ["REDIS_IP:9121"]  

@@ -1,0 +1,157 @@
+// ================================================================  
+// Grafana Alloy — Server Monitoring Agent  
+// Before deploying: replace SERVER_NAME and MONITORING_IP  
+// ================================================================  
+
+// ── 1. System Metrics (replaces Node Exporter) ──────────────────  
+
+prometheus.exporter.unix "system" {  
+  // Enable extra collectors beyond the defaults  
+  enable_collectors    = ["systemd", "processes"]  
+  include_exporter_metrics = true  
+}  
+
+prometheus.scrape "system" {  
+  targets         = prometheus.exporter.unix.system.targets  
+  forward_to      = [prometheus.relabel.add_labels.receiver]  
+  scrape_interval = "15s"  
+}  
+
+// ── 2. Add server identity labels ────────────────────────────────  
+
+prometheus.relabel "add_labels" {  
+  forward_to = [prometheus.remote_write.monitoring.receiver]  
+
+  rule {  
+    target_label = "server"  
+    replacement  = "SERVER_NAME"    // e.g. manager, receiver, worker...  
+  }  
+
+  rule {  
+    target_label = "env"  
+    replacement  = "production"  
+  }  
+}  
+
+// ── 3. Push metrics to Prometheus ────────────────────────────────  
+
+prometheus.remote_write "monitoring" {  
+  endpoint {  
+    url = "http://MONITORING_IP:9090/api/v1/write"  
+
+    queue_config {  
+      capacity             = 2500  
+      max_shards           = 10  
+      max_samples_per_send = 500  
+    }  
+  }  
+}  
+
+// ── 4. Discover log files ────────────────────────────────────────  
+
+local.file_match "system_logs" {  
+  path_targets = [  
+    {  
+      __path__ = "/var/log/syslog",  
+      job      = "system",  
+      host     = "SERVER_NAME",  
+    },  
+    {  
+      __path__ = "/var/log/auth.log",     // SSH logins, sudo, su  
+      job      = "auth",  
+      host     = "SERVER_NAME",  
+    },  
+    {  
+      __path__ = "/var/log/kern.log",     // kernel / OOM events  
+      job      = "kernel",  
+      host     = "SERVER_NAME",  
+    },  
+  ]  
+}  
+
+local.file_match "app_logs" {  
+  path_targets = [  
+    {  
+      __path__ = "/var/log/app/*.log",    // adjust to your app log path  
+      job      = "app",  
+      host     = "SERVER_NAME",  
+    },  
+  ]  
+}  
+
+// ── 5. Read and ship system logs ─────────────────────────────────  
+
+loki.source.file "system_logs" {  
+  targets    = local.file_match.system_logs.targets  
+  forward_to = [loki.write.monitoring.receiver]  
+}  
+
+// ── 6. Read app logs and extract log level ────────────────────────  
+
+loki.source.file "app_logs" {  
+  targets    = local.file_match.app_logs.targets  
+  forward_to = [loki.process.app_logs.receiver]  
+}  
+
+loki.process "app_logs" {  
+  // Try to parse as logfmt (key=value) first  
+  stage.logfmt {}  
+
+  // Extract level, request_id, duration as labels  
+  stage.labels {  
+    values = {  
+      level      = "level",  
+      request_id = "request_id",  
+    }  
+  }  
+
+  // Drop debug logs in production to save space  
+  stage.drop {  
+    source     = "level"  
+    expression = "debug"  
+  }  
+
+  forward_to = [loki.write.monitoring.receiver]  
+}  
+
+// ── 7. Read systemd journal (errors, warnings, failed services) ──  
+
+loki.source.journal "journal" {  
+  forward_to    = [loki.process.journal.receiver]  
+  max_age       = "24h"              // only read last 24h on first start  
+  labels = {  
+    job  = "journal",  
+    host = "SERVER_NAME",  
+  }  
+}  
+
+loki.process "journal" {  
+  // Extract systemd priority as level  
+  stage.labels {  
+    values = {  
+      level   = "PRIORITY",  
+      unit    = "_SYSTEMD_UNIT",  
+    }  
+  }  
+
+  // Only keep warnings (4), errors (3), critical (2), alert (1), emergency (0)  
+  stage.drop {  
+    source     = "level"  
+    expression = "^[567]$"           // drop debug(7), info(6), notice(5)  
+  }  
+
+  forward_to = [loki.write.monitoring.receiver]  
+}  
+
+// ── 8. Send all logs to Loki ──────────────────────────────────────  
+
+loki.write "monitoring" {  
+  endpoint {  
+    url = "http://MONITORING_IP:3100/loki/api/v1/push"  
+  }  
+
+  external_labels = {  
+    host = "SERVER_NAME",  
+    env  = "production",  
+  }  
+}  

@@ -1,0 +1,29 @@
+groups:  
+  - name: security  
+    rules:  
+
+      # Too many failed SSH logins (via logs metric — requires Loki + recording rule)  
+      # This alert fires when a Loki-derived metric is exported via loki-rules or  
+      # you can use Grafana alerting directly on Loki queries instead.  
+
+      # Unusual number of open file descriptors  
+      - alert: TooManyOpenFiles  
+        expr: |  
+          process_open_fds / process_max_fds &gt; 0.8  
+        for: 5m  
+        labels:  
+          severity: warning  
+        annotations:  
+          summary: "Too many open file descriptors on {{ $labels.server }}"  
+          description: "{{ $value | printf \"%.0f%%\" }} of max FDs used"  
+
+      # System load too high  
+      - alert: HighSystemLoad  
+        expr: |  
+          node_load15 / count by(server, instance) (node_cpu_seconds_total{mode="idle"}) > 2  
+        for: 10m  
+        labels:  
+          severity: warning  
+        annotations:  
+          summary: "High system load on {{ $labels.server }}"  
+          description: "15-min load avg is {{ $value | printf \"%.2f\" }}x the number of CPUs"  

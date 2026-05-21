@@ -1,0 +1,34 @@
+groups:  
+  - name: http  
+    rules:  
+
+      # HTTP endpoint is down  
+      - alert: HTTPEndpointDown  
+        expr: probe_success == 0  
+        for: 2m  
+        labels:  
+          severity: critical  
+        annotations:  
+          summary: "HTTP endpoint DOWN: {{ $labels.instance }}"  
+          description: "{{ $labels.instance }} is not responding with HTTP 2xx"  
+
+      # HTTP response time &gt; 2 seconds  
+      - alert: SlowHTTPResponse  
+        expr: probe_duration_seconds &gt; 2  
+        for: 5m  
+        labels:  
+          severity: warning  
+        annotations:  
+          summary: "Slow HTTP response: {{ $labels.instance }}"  
+          description: "Response time is {{ $value | printf \"%.2f\" }}s (threshold: 2s)"  
+
+      # SSL certificate expiring in &lt; 14 days  
+      - alert: SSLCertExpiringSoon  
+        expr: |  
+          (probe_ssl_earliest_cert_expiry - time()) / 86400 &lt; 14  
+        for: 1h  
+        labels:  
+          severity: warning  
+        annotations:  
+          summary: "SSL cert expiring soon: {{ $labels.instance }}"  
+          description: "Certificate expires in {{ $value | printf \"%.0f\" }} days"  

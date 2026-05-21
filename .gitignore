@@ -1,0 +1,11 @@
+*.env
+*.data
+prometheus_data/
+loki_data/
+grafana_data/
+alertmanager_data/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db

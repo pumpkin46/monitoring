@@ -1,0 +1,10 @@
+// ── App metrics endpoint (e.g. /metrics on port 8080) ───────────  
+
+prometheus.scrape "app_metrics" {  
+  targets = [{  
+    __address__ = "localhost:8080",    // adjust port  
+  }]  
+  metrics_path    = "/metrics"  
+  scrape_interval = "15s"  
+  forward_to      = [prometheus.relabel.add_labels.receiver]  
+}  

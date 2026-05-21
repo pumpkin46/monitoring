@@ -1,0 +1,73 @@
+global:  
+  smtp_smarthost: "${SMTP_HOST}"  
+  smtp_from: "${SMTP_FROM}"  
+  smtp_auth_username: "${SMTP_FROM}"  
+  smtp_auth_password: "${SMTP_PASSWORD}"  
+
+  # Slack (optional — delete if not using)  
+  # slack_api_url: "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK"  
+
+route:  
+  group_by: ["alertname", "server"]  
+  group_wait: 30s           # wait 30s before sending first alert  
+  group_interval: 5m        # wait 5m before sending new alerts for same group  
+  repeat_interval: 4h       # resend if still firing after 4h  
+  receiver: team-email  
+
+  routes:  
+    # Critical alerts go out immediately  
+    - match:  
+        severity: critical  
+      receiver: team-email  
+      group_wait: 10s  
+      repeat_interval: 1h  
+
+    # Warnings batch together  
+    - match:  
+        severity: warning  
+      receiver: team-email  
+
+receivers:  
+  - name: team-email  
+    email_configs:  
+      - to: "${ALERT_EMAIL_TO}"  
+        subject: "[{{ .Status | toUpper }}] {{ .GroupLabels.alertname }} - {{ .GroupLabels.server }}"  
+        html: |
+          <html>
+          <body style="font-family: Arial, sans-serif; color: #333;">
+            <h2 style="color: {{ if eq .Status "firing" }}#d32f2f{{ else }}#388e3c{{ end }};">
+              [{{ .Status | toUpper }}] {{ .GroupLabels.alertname }}
+            </h2>
+            <table style="border-collapse: collapse; width: 100%;" border="1" cellpadding="8">
+              <tr style="background: #f5f5f5;">
+                <th>Alert</th><th>Details</th><th>Severity</th><th>Since</th>
+              </tr>
+              {{ range .Alerts }}
+              <tr>
+                <td>{{ .Annotations.summary }}</td>
+                <td>{{ .Annotations.description }}</td>
+                <td>{{ .Labels.severity }}</td>
+                <td>{{ .StartsAt.Format "2006-01-02 15:04:05 MST" }}</td>
+              </tr>
+              {{ end }}
+            </table>
+            <p style="color: #888; font-size: 12px; margin-top: 16px;">
+              Sent by Alertmanager &middot; <a href="http://localhost:9093">View in Alertmanager</a>
+            </p>
+          </body>
+          </html>  
+
+  # Uncomment for Slack  
+  # - name: slack-alerts  
+  #   slack_configs:  
+  #     - channel: "#alerts"  
+  #       title: "[{{ .Status | toUpper }}] {{ .GroupLabels.alertname }}"  
+  #       text: "{{ range .Alerts }}{{ .Annotations.description }}{{ end }}"  
+
+inhibit_rules:  
+  # If CriticalCPU fires, suppress HighCPU for same server  
+  - source_match:  
+      severity: critical  
+    target_match:  
+      severity: warning  
+    equal: ["server"]  

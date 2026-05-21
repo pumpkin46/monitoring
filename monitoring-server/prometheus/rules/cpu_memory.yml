@@ -1,0 +1,45 @@
+groups:  
+  - name: cpu_memory  
+    rules:  
+
+      # CPU > 85% for 5 minutes  
+      - alert: HighCPU  
+        expr: (1 - avg by(server)(rate(node_cpu_seconds_total{mode="idle"}[5m]))) * 100 > 85  
+        for: 5m  
+        labels:  
+          severity: warning  
+        annotations:  
+          summary: "High CPU on {{ $labels.server }}"  
+          description: "CPU is {{ $value | printf \"%.1f\" }}% on {{ $labels.server }}"  
+
+      # CPU > 95% for 2 minutes — critical  
+      - alert: CriticalCPU  
+        expr: (1 - avg by(server)(rate(node_cpu_seconds_total{mode="idle"}[5m]))) * 100 > 95  
+        for: 2m  
+        labels:  
+          severity: critical  
+        annotations:  
+          summary: "CRITICAL CPU on {{ $labels.server }}"  
+          description: "CPU is {{ $value | printf \"%.1f\" }}% on {{ $labels.server }}"  
+
+      # RAM &gt; 85%  
+      - alert: HighMemory  
+        expr: |  
+          (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 &gt; 85  
+        for: 5m  
+        labels:  
+          severity: warning  
+        annotations:  
+          summary: "High memory on {{ $labels.server }}"  
+          description: "Memory usage is {{ $value | printf \"%.1f\" }}% on {{ $labels.server }}"  
+
+      # RAM &gt; 95% — critical  
+      - alert: CriticalMemory  
+        expr: |  
+          (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 &gt; 95  
+        for: 2m  
+        labels:  
+          severity: critical  
+        annotations:  
+          summary: "CRITICAL memory on {{ $labels.server }}"  
+          description: "Memory usage is {{ $value | printf \"%.1f\" }}% on {{ $labels.server }}"  

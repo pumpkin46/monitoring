@@ -1,0 +1,36 @@
+groups:  
+  - name: network  
+    rules:  
+
+      # Server down — no scrape for 2 minutes  
+      - alert: ServerDown  
+        expr: up == 0  
+        for: 2m  
+        labels:  
+          severity: critical  
+        annotations:  
+          summary: "Server DOWN: {{ $labels.server }}"  
+          description: "{{ $labels.instance }} has been unreachable for 2 minutes"  
+
+      # High network traffic (&gt; 100 MB/s receive)  
+      - alert: HighNetworkReceive  
+        expr: |  
+          rate(node_network_receive_bytes_total{device!~"lo|docker.*"}[5m]) &gt; 100000000  
+        for: 5m  
+        labels:  
+          severity: warning  
+        annotations:  
+          summary: "High network RX on {{ $labels.server }}"  
+          description: "Receiving {{ $value | humanize }}B/s on {{ $labels.device }}"  
+
+      # High network errors  
+      - alert: NetworkErrors  
+        expr: |  
+          rate(node_network_receive_errs_total[5m]) +   
+          rate(node_network_transmit_errs_total[5m]) &gt; 10  
+        for: 5m  
+        labels:  
+          severity: warning  
+        annotations:  
+          summary: "Network errors on {{ $labels.server }}"  
+          description: "{{ $value | printf \"%.1f\" }} errors/s on {{ $labels.device }}"  
