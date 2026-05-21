@@ -14,7 +14,7 @@ groups:
 
       # HTTP response time &gt; 2 seconds  
       - alert: SlowHTTPResponse  
-        expr: probe_duration_seconds &gt; 2  
+        expr: probe_duration_seconds > 2  
         for: 5m  
         labels:  
           severity: warning  
@@ -25,7 +25,7 @@ groups:
       # SSL certificate expiring in &lt; 14 days  
       - alert: SSLCertExpiringSoon  
         expr: |  
-          (probe_ssl_earliest_cert_expiry - time()) / 86400 &lt; 14  
+          (probe_ssl_earliest_cert_expiry - time()) / 86400 < 14  
         for: 1h  
         labels:  
           severity: warning  

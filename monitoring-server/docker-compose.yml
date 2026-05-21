@@ -28,11 +28,11 @@ services:
       - "--web.enable-admin-api"  
       - "--web.enable-remote-write-receiver"
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:9090/-/healthy"]
+      test: ["CMD", "promtool", "check", "healthy", "--url=http://127.0.0.1:9090/-/healthy"]
       interval: 15s
       timeout: 5s
-      retries: 3
-      start_period: 10s
+      retries: 5
+      start_period: 30s
 
   loki:  
     image: grafana/loki:3.1.1  

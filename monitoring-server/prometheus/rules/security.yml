@@ -9,7 +9,7 @@ groups:
       # Unusual number of open file descriptors  
       - alert: TooManyOpenFiles  
         expr: |  
-          process_open_fds / process_max_fds &gt; 0.8  
+          process_open_fds / process_max_fds > 0.8  
         for: 5m  
         labels:  
           severity: warning  

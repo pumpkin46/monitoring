@@ -25,7 +25,7 @@ groups:
       # RAM &gt; 85%  
       - alert: HighMemory  
         expr: |  
-          (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 &gt; 85  
+          (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85  
         for: 5m  
         labels:  
           severity: warning  
@@ -36,7 +36,7 @@ groups:
       # RAM &gt; 95% — critical  
       - alert: CriticalMemory  
         expr: |  
-          (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 &gt; 95  
+          (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 95  
         for: 2m  
         labels:  
           severity: critical  
