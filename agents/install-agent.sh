@@ -16,7 +16,7 @@
 
 # ── Variables ─────────────────────────────────────────────────────
 SERVER_NAME=$1
-MONITORING_IP="192.168.1.100"    # CHANGE to your monitoring server IP
+MONITORING_IP="74.208.122.144"    # CHANGE to your monitoring server IP
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 TEMPLATE_DIR="${SCRIPT_DIR}/alloy"
 
