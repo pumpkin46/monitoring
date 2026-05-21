@@ -1,0 +1,5 @@
+# Config mounted into Linux containers must use LF line endings.
+monitoring-server/**/*.yml text eol=lf
+monitoring-server/**/*.yaml text eol=lf
+monitoring-server/**/*.tmpl text eol=lf
+agents/**/*.alloy text eol=lf
