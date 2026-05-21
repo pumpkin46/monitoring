@@ -26,7 +26,12 @@ loki.source.file "manager_logs" {
 }
 
 loki.process "manager_logs" {
-  stage.logfmt {}
+  stage.logfmt {
+    mapping = {
+      level      = "",
+      request_id = "",
+    }
+  }
 
   stage.labels {
     values = {

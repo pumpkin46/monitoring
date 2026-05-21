@@ -95,15 +95,19 @@ loki.source.file "app_logs" {
 
 loki.process "app_logs" {  
   // Try to parse as logfmt (key=value) first  
-  stage.logfmt {}  
+  stage.logfmt {
+    mapping = {
+      level      = "",
+      request_id = "",
+    }
+  }
 
-  // Extract level, request_id, duration as labels  
-  stage.labels {  
-    values = {  
-      level      = "level",  
-      request_id = "request_id",  
-    }  
-  }  
+  stage.labels {
+    values = {
+      level      = "level",
+      request_id = "request_id",
+    }
+  }
 
   // Drop debug logs in production to save space  
   stage.drop {  
