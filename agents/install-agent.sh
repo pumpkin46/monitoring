@@ -83,6 +83,17 @@ mkdir -p /etc/alloy
 mkdir -p /var/log/app          # app log folder (your apps write here)  
 mkdir -p /var/lib/alloy/data   # alloy data/positions storage  
 
+case "$SERVER_NAME" in
+  manager|receiver|worker|comparison|pms-api)
+    mkdir -p "/var/log/app/${SERVER_NAME}"
+    ;;
+esac
+
+# PM2 log directory for comparison (Python app deployed via PM2)
+if [ "$SERVER_NAME" = "comparison" ]; then
+  mkdir -p /root/.pm2/logs 2>/dev/null || true
+fi
+
 echo "✓ Directories created"  
 
 # ================================================================  
@@ -96,11 +107,13 @@ cp "${TEMPLATE_DIR}/config.alloy" /etc/alloy/config.alloy
 sed -i "s/SERVER_NAME/${SERVER_NAME}/g" /etc/alloy/config.alloy
 sed -i "s/MONITORING_IP/${MONITORING_IP}/g" /etc/alloy/config.alloy
 
-# Append app metrics scrape block for pms-api servers
-if [ "$SERVER_NAME" = "pms-api" ] && [ -f "${TEMPLATE_DIR}/config-pms-api.alloy" ]; then
+# Append server-specific addon config if present (e.g. config-pms-api.alloy, config-comparison.alloy)
+ADDON_FILE="${TEMPLATE_DIR}/config-${SERVER_NAME}.alloy"
+if [ -f "$ADDON_FILE" ]; then
   echo "" >> /etc/alloy/config.alloy
-  cat "${TEMPLATE_DIR}/config-pms-api.alloy" >> /etc/alloy/config.alloy
-  echo "  (appended pms-api app metrics block)"
+  cat "$ADDON_FILE" >> /etc/alloy/config.alloy
+  sed -i "s/SERVER_NAME/${SERVER_NAME}/g" /etc/alloy/config.alloy
+  echo "  (appended ${SERVER_NAME} addon: config-${SERVER_NAME}.alloy)"
 fi
 
 echo "✓ Config written to /etc/alloy/config.alloy"  

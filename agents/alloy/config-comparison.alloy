@@ -1,0 +1,64 @@
+// ── Comparison server — Python FastAPI (Image Comparison API) ─────
+// App: PM2 on port 3000, deploy path /var/www/comparison
+//
+// Metrics: base config.alloy already collects CPU/RAM/disk/network via
+// prometheus.exporter.unix and remote_writes to central Prometheus.
+// No /metrics endpoint on the app is required.
+//
+// HTTP uptime: central Blackbox probes /health (see prometheus.yml).
+
+// PM2 application logs (adjust user path if PM2 does not run as root)
+local.file_match "comparison_pm2_logs" {
+  path_targets = [
+    {
+      __path__ = "/root/.pm2/logs/comparison-out.log",
+      job      = "comparison",
+      host     = "SERVER_NAME",
+    },
+    {
+      __path__ = "/root/.pm2/logs/comparison-error.log",
+      job      = "comparison",
+      host     = "SERVER_NAME",
+    },
+  ]
+}
+
+loki.source.file "comparison_pm2_logs" {
+  targets    = local.file_match.comparison_pm2_logs.targets
+  forward_to = [loki.process.comparison_logs.receiver]
+}
+
+// Optional file logs under /var/log/app/comparison/
+local.file_match "comparison_file_logs" {
+  path_targets = [{
+    __path__ = "/var/log/app/comparison/*.log",
+    job      = "comparison",
+    host     = "SERVER_NAME",
+  }]
+}
+
+loki.source.file "comparison_file_logs" {
+  targets    = local.file_match.comparison_file_logs.targets
+  forward_to = [loki.process.comparison_logs.receiver]
+}
+
+// Python logging: "2026-05-21 10:30:00,123 INFO     app  message"
+loki.process "comparison_logs" {
+  stage.regex {
+    expression = "^(?P<timestamp>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d+) (?P<level>\\w+)\\s+(?P<logger>\\S+)\\s+(?P<message>.*)$"
+  }
+
+  stage.labels {
+    values = {
+      level  = "level",
+      logger = "logger",
+    }
+  }
+
+  stage.drop {
+    source     = "level"
+    expression = "(?i)debug"
+  }
+
+  forward_to = [loki.write.monitoring.receiver]
+}

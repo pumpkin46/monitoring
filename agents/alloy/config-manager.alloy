@@ -1,0 +1,44 @@
+// ── Manager (control plane) — addon (appended by install-agent.sh) ─
+// Adjust ports and paths to match your deployment.
+
+// App metrics endpoint
+prometheus.scrape "manager_metrics" {
+  targets = [{
+    __address__ = "localhost:8080",    // adjust port if different
+  }]
+  metrics_path    = "/metrics"
+  scrape_interval = "15s"
+  forward_to      = [prometheus.relabel.add_labels.receiver]
+}
+
+// Manager-specific application logs (under /var/log/app/manager/)
+local.file_match "manager_logs" {
+  path_targets = [{
+    __path__ = "/var/log/app/manager/*.log",
+    job      = "manager",
+    host     = "SERVER_NAME",
+  }]
+}
+
+loki.source.file "manager_logs" {
+  targets    = local.file_match.manager_logs.targets
+  forward_to = [loki.process.manager_logs.receiver]
+}
+
+loki.process "manager_logs" {
+  stage.logfmt {}
+
+  stage.labels {
+    values = {
+      level      = "level",
+      request_id = "request_id",
+    }
+  }
+
+  stage.drop {
+    source     = "level"
+    expression = "debug"
+  }
+
+  forward_to = [loki.write.monitoring.receiver]
+}

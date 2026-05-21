@@ -30,7 +30,7 @@ Target Servers                     Monitoring Server (Docker)
 | `manager`    | Management / control plane   |
 | `receiver`   | Data ingestion service       |
 | `worker`     | Background job processing    |
-| `comparison` | Comparison engine            |
+| `comparison` | Python FastAPI Image Comparison API (port 3000, PM2) |
 | `pms-api`    | PMS API (includes app metrics on `:8080/metrics`) |
 
 ## Project Structure
@@ -42,7 +42,11 @@ monitoring/
 │   ├── install-agent.sh              # Agent installer (run on each server)
 │   └── alloy/
 │       ├── config.alloy              # Alloy config template (single source of truth)
-│       └── config-pms-api.alloy      # App metrics scrape block (auto-appended for pms-api)
+│       ├── config-manager.alloy      # Addon: metrics + logs (manager)
+│       ├── config-receiver.alloy     # Addon: metrics + logs (receiver)
+│       ├── config-worker.alloy       # Addon: metrics + logs (worker)
+│       ├── config-comparison.alloy   # Addon: metrics + logs (comparison)
+│       └── config-pms-api.alloy      # Addon: app metrics (pms-api)
 │
 └── monitoring-server/
     ├── docker-compose.yml            # All monitoring services
@@ -220,7 +224,25 @@ systemctl restart alloy               # Restart after config change
 
 ### Adding App Metrics
 
-If your application exposes a `/metrics` endpoint (Prometheus format), append the content of `config-pms-api.alloy` to the server's Alloy config at `/etc/alloy/config.alloy`, adjusting the port as needed.
+If your application exposes a `/metrics` endpoint (Prometheus format), create a `config-<server-name>.alloy` addon file in `agents/alloy/`. The installer auto-appends it when the server name matches (e.g. `config-pms-api.alloy`, `config-comparison.alloy`). Adjust ports and log paths in the addon as needed.
+
+### Comparison server (Python FastAPI)
+
+The comparison addon (`config-comparison.alloy`) only adds **logs** for the Image Comparison API. You do **not** need Prometheus or `/metrics` on the app.
+
+| What | How |
+|------|-----|
+| **System metrics** (CPU, RAM, disk, network) | Alloy `prometheus.exporter.unix` in base `config.alloy` → `remote_write` to central Prometheus |
+| **HTTP uptime** | Central Blackbox probes `http://COMPARISON_IP:3000/health` |
+| **Application logs** | PM2 logs + Python log parsing in `config-comparison.alloy` → Loki |
+
+| Item | Value |
+|------|-------|
+| App port | `3000` |
+| Logs | `/root/.pm2/logs/comparison-out.log`, `comparison-error.log` |
+| Deploy path | `/var/www/comparison` (PM2 name: `comparison`) |
+
+Optional: only add `prometheus.scrape` + a `/metrics` endpoint on the app if you want **per-request** metrics (latency, status codes per route). That is separate from Alloy’s built-in host monitoring.
 
 ### Customizing Alerts
 

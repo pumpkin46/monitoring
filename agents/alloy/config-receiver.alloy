@@ -1,0 +1,44 @@
+// ── Receiver (data ingestion) — addon (appended by install-agent.sh) ─
+// Adjust ports and paths to match your deployment.
+
+// App metrics endpoint
+prometheus.scrape "receiver_metrics" {
+  targets = [{
+    __address__ = "localhost:8080",    // adjust port if different
+  }]
+  metrics_path    = "/metrics"
+  scrape_interval = "15s"
+  forward_to      = [prometheus.relabel.add_labels.receiver]
+}
+
+// Receiver-specific application logs (under /var/log/app/receiver/)
+local.file_match "receiver_logs" {
+  path_targets = [{
+    __path__ = "/var/log/app/receiver/*.log",
+    job      = "receiver",
+    host     = "SERVER_NAME",
+  }]
+}
+
+loki.source.file "receiver_logs" {
+  targets    = local.file_match.receiver_logs.targets
+  forward_to = [loki.process.receiver_logs.receiver]
+}
+
+loki.process "receiver_logs" {
+  stage.logfmt {}
+
+  stage.labels {
+    values = {
+      level      = "level",
+      request_id = "request_id",
+    }
+  }
+
+  stage.drop {
+    source     = "level"
+    expression = "debug"
+  }
+
+  forward_to = [loki.write.monitoring.receiver]
+}
