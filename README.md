@@ -244,6 +244,25 @@ The comparison addon (`config-comparison.alloy`) only adds **logs** for the Imag
 
 Optional: only add `prometheus.scrape` + a `/metrics` endpoint on the app if you want **per-request** metrics (latency, status codes per route). That is separate from Alloy’s built-in host monitoring.
 
+### Loki container unhealthy
+
+Loki 3.x requires the `common:` storage block. Older `tsdb_shipper` / `shared_store` settings cause Loki to crash and mark the container unhealthy (Grafana then fails with `dependency failed to start`).
+
+```bash
+cd monitoring-server
+docker compose logs loki --tail 50
+docker compose up -d loki
+curl http://localhost:3100/ready
+```
+
+If errors persist after upgrading from Loki 2.x, reset the volume (deletes stored logs):
+
+```bash
+docker compose down
+docker volume rm monitoring-server_loki_data
+docker compose up -d
+```
+
 ### Customizing Alerts
 
 Edit the YAML files in `prometheus/rules/`. After changes, reload Prometheus:
