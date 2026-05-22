@@ -83,6 +83,16 @@ monitoring/
 - Ports 3000, 3100, 9090, 9093, 9115 available
 - Sufficient disk space for 30 days of metrics and logs
 
+**Pinned image versions** (`monitoring-server/docker-compose.yml`):
+
+| Service | Image |
+|---------|-------|
+| Prometheus | `prom/prometheus:v3.11.3` |
+| Loki | `grafana/loki:3.7.2` |
+| Alertmanager | `prom/alertmanager:v0.32.1` |
+| Blackbox | `prom/blackbox-exporter:v0.28.0` |
+| Grafana | `grafana/grafana:13.0.1-security-01` |
+
 **Target servers:**
 - Ubuntu/Debian (the installer uses `apt`)
 - Root access
@@ -114,6 +124,17 @@ Start all services:
 
 ```bash
 docker compose up -d
+```
+
+After upgrading images, reload configs and check health:
+
+```bash
+docker compose pull
+docker compose up -d
+docker compose exec prometheus promtool check rules /etc/prometheus/rules/*.yml
+curl -s http://localhost:9090/-/ready
+curl -s http://localhost:3100/ready
+curl -s http://localhost:3000/api/health
 ```
 
 Verify everything is running:
@@ -261,6 +282,16 @@ If errors persist after upgrading from Loki 2.x, reset the volume (deletes store
 docker compose down
 docker volume rm monitoring-server_loki_data
 docker compose up -d
+```
+
+### Loki logs: `failed to get token ranges for ingester` / `zone not set`
+
+Loki **3.1.x** logs this periodically on single-node setups. It is a known bug in stream-ownership recalculation ([grafana/loki#13414](https://github.com/grafana/loki/issues/13414)); ingestion and queries usually still work. This stack uses **Loki 3.2+** (currently **3.7.2**), which removes the noisy code path. `pattern_ingester` is disabled in `loki-config.yml` for single-node setups. After pulling changes:
+
+```bash
+cd monitoring-server
+docker compose pull loki
+docker compose up -d loki
 ```
 
 ### Customizing Alerts

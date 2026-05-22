@@ -31,6 +31,7 @@ receivers:
   - name: team-email  
     email_configs:  
       - to: "${ALERT_EMAIL_TO}"  
+        send_resolved: true
         headers:
           Subject: "[{{ .Status | toUpper }}] {{ .GroupLabels.alertname }} - {{ .GroupLabels.server }}"
         html: |

@@ -7,9 +7,12 @@ modules:
       valid_status_codes: [200]
       method: GET
       follow_redirects: true
+      enable_http2: true
       preferred_ip_protocol: ip4
+      ip_protocol_fallback: true
 
-  http_2xx_with_tls:
+  # Used for https:// probe targets (TLS + cert expiry metrics)
+  http_2xx_tls:
     prober: http
     timeout: 10s
     http:
@@ -17,7 +20,10 @@ modules:
       valid_status_codes: [200]
       method: GET
       follow_redirects: true
+      enable_http2: true
       preferred_ip_protocol: ip4
+      ip_protocol_fallback: true
+      fail_if_not_ssl: true
       tls_config:
         insecure_skip_verify: false
 
@@ -26,9 +32,11 @@ modules:
     timeout: 5s
     icmp:
       preferred_ip_protocol: ip4
+      ip_protocol_fallback: true
 
   tcp_connect:
     prober: tcp
     timeout: 5s
     tcp:
       preferred_ip_protocol: ip4
+      ip_protocol_fallback: true

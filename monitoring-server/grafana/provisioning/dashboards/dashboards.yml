@@ -1,8 +1,11 @@
-apiVersion: 1  
+apiVersion: 1
 
-providers:  
-  - name: default  
-    folder: "Servers"  
-    type: file  
-    options:  
-      path: /etc/grafana/provisioning/dashboards  
+providers:
+  - name: default
+    orgId: 1
+    folder: "Servers"
+    type: file
+    disableDeletion: true
+    editable: true
+    options:
+      path: /etc/grafana/provisioning/dashboards
