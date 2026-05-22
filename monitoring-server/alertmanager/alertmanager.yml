@@ -31,7 +31,8 @@ receivers:
   - name: team-email  
     email_configs:  
       - to: "${ALERT_EMAIL_TO}"  
-        subject: "[{{ .Status | toUpper }}] {{ .GroupLabels.alertname }} - {{ .GroupLabels.server }}"  
+        headers:
+          Subject: "[{{ .Status | toUpper }}] {{ .GroupLabels.alertname }} - {{ .GroupLabels.server }}"
         html: |
           <html>
           <body style="font-family: Arial, sans-serif; color: #333;">
