@@ -1,22 +1,32 @@
 // ── Comparison server — Python FastAPI (Image Comparison API) ─────
-// App: PM2 on port 3000, deploy path /var/www/comparison
+// App: PM2 name "comparison", port 3000 (PORT env), deploy /var/www/comparison
+// Deploy: .github/workflows/deploy.yml — pm2 start app.py --time
+//         --log-date-format "YYYY-MM-DD HH:mm:ss Z"
 //
-// Metrics: base config.alloy already collects CPU/RAM/disk/network via
-// prometheus.exporter.unix and remote_writes to central Prometheus.
-// No /metrics endpoint on the app is required.
+// Metrics: base config.alloy (host) + app GET /metrics on port 3000.
+// HTTP uptime: Blackbox probe /health on :3000.
 //
-// HTTP uptime: central Blackbox probes /health (see prometheus.yml).
+// PM2 logs: CI runs pm2 as the SSH user (not always root). Paths below
+// cover /root and /home/*/. Adjust if your PM2 home differs.
 
-// PM2 application logs (adjust user path if PM2 does not run as root)
+prometheus.scrape "comparison_metrics" {
+  targets = [{
+    __address__ = "localhost:3000",
+  }]
+  metrics_path    = "/metrics"
+  scrape_interval = "15s"
+  forward_to      = [prometheus.relabel.add_labels.receiver]
+}
+
 local.file_match "comparison_pm2_logs" {
   path_targets = [
     {
-      __path__ = "/root/.pm2/logs/comparison-out.log",
+      __path__ = "/root/.pm2/logs/comparison-*.log",
       job      = "comparison",
       host     = "SERVER_NAME",
     },
     {
-      __path__ = "/root/.pm2/logs/comparison-error.log",
+      __path__ = "/home/*/.pm2/logs/comparison-*.log",
       job      = "comparison",
       host     = "SERVER_NAME",
     },
@@ -28,7 +38,7 @@ loki.source.file "comparison_pm2_logs" {
   forward_to = [loki.process.comparison_logs.receiver]
 }
 
-// Optional file logs under /var/log/app/comparison/
+// Optional file logs (install-agent creates /var/log/app/comparison/)
 local.file_match "comparison_file_logs" {
   path_targets = [{
     __path__ = "/var/log/app/comparison/*.log",
@@ -42,16 +52,39 @@ loki.source.file "comparison_file_logs" {
   forward_to = [loki.process.comparison_logs.receiver]
 }
 
-// Python logging: "2026-05-21 10:30:00,123 INFO     app  message"
+// Pipeline:
+//  1. Strip optional PM2 --time prefix (with or without timezone)
+//  2. Parse Python logging from app.py basicConfig
+//  3. Fallback: Uvicorn lines when app is started via python app.py
+//  4. Extract HTTP method/path from logging_middleware messages
 loki.process "comparison_logs" {
   stage.regex {
+    expression = "^(?:(?P<pm2_ts>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}(?:[.,]\\d+)?(?:\\s+[+-]\\d{2}:?\\d{2}|\\s+Z)?)?:\\s*)?(?P<log_line>.*)$"
+  }
+
+  // Python: "2026-05-22 10:30:00,123 INFO     middleware.logging_middleware  message"
+  stage.regex {
+    source     = "log_line"
     expression = "^(?P<timestamp>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d+) (?P<level>\\w+)\\s+(?P<logger>\\S+)\\s+(?P<message>.*)$"
+  }
+
+  // Uvicorn: "INFO:     Started server process [12345]"
+  stage.regex {
+    source     = "log_line"
+    expression = "^(?P<level>\\w+):\\s+(?P<message>.*)$"
+  }
+
+  stage.regex {
+    source     = "message"
+    expression = "^(?:Request|Response): (?P<http_method>\\w+) (?P<http_path>\\S+)"
   }
 
   stage.labels {
     values = {
-      level  = "level",
-      logger = "logger",
+      level       = "level",
+      logger      = "logger",
+      http_method = "http_method",
+      http_path   = "http_path",
     }
   }
 
