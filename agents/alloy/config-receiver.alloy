@@ -1,31 +1,103 @@
-// ── Receiver (data ingestion) — addon (appended by install-agent.sh) ─
-// Adjust ports and paths to match your deployment.
+// ── Receiver (data ingestion) — Node.js Express, Docker Compose ───
+// Production: docker compose in /var/www/localota-apis/receiver (see receiver.pipeline.yml).
+// Each integration is a container; app listens on 8000 inside the container.
+//
+// Host metrics: base config.alloy (prometheus.exporter.unix → remote_write).
+// App metrics: GET /metrics (express-prom-bundle in receiver/app.js).
+// HTTP uptime: central Blackbox probes /healthz (prometheus.yml).
+//
+// Alloy needs read access to Docker: usermod -aG docker alloy && systemctl restart alloy
 
-// App metrics endpoint
+// ── App metrics (host-published ports from docker-compose.yml) ─────
+
 prometheus.scrape "receiver_metrics" {
-  targets = [{
-    __address__ = "localhost:8080",    // adjust port if different
-  }]
+  targets = [
+    { __address__ = "localhost:8001", integration = "channex" },
+    { __address__ = "localhost:8002", integration = "hyperguest" },
+    { __address__ = "localhost:8003", integration = "myallocator" },
+    { __address__ = "localhost:8004", integration = "ownerrez" },
+    { __address__ = "localhost:8005", integration = "igms" },
+    { __address__ = "localhost:8006", integration = "smoobu" },
+    { __address__ = "localhost:8007", integration = "bookingpal" },
+    { __address__ = "localhost:8008", integration = "ratedock" },
+    { __address__ = "localhost:8009", integration = "booking" },
+    { __address__ = "localhost:8010", integration = "localota" },
+    { __address__ = "localhost:8011", integration = "email" },
+    { __address__ = "localhost:8012", integration = "core" },
+  ]
   metrics_path    = "/metrics"
   scrape_interval = "15s"
   forward_to      = [prometheus.relabel.add_labels.receiver]
 }
 
-// Receiver-specific application logs (under /var/log/app/receiver/)
-local.file_match "receiver_logs" {
-  path_targets = [{
-    __path__ = "/var/log/app/receiver/*.log",
-    job      = "receiver",
-    host     = "SERVER_NAME",
-  }]
+// ari-ingest-worker has no host port mapping — scrape via container network IP
+discovery.docker "receiver" {
+  host             = "unix:///var/run/docker.sock"
+  refresh_interval = "30s"
 }
 
-loki.source.file "receiver_logs" {
-  targets    = local.file_match.receiver_logs.targets
+discovery.relabel "ari_ingest_metrics" {
+  targets = discovery.docker.receiver.targets
+
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/ari-ingest-worker"
+    action        = "keep"
+  }
+
+  rule {
+    source_labels = ["__meta_docker_network_ip"]
+    target_label  = "__address__"
+    replacement   = "$1:8000"
+  }
+
+  rule {
+    target_label = "integration"
+    replacement  = "ari-ingest-worker"
+  }
+}
+
+prometheus.scrape "ari_ingest_metrics" {
+  targets         = discovery.relabel.ari_ingest_metrics.output
+  metrics_path    = "/metrics"
+  scrape_interval = "15s"
+  forward_to      = [prometheus.relabel.add_labels.receiver]
+}
+
+// ── Container logs (stdout from pm2-runtime / Node inside Docker) ──
+
+discovery.relabel "receiver_logs" {
+  targets = discovery.docker.receiver.targets
+
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/(receiver-.+|ari-ingest-worker)"
+    action        = "keep"
+  }
+
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/(?:receiver-)?(.+)"
+    target_label  = "integration"
+    replacement   = "$1"
+  }
+}
+
+loki.source.docker "receiver_containers" {
+  host       = "unix:///var/run/docker.sock"
+  targets    = discovery.relabel.receiver_logs.output
+  labels     = { job = "receiver", host = "SERVER_NAME" }
   forward_to = [loki.process.receiver_logs.receiver]
 }
 
+// Morgan: "GET /path 200 12 - 42 rid=abc-123"
+// console: "Listening on port 8000", "[requestId] Unhandled error: ..."
+// Optional logfmt: level=info request_id=...
 loki.process "receiver_logs" {
+  stage.regex {
+    expression = "rid=(?P<request_id>\\S+)"
+  }
+
   stage.logfmt {
     mapping = {
       level      = "",
@@ -35,14 +107,15 @@ loki.process "receiver_logs" {
 
   stage.labels {
     values = {
-      level      = "level",
-      request_id = "request_id",
+      level        = "level",
+      request_id   = "request_id",
+      integration  = "integration",
     }
   }
 
   stage.drop {
     source     = "level"
-    expression = "debug"
+    expression = "(?i)debug"
   }
 
   forward_to = [loki.write.monitoring.receiver]
