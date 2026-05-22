@@ -267,13 +267,18 @@ Optional: only add `prometheus.scrape` + a `/metrics` endpoint on the app if you
 
 ### Loki container unhealthy
 
-Loki 3.x requires the `common:` storage block. Older `tsdb_shipper` / `shared_store` settings cause Loki to crash and mark the container unhealthy (Grafana then fails with `dependency failed to start`).
+Grafana may report `dependency loki failed to start` when Loki never becomes **healthy** (not necessarily when the process crashes).
+
+**Loki 3.6+** images are distroless: they have no `wget`, `curl`, or shell, so a `CMD-SHELL` healthcheck with `wget` always fails. This stack uses the built-in check: `loki -health` in `docker-compose.yml`.
+
+Loki 3.x also requires the `common:` storage block. Older `tsdb_shipper` / `shared_store` settings cause Loki to crash and mark the container unhealthy.
 
 ```bash
 cd monitoring-server
 docker compose logs loki --tail 50
 docker compose up -d loki
 curl http://localhost:3100/ready
+docker inspect loki --format '{{.State.Health.Status}}'
 ```
 
 If errors persist after upgrading from Loki 2.x, reset the volume (deletes stored logs):

@@ -49,7 +49,8 @@ services:
       - loki_data:/loki  
     command: -config.file=/etc/loki/config.yml  
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3100/ready 2>/dev/null | grep -q ready || exit 1"]
+      # Loki 3.6+ distroless image has no wget/shell; use built-in -health (3.7+)
+      test: ["CMD", "/usr/bin/loki", "-health"]
       interval: 15s
       timeout: 10s
       retries: 5
