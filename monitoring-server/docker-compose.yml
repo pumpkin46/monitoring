@@ -33,6 +33,9 @@ services:
       timeout: 5s
       retries: 10
       start_period: 60s
+    depends_on:
+      alertmanager:
+        condition: service_started
 
   loki:  
     image: grafana/loki:3.1.1  
@@ -83,9 +86,6 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
-    depends_on:
-      prometheus:
-        condition: service_healthy
 
   blackbox:  
     image: prom/blackbox-exporter:v0.26.0  

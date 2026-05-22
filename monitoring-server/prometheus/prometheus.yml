@@ -28,11 +28,11 @@ scrape_configs:
       module: [http_2xx]  
     static_configs:  
       - targets:  
-          - http://MANAGER_IP           # add your real URLs  
-          - http://RECEIVER_IP  
+          - http://146.190.166.199           # add your real URLs  
+          - https://ota-receiver.localota.stream/healthz  
           - http://WORKER_IP  
-          - http://COMPARISON_IP:3000/health    # Python FastAPI Image Comparison API  
-          - http://PMS_API_IP/health  
+          - https://tools.localota.stream/health    # Python FastAPI Image Comparison API  
+          - https://gha.localota.stream
     relabel_configs:  
       - source_labels: [__address__]  
         target_label: __param_target  
