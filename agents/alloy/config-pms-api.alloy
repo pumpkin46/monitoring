@@ -1,10 +1,69 @@
-// ── App metrics endpoint (e.g. /metrics on port 8080) ───────────  
+// ── PMS API — Node.js Express (GHA cron + REST) ─────────────────
+// App: PM2 process name "pms", port 8050 (SERVER_PORT env, see src/startServer.ts)
+// Deploy: /var/www/pms-api (.github/workflows/pipeline.yml)
+//
+// Host metrics: base config.alloy (prometheus.exporter.unix → remote_write).
+// App metrics: GET /metrics on port 8050 (express-prom-bundle in src/startServer.ts).
+//
+// HTTP uptime: add a Blackbox probe for http://PMS_API_IP:8050/ in prometheus.yml.
 
-prometheus.scrape "app_metrics" {  
-  targets = [{  
-    __address__ = "localhost:8080",    // adjust port  
-  }]  
-  metrics_path    = "/metrics"  
-  scrape_interval = "15s"  
-  forward_to      = [prometheus.relabel.add_labels.receiver]  
-}  
+prometheus.scrape "pms_api_metrics" {
+  targets = [{
+    __address__ = "localhost:8050",
+  }]
+  metrics_path    = "/metrics"
+  scrape_interval = "15s"
+  forward_to      = [prometheus.relabel.add_labels.receiver]
+}
+
+// PM2 application logs (adjust user path if PM2 does not run as root)
+local.file_match "pms_api_pm2_logs" {
+  path_targets = [
+    {
+      __path__ = "/root/.pm2/logs/pms-out.log",
+      job      = "pms-api",
+      host     = "SERVER_NAME",
+    },
+    {
+      __path__ = "/root/.pm2/logs/pms-error.log",
+      job      = "pms-api",
+      host     = "SERVER_NAME",
+    },
+  ]
+}
+
+loki.source.file "pms_api_pm2_logs" {
+  targets    = local.file_match.pms_api_pm2_logs.targets
+  forward_to = [loki.process.pms_api_logs.receiver]
+}
+
+
+
+// PM2: "Running on port 8050"
+// Optional logfmt files: level=info request_id=...
+loki.process "pms_api_logs" {
+  stage.regex {
+    expression = "^(?P<timestamp>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}):\\s*(?P<message>.*)$"
+  }
+
+  stage.logfmt {
+    mapping = {
+      level      = "",
+      request_id = "",
+    }
+  }
+
+  stage.labels {
+    values = {
+      level      = "level",
+      request_id = "request_id",
+    }
+  }
+
+  stage.drop {
+    source     = "level"
+    expression = "(?i)debug"
+  }
+
+  forward_to = [loki.write.monitoring.receiver]
+}
