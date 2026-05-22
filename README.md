@@ -255,7 +255,7 @@ The comparison addon (`config-comparison.alloy`) only adds **logs** for the Imag
 |------|-----|
 | **System metrics** (CPU, RAM, disk, network) | Alloy `prometheus.exporter.unix` in base `config.alloy` → `remote_write` to central Prometheus |
 | **HTTP uptime** | Central Blackbox probes `http://COMPARISON_IP:3000/health` |
-| **Application logs** | PM2 logs + Python log parsing in `config-comparison.alloy` → Loki |
+| **Application logs** | PM2 logs + Python log parsing in `config-comparison.alloy` → Loki (`job="comparison"`, not the Alloy block name `comparison_pm2_logs`) |
 
 | Item | Value |
 |------|-------|
@@ -264,6 +264,8 @@ The comparison addon (`config-comparison.alloy`) only adds **logs** for the Imag
 | Deploy path | `/var/www/comparison` (PM2 name: `comparison`) |
 
 Optional: only add `prometheus.scrape` + a `/metrics` endpoint on the app if you want **per-request** metrics (latency, status codes per route). That is separate from Alloy’s built-in host monitoring.
+
+**Comparison logs missing in Grafana:** The Logs Overview dashboard queries `job=~"app|comparison|manager|receiver|worker"`. If the **comparison** host shows no app logs, on the comparison server check that PM2 log files exist (`ls /root/.pm2/logs/comparison-*.log`), re-run `install-agent.sh comparison` (sets read permissions for the `alloy` user), then `systemctl restart alloy` and `journalctl -u alloy -n 30` for tail errors.
 
 ### Loki container unhealthy
 

@@ -117,7 +117,7 @@
       "type": "logs",
       "targets": [
         {
-          "expr": "{job=\"app\", host=~\"$server\"} | logfmt",
+          "expr": "{job=~\"app|comparison|manager|receiver|worker\", host=~\"$server\"}",
           "refId": "A"
         }
       ]
