@@ -98,10 +98,15 @@ loki.process "receiver_logs" {
     expression = "rid=(?P<request_id>\\S+)"
   }
 
-  stage.logfmt {
-    mapping = {
-      level      = "",
-      request_id = "",
+  // Only parse lines that look like logfmt (level= / request_id=). Morgan and
+  // console logs are not logfmt; unconditional logfmt spams decode errors.
+  stage.match {
+    selector = "|~ \"level=|request_id=\""
+    stage.logfmt {
+      mapping = {
+        level      = "",
+        request_id = "",
+      }
     }
   }
 
