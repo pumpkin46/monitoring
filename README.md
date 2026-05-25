@@ -278,11 +278,11 @@ The comparison addon (`config-comparison.alloy`) scrapes **`GET /metrics` on por
 **Comparison logs missing in Grafana:** The Logs Overview dashboard queries `job=~"app|comparison|manager|receiver|worker"`. PM2 logs under `/root/.pm2/logs/` are not readable by the `alloy` user until traverse permissions are set (`/root` is mode `700` by default). On the comparison server:
 
 ```bash
-sudo bash grant-pm2-logs.sh comparison   # verifies all PM2 + base log paths on this host
+sudo bash grant-alloy-access.sh comparison   # PM2 + Docker + base log path checks
 systemctl restart alloy
 ```
 
-If `head` still fails, install ACL tools (`apt install acl`) and re-run `grant-pm2-logs.sh`.
+If `head` still fails, install ACL tools (`apt install acl`) and re-run `grant-alloy-access.sh`.
 
 ### Loki container unhealthy
 

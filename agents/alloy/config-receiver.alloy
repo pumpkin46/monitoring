@@ -6,7 +6,7 @@
 // App metrics: GET /metrics (express-prom-bundle in receiver/app.js).
 // HTTP uptime: central Blackbox probes /healthz (prometheus.yml).
 //
-// Alloy needs read access to Docker: usermod -aG docker alloy && systemctl restart alloy
+// Docker socket access: sudo bash grant-alloy-access.sh receiver && systemctl restart alloy
 
 // ── App metrics (host-published ports from docker-compose.yml) ─────
 

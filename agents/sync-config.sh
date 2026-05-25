@@ -48,9 +48,9 @@ fi
 
 chown alloy:alloy /etc/alloy/config.alloy 2>/dev/null || true
 
-GRANT_PM2="${SCRIPT_DIR}/grant-pm2-logs.sh"
-if [ -f "$GRANT_PM2" ]; then
-  bash "$GRANT_PM2" "$SERVER_NAME"
+GRANT_ACCESS="${SCRIPT_DIR}/grant-alloy-access.sh"
+if [ -f "$GRANT_ACCESS" ]; then
+  bash "$GRANT_ACCESS" "$SERVER_NAME"
 fi
 
 systemctl restart alloy

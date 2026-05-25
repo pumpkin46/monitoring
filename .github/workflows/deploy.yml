@@ -211,7 +211,7 @@ jobs:
           SERVER_NAME: ${{ matrix.server }}
         run: |
           rsync -az --delete \
-            agents/alloy/ agents/sync-config.sh agents/install-agent.sh agents/grant-pm2-logs.sh \
+            agents/alloy/ agents/sync-config.sh agents/install-agent.sh agents/grant-alloy-access.sh \
             "$DEPLOY_USER@$DEPLOY_HOST:/tmp/monitoring-agents/"
 
           ssh "$DEPLOY_USER@$DEPLOY_HOST" \

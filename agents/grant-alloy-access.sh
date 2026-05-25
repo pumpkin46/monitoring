@@ -1,9 +1,11 @@
 #!/bin/bash
-# Grant the alloy user read access to PM2 log files (including under /root),
-# then verify every log path Alloy is configured to tail on this host.
+# Grant the alloy user access needed for log collection on this host:
+#   - PM2 log files (including under /root)
+#   - Docker socket (when Docker is installed, for discovery.docker / loki.source.docker)
+# Then verify every log path Alloy is configured to tail on this host.
 #
 # Usage:
-#   sudo bash grant-pm2-logs.sh [server-name]
+#   sudo bash grant-alloy-access.sh [server-name]
 #
 # server-name (optional): manager, worker, comparison, pms-api, receiver
 #   When set, also checks that this host's expected PM2 log files exist.
@@ -16,7 +18,7 @@ set -euo pipefail
 SERVER_NAME="${1:-}"
 
 if [ "$EUID" -ne 0 ]; then
-  echo "ERROR: Run as root (sudo bash grant-pm2-logs.sh [server-name])"
+  echo "ERROR: Run as root (sudo bash grant-alloy-access.sh [server-name])"
   exit 1
 fi
 
@@ -26,6 +28,34 @@ if ! id alloy &>/dev/null; then
 fi
 
 FAILED=0
+
+grant_docker_access() {
+  if ! getent group docker >/dev/null; then
+    echo "  — docker group not found (Docker not installed — skipping)"
+    return 0
+  fi
+
+  if id -nG alloy 2>/dev/null | tr ' ' '\n' | grep -qx docker; then
+    echo "✓ alloy is already in the docker group"
+  else
+    usermod -aG docker alloy
+    echo "✓ added alloy to the docker group"
+  fi
+}
+
+verify_docker_socket() {
+  [ -S /var/run/docker.sock ] || return 0
+
+  echo ""
+  echo "Verifying Docker socket access for alloy..."
+
+  if sudo -u alloy sg docker -c 'curl -sf --unix-socket /var/run/docker.sock http://localhost/containers/json?limit=1 >/dev/null'; then
+    echo "✓ alloy can list Docker containers"
+  else
+    echo "✗ alloy cannot access /var/run/docker.sock (run: systemctl restart alloy)"
+    FAILED=1
+  fi
+}
 
 grant_root_pm2_logs() {
   local logs_dir="/root/.pm2/logs"
@@ -175,6 +205,7 @@ verify_expected_pm2_for_server() {
   fi
 }
 
+grant_docker_access
 grant_root_pm2_logs
 for logs_dir in /home/*/.pm2/logs; do
   grant_home_pm2_logs "$logs_dir"
@@ -192,6 +223,7 @@ fi
 
 verify_base_alloy_logs
 verify_expected_pm2_for_server
+verify_docker_socket
 
 echo ""
 if [ "$FAILED" -ne 0 ]; then
@@ -199,4 +231,4 @@ if [ "$FAILED" -ne 0 ]; then
   exit 1
 fi
 
-echo "✓ All present Alloy log paths are readable by alloy"
+echo "✓ Alloy permissions verified (PM2 logs, Docker, configured log paths)"
