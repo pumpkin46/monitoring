@@ -357,7 +357,7 @@
     {
       "collapsed": false,
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 43 },
-      "id": 104,
+      "id": 106,
       "title": "Application Metrics",
       "type": "row"
     },
@@ -422,8 +422,100 @@
       ]
     },
     {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": { "fillOpacity": 10, "lineWidth": 2 }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 52 },
+      "id": 18,
+      "options": { "tooltip": { "mode": "multi" } },
+      "title": "HTTP Latency p50 / p95",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.50, sum by (server, le) (rate(http_request_duration_seconds_bucket{server=~\"$server\"}[5m])))",
+          "legendFormat": "{{ server }} p50"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum by (server, le) (rate(http_request_duration_seconds_bucket{server=~\"$server\"}[5m])))",
+          "legendFormat": "{{ server }} p95"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": { "fillOpacity": 10, "lineWidth": 2 }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 52 },
+      "id": 19,
+      "options": { "tooltip": { "mode": "multi" } },
+      "title": "HTTP Error Rate (4xx / 5xx)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum by (server) (rate(http_request_duration_seconds_count{server=~\"$server\", status_code=~\"4..\"}[5m]))",
+          "legendFormat": "{{ server }} 4xx"
+        },
+        {
+          "expr": "sum by (server) (rate(http_request_duration_seconds_count{server=~\"$server\", status_code=~\"5..\"}[5m]))",
+          "legendFormat": "{{ server }} 5xx"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": { "fillOpacity": 10, "lineWidth": 2, "stacking": { "mode": "normal" } }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 60 },
+      "id": 20,
+      "options": { "tooltip": { "mode": "multi" } },
+      "title": "Receiver Request Rate by Integration",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", integration=~\".+\"}[5m]))",
+          "legendFormat": "{{ integration }}"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "custom": { "fillOpacity": 10, "lineWidth": 2 }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 60 },
+      "id": 21,
+      "options": { "tooltip": { "mode": "multi" } },
+      "title": "Node.js Memory (heap / RSS)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "nodejs_heap_size_used_bytes{server=~\"$server\"}",
+          "legendFormat": "{{ server }} heap used"
+        },
+        {
+          "expr": "process_resident_memory_bytes{server=~\"$server\"}",
+          "legendFormat": "{{ server }} RSS"
+        }
+      ]
+    },
+    {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 52 },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 68 },
       "id": 105,
       "title": "HTTP Probes (Blackbox)",
       "type": "row"
@@ -444,7 +536,7 @@
           }
         }
       },
-      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 53 },
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 69 },
       "id": 13,
       "options": {
         "reduceOptions": { "calcs": ["lastNotNull"] },
@@ -477,7 +569,7 @@
           "custom": { "fillOpacity": 10, "lineWidth": 2 }
         }
       },
-      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 53 },
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 69 },
       "id": 14,
       "options": { "tooltip": { "mode": "multi" } },
       "title": "HTTP Response Time",

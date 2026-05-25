@@ -95,13 +95,43 @@
     {
       "collapsed": false,
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 29 },
+      "id": 105,
+      "title": "Kernel Logs",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "loki" },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 30 },
+      "id": 6,
+      "options": {
+        "showTime": true,
+        "showLabels": true,
+        "showCommonLabels": false,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": false,
+        "enableLogDetails": true,
+        "sortOrder": "Descending",
+        "dedupStrategy": "none"
+      },
+      "title": "Kernel Logs (kern.log)",
+      "type": "logs",
+      "targets": [
+        {
+          "expr": "{job=\"kernel\", host=~\"$server\"}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 40 },
       "id": 103,
       "title": "Application Logs",
       "type": "row"
     },
     {
       "datasource": { "type": "loki", "uid": "loki" },
-      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 30 },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 41 },
       "id": 4,
       "options": {
         "showTime": true,
@@ -117,21 +147,21 @@
       "type": "logs",
       "targets": [
         {
-          "expr": "{job=~\"app|comparison|manager|receiver|worker\", host=~\"$server\"}",
+          "expr": "{job=~\"app|comparison|manager|receiver|worker|pms-api\", host=~\"$server\"}",
           "refId": "A"
         }
       ]
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 40 },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 51 },
       "id": 104,
       "title": "Journal (Warnings & Errors)",
       "type": "row"
     },
     {
       "datasource": { "type": "loki", "uid": "loki" },
-      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 41 },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 52 },
       "id": 5,
       "options": {
         "showTime": true,
