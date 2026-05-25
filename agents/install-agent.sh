@@ -12,6 +12,7 @@
 #   sudo bash install-agent.sh worker
 #   sudo bash install-agent.sh comparison
 #   sudo bash install-agent.sh pms-api
+#   sudo bash install-agent.sh scraper
 # ================================================================
 
 # ── Variables ─────────────────────────────────────────────────────

@@ -1,0 +1,68 @@
+// ── Scraper — Node.js Express (ARI scraping + subscriptions) ─────
+// App: PM2 process name "scraper", port 8080 (see app.js)
+// Deploy: /var/www/scraper (.github/workflows/pipeline.yml)
+//
+// Host metrics: base config.alloy (prometheus.exporter.unix → remote_write).
+// App metrics: GET /metrics on port 8080 (express-prom-bundle in app.js).
+//
+// HTTP uptime: add a Blackbox probe for http://SCRAPER_IP:8080/ in prometheus.yml.
+
+prometheus.scrape "scraper_metrics" {
+  targets = [{
+    __address__ = "localhost:8080",
+  }]
+  metrics_path    = "/metrics"
+  scrape_interval = "15s"
+  forward_to      = [prometheus.relabel.add_labels.receiver]
+}
+
+// PM2 application logs (adjust user path if PM2 does not run as root)
+local.file_match "scraper_pm2_logs" {
+  path_targets = [
+    {
+      __path__ = "/root/.pm2/logs/scraper-out.log",
+      job      = "scraper",
+      host     = "SERVER_NAME",
+    },
+    {
+      __path__ = "/root/.pm2/logs/scraper-error.log",
+      job      = "scraper",
+      host     = "SERVER_NAME",
+    },
+  ]
+}
+
+loki.source.file "scraper_pm2_logs" {
+  targets    = local.file_match.scraper_pm2_logs.targets
+  forward_to = [loki.process.scraper_logs.receiver]
+}
+
+// PM2: "Listening on port 8080"
+// Morgan dev: "GET /path 200 12.345 ms - 42"
+// Optional logfmt files: level=info request_id=...
+loki.process "scraper_logs" {
+  stage.regex {
+    expression = "^(?P<timestamp>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}):\\s*(?P<message>.*)$"
+  }
+
+  stage.logfmt {
+    mapping = {
+      level      = "",
+      request_id = "",
+    }
+  }
+
+  stage.labels {
+    values = {
+      level      = "level",
+      request_id = "request_id",
+    }
+  }
+
+  stage.drop {
+    source     = "level"
+    expression = "(?i)debug"
+  }
+
+  forward_to = [loki.write.monitoring.receiver]
+}

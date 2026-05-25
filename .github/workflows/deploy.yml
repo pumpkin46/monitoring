@@ -10,6 +10,7 @@
 #   DEPLOY_WORKER_HOST       — Agent: worker
 #   DEPLOY_COMPARISON_HOST   — Agent: comparison
 #   DEPLOY_PMS_API_HOST      — Agent: pms-api
+#   DEPLOY_SCRAPER_HOST      — Agent: scraper
 #
 # Server prep (one-time):
 #   Monitoring host: clone repo to /var/www/monitoring, cp .env.example .env locally once
@@ -159,6 +160,8 @@ jobs:
             host_secret: DEPLOY_COMPARISON_HOST
           - server: pms-api
             host_secret: DEPLOY_PMS_API_HOST
+          - server: scraper
+            host_secret: DEPLOY_SCRAPER_HOST
 
     steps:
       - uses: actions/checkout@v4
@@ -171,6 +174,7 @@ jobs:
           WORKER_HOST: ${{ secrets.DEPLOY_WORKER_HOST }}
           COMPARISON_HOST: ${{ secrets.DEPLOY_COMPARISON_HOST }}
           PMS_API_HOST: ${{ secrets.DEPLOY_PMS_API_HOST }}
+          SCRAPER_HOST: ${{ secrets.DEPLOY_SCRAPER_HOST }}
         run: |
           case "${{ matrix.server }}" in
             manager)   HOST="$MANAGER_HOST" ;;
@@ -178,6 +182,7 @@ jobs:
             worker)    HOST="$WORKER_HOST" ;;
             comparison) HOST="$COMPARISON_HOST" ;;
             pms-api)   HOST="$PMS_API_HOST" ;;
+            scraper)   HOST="$SCRAPER_HOST" ;;
             *) echo "Unknown server: ${{ matrix.server }}"; exit 1 ;;
           esac
 

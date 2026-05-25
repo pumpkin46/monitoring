@@ -7,7 +7,7 @@
 # Usage:
 #   sudo bash grant-alloy-access.sh [server-name]
 #
-# server-name (optional): manager, worker, comparison, pms-api, receiver
+# server-name (optional): manager, worker, comparison, pms-api, receiver, scraper
 #   When set, also checks that this host's expected PM2 log files exist.
 #
 # /root is normally mode 700, so chmod on log files alone is not enough — alloy
@@ -169,6 +169,7 @@ verify_expected_pm2_for_server() {
     worker)     expected=(worker-out.log worker-error.log) ;;
     comparison) expected=(comparison-out.log comparison-error.log) ;;
     pms-api)    expected=(pms-out.log pms-error.log) ;;
+    scraper)    expected=(scraper-out.log scraper-error.log) ;;
     receiver)   return 0 ;; # Docker logs, not PM2 files
     "")
       return 0

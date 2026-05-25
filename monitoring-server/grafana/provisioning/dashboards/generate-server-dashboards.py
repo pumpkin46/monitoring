@@ -41,6 +41,12 @@ SERVERS = {
         "features": {"http", "nodejs"},
         "probe_match": r"gha\.localota",
     },
+    "scraper": {
+        "title": "Scraper",
+        "app_jobs": ["scraper", "app"],
+        "features": {"http", "nodejs"},
+        "probe_match": r"SCRAPER",
+    },
 }
 
 PANEL_FEATURES = {

@@ -147,7 +147,7 @@
       "type": "logs",
       "targets": [
         {
-          "expr": "{job=~\"app|comparison|manager|receiver|worker|pms-api\", host=~\"$server\"} |= \"${log_search}\"",
+          "expr": "{job=~\"app|comparison|manager|receiver|worker|pms-api|scraper\", host=~\"$server\"} |= \"${log_search}\"",
           "refId": "A"
         }
       ]

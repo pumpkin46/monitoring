@@ -31,7 +31,8 @@ Target Servers                     Monitoring Server (Docker)
 | `receiver`   | Data ingestion service       |
 | `worker`     | Background job processing    |
 | `comparison` | Python FastAPI Image Comparison API (port 3000, PM2) |
-| `pms-api`    | PMS API (includes app metrics on `:8080/metrics`) |
+| `pms-api`    | PMS API (includes app metrics on `:8050/metrics`) |
+| `scraper`    | ARI scraper / subscriptions (port 8080, PM2) |
 
 ## Project Structure
 
@@ -46,7 +47,8 @@ monitoring/
 │       ├── config-receiver.alloy     # Addon: metrics + logs (receiver)
 │       ├── config-worker.alloy       # Addon: metrics + logs (worker)
 │       ├── config-comparison.alloy   # Addon: metrics + logs (comparison)
-│       └── config-pms-api.alloy      # Addon: app metrics (pms-api)
+│       ├── config-pms-api.alloy      # Addon: app metrics (pms-api)
+│       └── config-scraper.alloy      # Addon: app metrics + logs (scraper)
 │
 └── monitoring-server/
     ├── docker-compose.yml            # All monitoring services
@@ -81,7 +83,8 @@ monitoring/
                     ├── receiver.json
                     ├── worker.json
                     ├── comparison.json
-                    └── pms-api.json
+                    ├── pms-api.json
+                    └── scraper.json
 ```
 
 ## Prerequisites
@@ -126,7 +129,7 @@ Then edit the following config placeholder values:
 | File | What to change |
 |------|---------------|
 | `.env` | Grafana password, SMTP credentials, alert email |
-| `prometheus/prometheus.yml` | Replace `MANAGER_IP`, `RECEIVER_IP`, etc. with real IPs/URLs |
+| `prometheus/prometheus.yml` | Replace `MANAGER_IP`, `RECEIVER_IP`, `SCRAPER_IP`, etc. with real IPs/URLs |
 
 Start all services:
 
@@ -167,6 +170,7 @@ sudo bash install-agent.sh receiver
 sudo bash install-agent.sh worker
 sudo bash install-agent.sh comparison
 sudo bash install-agent.sh pms-api
+sudo bash install-agent.sh scraper
 ```
 
 Before running, edit `install-agent.sh` and set `MONITORING_IP` (line 19) to your monitoring server's IP address. The installer reads `config.alloy` from the `alloy/` directory next to the script, so make sure you copy the entire `agents/` folder.
@@ -275,7 +279,20 @@ The comparison addon (`config-comparison.alloy`) scrapes **`GET /metrics` on por
 
 **Per-route HTTP metrics** (like manager’s `http_request_duration_seconds_*`) require extra instrumentation in the FastAPI app (e.g. `prometheus-fastapi-instrumentator`). The comparison app currently exposes queue/worker gauges only.
 
-**Comparison logs missing in Grafana:** The Logs Overview dashboard queries `job=~"app|comparison|manager|receiver|worker"`. PM2 logs under `/root/.pm2/logs/` are not readable by the `alloy` user until traverse permissions are set (`/root` is mode `700` by default). On the comparison server:
+### Scraper server (Node.js Express)
+
+The scraper addon (`config-scraper.alloy`) scrapes **`GET /metrics` on port 8080** (express-prom-bundle in `app.js`) and ships **PM2 logs** to Loki.
+
+| Item | Value |
+|------|-------|
+| App port | `8080` |
+| PM2 name | `scraper` |
+| Deploy path | `/var/www/scraper` |
+| Grafana | **Servers → Scraper** dashboard |
+| Logs | `scraper-out.log`, `scraper-error.log` under `/root/.pm2/logs/` |
+| HTTP uptime | Blackbox: `http://SCRAPER_IP:8080/` in `prometheus/prometheus.yml` |
+
+**Comparison logs missing in Grafana:** The Logs Overview dashboard queries `job=~"app|comparison|manager|receiver|worker|pms-api|scraper"`. PM2 logs under `/root/.pm2/logs/` are not readable by the `alloy` user until traverse permissions are set (`/root` is mode `700` by default). On the comparison server:
 
 ```bash
 sudo bash grant-alloy-access.sh comparison   # PM2 + Docker + base log path checks
