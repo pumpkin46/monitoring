@@ -265,7 +265,14 @@ The comparison addon (`config-comparison.alloy`) only adds **logs** for the Imag
 
 Optional: only add `prometheus.scrape` + a `/metrics` endpoint on the app if you want **per-request** metrics (latency, status codes per route). That is separate from Alloy’s built-in host monitoring.
 
-**Comparison logs missing in Grafana:** The Logs Overview dashboard queries `job=~"app|comparison|manager|receiver|worker"`. If the **comparison** host shows no app logs, on the comparison server check that PM2 log files exist (`ls /root/.pm2/logs/comparison-*.log`), re-run `install-agent.sh comparison` (sets read permissions for the `alloy` user), then `systemctl restart alloy` and `journalctl -u alloy -n 30` for tail errors.
+**Comparison logs missing in Grafana:** The Logs Overview dashboard queries `job=~"app|comparison|manager|receiver|worker"`. PM2 logs under `/root/.pm2/logs/` are not readable by the `alloy` user until traverse permissions are set (`/root` is mode `700` by default). On the comparison server:
+
+```bash
+sudo bash grant-pm2-logs.sh comparison   # verifies all PM2 + base log paths on this host
+systemctl restart alloy
+```
+
+If `head` still fails, install ACL tools (`apt install acl`) and re-run `grant-pm2-logs.sh`.
 
 ### Loki container unhealthy
 

@@ -119,6 +119,13 @@ echo "[STEP 5] Setting permissions..."
 usermod -aG adm alloy 2>/dev/null || true
 chown -R alloy:alloy /var/lib/alloy/
 
+GRANT_PM2="${SCRIPT_DIR}/grant-pm2-logs.sh"
+if [ -f "$GRANT_PM2" ]; then
+  bash "$GRANT_PM2" "$SERVER_NAME"
+else
+  echo "⚠ grant-pm2-logs.sh not found — run it manually so alloy can read PM2 logs under /root"
+fi
+
 echo "✓ Permissions set"
 
 # ================================================================

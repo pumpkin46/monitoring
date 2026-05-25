@@ -18,15 +18,17 @@ prometheus.scrape "comparison_metrics" {
   forward_to      = [prometheus.relabel.add_labels.receiver]
 }
 
+// Explicit PM2 log files (same pattern as manager/worker). CI may run PM2 as
+// root or as the deploy user under /home/<user>/.pm2/logs/.
 local.file_match "comparison_pm2_logs" {
   path_targets = [
     {
-      __path__ = "/root/.pm2/logs/comparison-*.log",
+      __path__ = "/root/.pm2/logs/comparison-out.log",
       job      = "comparison",
       host     = "SERVER_NAME",
     },
     {
-      __path__ = "/home/*/.pm2/logs/comparison-*.log",
+      __path__ = "/root/.pm2/logs/comparison-error.log",
       job      = "comparison",
       host     = "SERVER_NAME",
     },

@@ -1,0 +1,254 @@
+# Continuous deployment for the monitoring stack.
+#
+# Required GitHub secrets (repository or production environment):
+#   PRIVATEKEY                    — SSH private key
+#   DEPLOY_USER              — SSH user (often root or deploy)
+#   DEPLOY_MONITORING_HOST   — Monitoring server (Docker Compose host)
+#   MONITORING_ENV_FILE           — Full contents of monitoring-server/.env
+#   DEPLOY_MANAGER_HOST      — Agent: manager
+#   DEPLOY_RECEIVER_HOST     — Agent: receiver
+#   DEPLOY_WORKER_HOST       — Agent: worker
+#   DEPLOY_COMPARISON_HOST   — Agent: comparison
+#   DEPLOY_PMS_API_HOST      — Agent: pms-api
+#
+# Server prep (one-time):
+#   Monitoring host: clone repo to /var/www/monitoring, cp .env.example .env locally once
+#   Agent hosts:     sudo bash install-agent.sh <server-name>
+
+name: Deploy Monitoring
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: monitoring-production
+  cancel-in-progress: false
+
+jobs:
+  detect-changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    outputs:
+      monitoring_server: ${{ steps.filter.outputs.monitoring_server }}
+      agents: ${{ steps.filter.outputs.agents }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Path filter
+        id: filter
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "monitoring_server=true" >> "$GITHUB_OUTPUT"
+            echo "agents=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          CHANGED=$(git diff --name-only HEAD^ HEAD)
+          echo "Changed files:"
+          echo "$CHANGED"
+
+          if echo "$CHANGED" | grep -qE '^monitoring-server/'; then
+            echo "monitoring_server=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "monitoring_server=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          if echo "$CHANGED" | grep -qE '^agents/'; then
+            echo "agents=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "agents=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  deploy-monitoring-server:
+    name: Deploy monitoring server
+    needs: detect-changes
+    if: needs.detect-changes.outputs.monitoring_server == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.PRIVATEKEY }}
+
+      - name: Add server to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H "${{ secrets.DEPLOY_MONITORING_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Validate SSH connection
+        run: |
+          ssh -o ConnectTimeout=10 \
+            "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_MONITORING_HOST }}" \
+            "echo 'SSH connection successful'"
+
+      - name: Prepare .env for deploy
+        env:
+          MONITORING_ENV_FILE: ${{ secrets.MONITORING_ENV_FILE }}
+        run: |
+          printf '%s\n' "$MONITORING_ENV_FILE" > monitoring-server.env.ci
+
+      - name: Deploy Docker stack
+        env:
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_MONITORING_HOST }}
+        run: |
+          scp monitoring-server.env.ci \
+            "$DEPLOY_USER@$DEPLOY_HOST:/tmp/monitoring-server.env"
+
+          ssh "$DEPLOY_USER@$DEPLOY_HOST" 'bash -s' <<'SSHEOF'
+          set -euo pipefail
+
+          DEPLOY_PATH="/var/www/monitoring"
+          cd "$DEPLOY_PATH"
+
+          echo "Pulling latest main..."
+          git fetch origin main
+          git checkout main
+          git reset --hard origin/main
+
+          cd monitoring-server
+          cp /tmp/monitoring-server.env .env
+          rm -f /tmp/monitoring-server.env
+
+          echo "Pulling images and starting stack..."
+          docker compose pull
+          docker compose up -d --remove-orphans
+
+          echo "Validating Prometheus rules..."
+          docker compose exec -T prometheus \
+            promtool check rules /etc/prometheus/rules/*.yml
+
+          echo "Reloading Prometheus config..."
+          curl -sf -X POST http://127.0.0.1:9090/-/reload || true
+
+          echo "Health checks..."
+          curl -sf http://127.0.0.1:9090/-/ready
+          curl -sf http://127.0.0.1:3100/ready
+          curl -sf http://127.0.0.1:3000/api/health
+
+          docker compose ps
+          echo "Monitoring server deployment complete."
+          SSHEOF
+
+  deploy-agents:
+    name: Deploy agent — ${{ matrix.server }}
+    needs: detect-changes
+    if: needs.detect-changes.outputs.agents == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - server: manager
+            host_secret: DEPLOY_MANAGER_HOST
+          - server: receiver
+            host_secret: DEPLOY_RECEIVER_HOST
+          - server: worker
+            host_secret: DEPLOY_WORKER_HOST
+          - server: comparison
+            host_secret: DEPLOY_COMPARISON_HOST
+          - server: pms-api
+            host_secret: DEPLOY_PMS_API_HOST
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve deploy host
+        id: host
+        env:
+          MANAGER_HOST: ${{ secrets.DEPLOY_MANAGER_HOST }}
+          RECEIVER_HOST: ${{ secrets.DEPLOY_RECEIVER_HOST }}
+          WORKER_HOST: ${{ secrets.DEPLOY_WORKER_HOST }}
+          COMPARISON_HOST: ${{ secrets.DEPLOY_COMPARISON_HOST }}
+          PMS_API_HOST: ${{ secrets.DEPLOY_PMS_API_HOST }}
+        run: |
+          case "${{ matrix.server }}" in
+            manager)   HOST="$MANAGER_HOST" ;;
+            receiver)  HOST="$RECEIVER_HOST" ;;
+            worker)    HOST="$WORKER_HOST" ;;
+            comparison) HOST="$COMPARISON_HOST" ;;
+            pms-api)   HOST="$PMS_API_HOST" ;;
+            *) echo "Unknown server: ${{ matrix.server }}"; exit 1 ;;
+          esac
+
+          if [ -z "$HOST" ]; then
+            echo "::warning::No host configured for ${{ matrix.server }} — skipping"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "host=$HOST" >> "$GITHUB_OUTPUT"
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
+      - name: Setup SSH
+        if: steps.host.outputs.skip != 'true'
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.PRIVATEKEY }}
+
+      - name: Add server to known hosts
+        if: steps.host.outputs.skip != 'true'
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H "${{ steps.host.outputs.host }}" >> ~/.ssh/known_hosts
+
+      - name: Sync Alloy config and restart
+        if: steps.host.outputs.skip != 'true'
+        env:
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_HOST: ${{ steps.host.outputs.host }}
+          MONITORING_IP: ${{ secrets.DEPLOY_MONITORING_HOST }}
+          SERVER_NAME: ${{ matrix.server }}
+        run: |
+          rsync -az --delete \
+            agents/alloy/ agents/sync-config.sh agents/install-agent.sh agents/grant-pm2-logs.sh \
+            "$DEPLOY_USER@$DEPLOY_HOST:/tmp/monitoring-agents/"
+
+          ssh "$DEPLOY_USER@$DEPLOY_HOST" \
+            "sudo bash /tmp/monitoring-agents/sync-config.sh '$SERVER_NAME' '$MONITORING_IP'"
+
+      - name: Verify Alloy
+        if: steps.host.outputs.skip != 'true'
+        env:
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_HOST: ${{ steps.host.outputs.host }}
+        run: |
+          ssh "$DEPLOY_USER@$DEPLOY_HOST" \
+            "systemctl is-active alloy && systemctl status alloy --no-pager -l | head -20"
+
+  health-check:
+    name: Health check
+    needs: [deploy-monitoring-server, deploy-agents]
+    if: always() && (needs.deploy-monitoring-server.result == 'success' || needs.deploy-monitoring-server.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check monitoring endpoints
+        if: needs.deploy-monitoring-server.result == 'success'
+        run: |
+          HOST="${{ secrets.DEPLOY_MONITORING_HOST }}"
+          for path in "9090/-/ready" "3100/ready" "3000/api/health"; do
+            port="${path%%/*}"
+            url="http://${HOST}:${path}"
+            echo "Checking $url"
+            for i in $(seq 1 12); do
+              if curl -sf --connect-timeout 5 "$url" >/dev/null; then
+                echo "OK: $url"
+                break
+              fi
+              if [ "$i" -eq 12 ]; then
+                echo "::error::Health check failed: $url"
+                exit 1
+              fi
+              sleep 10
+            done
+          done
