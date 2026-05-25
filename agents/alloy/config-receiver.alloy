@@ -101,7 +101,7 @@ loki.process "receiver_logs" {
   // Only parse lines that look like logfmt (level= / request_id=). Morgan and
   // console logs are not logfmt; unconditional logfmt spams decode errors.
   stage.match {
-    selector = "|~ \"level=|request_id=\""
+    selector = "{job=\"receiver\"} |~ \"level=|request_id=\""
     stage.logfmt {
       mapping = {
         level      = "",
@@ -112,9 +112,8 @@ loki.process "receiver_logs" {
 
   stage.labels {
     values = {
-      level        = "level",
-      request_id   = "request_id",
-      integration  = "integration",
+      level      = "level",
+      request_id = "request_id",
     }
   }
 
