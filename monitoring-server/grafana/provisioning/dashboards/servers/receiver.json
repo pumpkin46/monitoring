@@ -107,7 +107,7 @@
         "h": 6,
         "w": 6,
         "x": 6,
-        "y": 7
+        "y": 1
       },
       "id": 2,
       "options": {
@@ -162,7 +162,7 @@
         "h": 6,
         "w": 6,
         "x": 12,
-        "y": 13
+        "y": 1
       },
       "id": 3,
       "options": {
@@ -211,7 +211,7 @@
         "h": 6,
         "w": 6,
         "x": 18,
-        "y": 19
+        "y": 1
       },
       "id": 4,
       "options": {
@@ -238,7 +238,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 25
+        "y": 7
       },
       "id": 101,
       "title": "CPU & Load",
@@ -264,7 +264,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 26
+        "y": 8
       },
       "id": 5,
       "options": {
@@ -299,7 +299,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 34
+        "y": 8
       },
       "id": 6,
       "options": {
@@ -322,7 +322,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 42
+        "y": 16
       },
       "id": 102,
       "title": "Memory",
@@ -349,7 +349,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 43
+        "y": 17
       },
       "id": 7,
       "options": {
@@ -390,7 +390,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 51
+        "y": 17
       },
       "id": 8,
       "options": {
@@ -413,7 +413,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 59
+        "y": 25
       },
       "id": 103,
       "title": "Disk",
@@ -439,7 +439,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 60
+        "y": 26
       },
       "id": 9,
       "options": {
@@ -474,7 +474,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 68
+        "y": 26
       },
       "id": 10,
       "options": {
@@ -501,7 +501,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 76
+        "y": 34
       },
       "id": 104,
       "title": "Network",
@@ -525,7 +525,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 77
+        "y": 35
       },
       "id": 11,
       "options": {
@@ -564,7 +564,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 85
+        "y": 35
       },
       "id": 12,
       "options": {
@@ -591,7 +591,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 93
+        "y": 43
       },
       "id": 106,
       "title": "Application Metrics",
@@ -614,8 +614,8 @@
       "gridPos": {
         "h": 8,
         "w": 8,
-        "x": 16,
-        "y": 94
+        "x": 0,
+        "y": 44
       },
       "id": 17,
       "options": {
@@ -623,12 +623,12 @@
           "mode": "multi"
         }
       },
-      "title": "HTTP Request Rate (app /metrics)",
+      "title": "HTTP Request Rate by Route",
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum by (method, path) (rate(http_request_duration_seconds_count{server=\"receiver\"}[5m]))",
-          "legendFormat": "{{ server }} {{ method }} {{ path }}"
+          "expr": "sum by (integration, method, path) (rate(http_request_duration_seconds_count{server=\"receiver\", integration=~\"$integration\"}[5m]))",
+          "legendFormat": "{{ integration }} {{ method }} {{ path }}"
         }
       ]
     },
@@ -649,8 +649,8 @@
       "gridPos": {
         "h": 8,
         "w": 12,
-        "x": 0,
-        "y": 102
+        "x": 8,
+        "y": 44
       },
       "id": 18,
       "options": {
@@ -658,16 +658,12 @@
           "mode": "multi"
         }
       },
-      "title": "HTTP Latency p50 / p95",
+      "title": "HTTP Latency p95 by Integration",
       "type": "timeseries",
       "targets": [
         {
-          "expr": "histogram_quantile(0.50, sum by (le) (rate(http_request_duration_seconds_bucket{server=\"receiver\"}[5m])))",
-          "legendFormat": "{{ server }} p50"
-        },
-        {
-          "expr": "histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{server=\"receiver\"}[5m])))",
-          "legendFormat": "{{ server }} p95"
+          "expr": "histogram_quantile(0.95, sum by (integration, le) (rate(http_request_duration_seconds_bucket{server=\"receiver\", integration=~\"$integration\"}[5m])))",
+          "legendFormat": "{{ integration }}"
         }
       ]
     },
@@ -688,8 +684,8 @@
       "gridPos": {
         "h": 8,
         "w": 12,
-        "x": 12,
-        "y": 110
+        "x": 0,
+        "y": 52
       },
       "id": 19,
       "options": {
@@ -697,16 +693,128 @@
           "mode": "multi"
         }
       },
-      "title": "HTTP Error Rate (4xx / 5xx)",
+      "title": "HTTP Error Rate by Integration",
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", status_code=~\"4..\"}[5m]))",
-          "legendFormat": "{{ server }} 4xx"
+          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", status_code=~\"4..\", integration=~\"$integration\"}[5m]))",
+          "legendFormat": "{{ integration }} 4xx"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", status_code=~\"5..\"}[5m]))",
-          "legendFormat": "{{ server }} 5xx"
+          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", status_code=~\"5..\", integration=~\"$integration\"}[5m]))",
+          "legendFormat": "{{ integration }} 5xx"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "fillOpacity": 10,
+            "lineWidth": 2,
+            "stacking": {
+              "mode": "normal"
+            }
+          }
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 52
+      },
+      "id": 20,
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "title": "Receiver Request Rate by Integration",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", integration=~\"$integration\"}[5m]))",
+          "legendFormat": "{{ integration }}"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "custom": {
+            "fillOpacity": 10,
+            "lineWidth": 2
+          }
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 60
+      },
+      "id": 21,
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "title": "Node.js Memory by Integration",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "nodejs_heap_size_used_bytes{server=\"receiver\", integration=~\"$integration\"}",
+          "legendFormat": "{{ integration }} heap"
+        },
+        {
+          "expr": "process_resident_memory_bytes{server=\"receiver\", integration=~\"$integration\"}",
+          "legendFormat": "{{ integration }} RSS"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "fillOpacity": 10,
+            "lineWidth": 2
+          }
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 60
+      },
+      "id": 22,
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "title": "Integration Scrape Status",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "max by (integration) (up{server=\"receiver\", integration=~\"$integration\"})",
+          "legendFormat": "{{ integration }}"
         }
       ]
     },
@@ -731,59 +839,20 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 118
+        "y": 68
       },
-      "id": 20,
+      "id": 23,
       "options": {
         "tooltip": {
           "mode": "multi"
         }
       },
-      "title": "Receiver Request Rate by Integration",
+      "title": "HTTP 5xx Rate by Integration",
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", integration=~\".+\"}[5m]))",
+          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", status_code=~\"5..\", integration=~\"$integration\"}[5m]))",
           "legendFormat": "{{ integration }}"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "bytes",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 126
-      },
-      "id": 21,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "Node.js Memory (heap / RSS)",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "nodejs_heap_size_used_bytes{server=\"receiver\"}",
-          "legendFormat": "{{ server }} heap used"
-        },
-        {
-          "expr": "process_resident_memory_bytes{server=\"receiver\"}",
-          "legendFormat": "{{ server }} RSS"
         }
       ]
     },
@@ -793,7 +862,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 134
+        "y": 76
       },
       "id": 105,
       "title": "HTTP Probes (Blackbox)",
@@ -840,7 +909,7 @@
         "h": 6,
         "w": 12,
         "x": 0,
-        "y": 135
+        "y": 77
       },
       "id": 13,
       "options": {
@@ -897,7 +966,7 @@
         "h": 6,
         "w": 12,
         "x": 12,
-        "y": 141
+        "y": 77
       },
       "id": 14,
       "options": {
@@ -920,7 +989,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 147
+        "y": 83
       },
       "id": 200,
       "title": "Logs",
@@ -935,7 +1004,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 148
+        "y": 84
       },
       "id": 201,
       "fieldConfig": {
@@ -952,12 +1021,12 @@
           "mode": "multi"
         }
       },
-      "title": "Log Volume",
+      "title": "Log Volume by Integration",
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum(rate({host=\"receiver\"} |= \"${log_search}\" [5m]))",
-          "legendFormat": "lines/s"
+          "expr": "sum by (integration) (rate({job=\"receiver\", host=\"receiver\"} |= \"${log_search}\" [5m]))",
+          "legendFormat": "{{ integration }}"
         }
       ]
     },
@@ -970,7 +1039,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 154
+        "y": 90
       },
       "id": 202,
       "options": {
@@ -1001,7 +1070,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 162
+        "y": 98
       },
       "id": 203,
       "options": {
@@ -1032,7 +1101,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 170
+        "y": 106
       },
       "id": 204,
       "options": {
@@ -1063,7 +1132,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 178
+        "y": 114
       },
       "id": 205,
       "options": {
@@ -1080,7 +1149,7 @@
       "type": "logs",
       "targets": [
         {
-          "expr": "{job=~\"receiver|app\", host=\"receiver\"} |= \"${log_search}\"",
+          "expr": "{job=~\"receiver|app\", host=\"receiver\", integration=~\"$integration\"} |= \"${log_search}\"",
           "refId": "A"
         }
       ]
@@ -1094,7 +1163,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 186
+        "y": 122
       },
       "id": 206,
       "options": {
@@ -1125,6 +1194,31 @@
   ],
   "templating": {
     "list": [
+      {
+        "allValue": ".+",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "definition": "label_values(http_request_duration_seconds_count{server=\"receiver\"}, integration)",
+        "includeAll": true,
+        "label": "Integration",
+        "multi": true,
+        "name": "integration",
+        "options": [],
+        "query": {
+          "query": "label_values(http_request_duration_seconds_count{server=\"receiver\"}, integration)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "sort": 1,
+        "type": "query"
+      },
       {
         "current": {
           "selected": false,

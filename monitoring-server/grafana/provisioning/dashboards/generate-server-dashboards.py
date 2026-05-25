@@ -74,6 +74,33 @@ LOG_SEARCH_VAR = {
     "type": "textbox",
 }
 
+INTEGRATION_VAR = {
+    "allValue": ".+",
+    "current": {"selected": True, "text": "All", "value": "$__all"},
+    "datasource": {"type": "prometheus", "uid": "prometheus"},
+    "definition": (
+        'label_values(http_request_duration_seconds_count{server="receiver"}, '
+        "integration)"
+    ),
+    "includeAll": True,
+    "label": "Integration",
+    "multi": True,
+    "name": "integration",
+    "options": [],
+    "query": {
+        "query": (
+            'label_values(http_request_duration_seconds_count{server="receiver"}, '
+            "integration)"
+        ),
+        "refId": "StandardVariableQuery",
+    },
+    "refresh": 2,
+    "sort": 1,
+    "type": "query",
+}
+
+TS_DEFAULTS = {"fillOpacity": 10, "lineWidth": 2}
+
 
 def with_log_search(selector: str) -> str:
     return f'{selector} |= "${{log_search}}"'
@@ -160,8 +187,20 @@ def probe_panels(panels: list, probe_match: str) -> list:
     return out
 
 
-def build_log_panels(server: str, app_jobs: list[str]) -> list:
+def build_log_panels(server: str, app_jobs: list[str], *, receiver: bool = False) -> list:
     job_pattern = "|".join(app_jobs)
+    if receiver:
+        volume_expr = (
+            f'sum by (integration) (rate({{job="receiver", host="{server}"}} '
+            f'|= "${{log_search}}" [5m]))'
+        )
+        volume_legend = "{{ integration }}"
+    else:
+        volume_expr = (
+            f'sum(rate({{host="{server}"}} |= "${{log_search}}" [5m]))'
+        )
+        volume_legend = "lines/s"
+
     panels = [
         {
             "collapsed": False,
@@ -181,23 +220,30 @@ def build_log_panels(server: str, app_jobs: list[str]) -> list:
                 }
             },
             "options": {"tooltip": {"mode": "multi"}},
-            "title": "Log Volume",
+            "title": "Log Volume" + (" by Integration" if receiver else ""),
             "type": "timeseries",
             "targets": [
                 {
-                    "expr": f'sum(rate({{host="{server}"}} |= "${{log_search}}" [5m]))',
-                    "legendFormat": "lines/s",
+                    "expr": volume_expr,
+                    "legendFormat": volume_legend,
                 }
             ],
         },
     ]
-    for pid, title, selector in [
+    log_streams = [
         (202, "System Logs (syslog)", f'{{job="system", host="{server}"}}'),
         (203, "Auth Logs (SSH, sudo)", f'{{job="auth", host="{server}"}}'),
         (204, "Kernel Logs (kern.log)", f'{{job="kernel", host="{server}"}}'),
-        (205, "Application Logs", f'{{job=~"{job_pattern}", host="{server}"}}'),
+        (
+            205,
+            "Application Logs",
+            f'{{job=~"{job_pattern}", host="{server}"'
+            + (', integration=~"$integration"' if receiver else "")
+            + "}",
+        ),
         (206, "Systemd Journal (warnings+)", f'{{job="journal", host="{server}"}}'),
-    ]:
+    ]
+    for pid, title, selector in log_streams:
         expr = with_log_search(selector)
         panels.append(
             {
@@ -213,18 +259,185 @@ def build_log_panels(server: str, app_jobs: list[str]) -> list:
     return panels
 
 
-def relayout(panels: list, start_y: int = 0) -> list:
+def reflow_panels(panels: list, start_y: int = 0) -> list:
+    """Pack panels left-to-right in a 24-column grid, wrapping at row boundaries."""
     y = start_y
+    x = 0
+    row_h = 0
+
     for panel in panels:
-        h = panel["gridPos"]["h"]
-        panel["gridPos"]["y"] = y
-        y += h
+        gp = panel["gridPos"]
+        w = gp["w"]
+        h = gp["h"]
+
+        if panel.get("type") == "row":
+            if row_h:
+                y += row_h
+            gp["x"] = 0
+            gp["y"] = y
+            y += h
+            x = 0
+            row_h = 0
+            continue
+
+        if x > 0 and x + w > 24:
+            y += row_h
+            x = 0
+            row_h = 0
+
+        gp["x"] = x
+        gp["y"] = y
+        row_h = max(row_h, h)
+        x += w
+
     return panels
+
+
+def prom_ts_panel(
+    pid: int,
+    title: str,
+    expr: str,
+    *,
+    legend: str = "",
+    unit: str = "short",
+    w: int = 12,
+    h: int = 8,
+    stacking: str | None = None,
+) -> dict:
+    custom = dict(TS_DEFAULTS)
+    if stacking:
+        custom["stacking"] = {"mode": stacking}
+    panel = {
+        "datasource": {"type": "prometheus", "uid": "prometheus"},
+        "fieldConfig": {"defaults": {"unit": unit, "custom": custom}},
+        "gridPos": {"h": h, "w": w, "x": 0, "y": 0},
+        "id": pid,
+        "options": {"tooltip": {"mode": "multi"}},
+        "title": title,
+        "type": "timeseries",
+        "targets": [{"expr": expr, "legendFormat": legend}],
+    }
+    return panel
+
+
+def receiver_extra_panels() -> list:
+    integ = 'integration=~"$integration"'
+    return [
+        prom_ts_panel(
+            22,
+            "Integration Scrape Status",
+            f"max by (integration) (up{{server=\"receiver\", {integ}}})",
+            legend="{{ integration }}",
+            unit="short",
+            w=12,
+        ),
+        prom_ts_panel(
+            23,
+            "HTTP 5xx Rate by Integration",
+            (
+                "sum by (integration) "
+                "(rate(http_request_duration_seconds_count"
+                '{server="receiver", status_code=~"5..", '
+                f"{integ}}}[5m]))"
+            ),
+            legend="{{ integration }}",
+            unit="reqps",
+            w=12,
+            stacking="normal",
+        ),
+    ]
+
+
+def customize_receiver_panels(panels: list) -> None:
+    integ = 'integration=~"$integration"'
+    for panel in panels:
+        pid = panel.get("id")
+        if pid == 17:
+            panel["title"] = "HTTP Request Rate by Route"
+            panel["targets"] = [
+                {
+                    "expr": (
+                        "sum by (integration, method, path) "
+                        "(rate(http_request_duration_seconds_count"
+                        f'{{server="receiver", {integ}}}[5m]))'
+                    ),
+                    "legendFormat": "{{ integration }} {{ method }} {{ path }}",
+                }
+            ]
+        elif pid == 18:
+            panel["title"] = "HTTP Latency p95 by Integration"
+            panel["targets"] = [
+                {
+                    "expr": (
+                        "histogram_quantile(0.95, sum by (integration, le) "
+                        "(rate(http_request_duration_seconds_bucket"
+                        f'{{server="receiver", {integ}}}[5m])))'
+                    ),
+                    "legendFormat": "{{ integration }}",
+                }
+            ]
+        elif pid == 19:
+            panel["title"] = "HTTP Error Rate by Integration"
+            panel["targets"] = [
+                {
+                    "expr": (
+                        "sum by (integration) "
+                        "(rate(http_request_duration_seconds_count"
+                        f'{{server="receiver", status_code=~"4..", {integ}}}[5m]))'
+                    ),
+                    "legendFormat": "{{ integration }} 4xx",
+                },
+                {
+                    "expr": (
+                        "sum by (integration) "
+                        "(rate(http_request_duration_seconds_count"
+                        f'{{server="receiver", status_code=~"5..", {integ}}}[5m]))'
+                    ),
+                    "legendFormat": "{{ integration }} 5xx",
+                },
+            ]
+        elif pid == 20:
+            panel["targets"] = [
+                {
+                    "expr": (
+                        "sum by (integration) "
+                        "(rate(http_request_duration_seconds_count"
+                        f'{{server="receiver", {integ}}}[5m]))'
+                    ),
+                    "legendFormat": "{{ integration }}",
+                }
+            ]
+        elif pid == 21:
+            panel["title"] = "Node.js Memory by Integration"
+            panel["targets"] = [
+                {
+                    "expr": (
+                        f'nodejs_heap_size_used_bytes{{server="receiver", {integ}}}'
+                    ),
+                    "legendFormat": "{{ integration }} heap",
+                },
+                {
+                    "expr": (
+                        f'process_resident_memory_bytes{{server="receiver", {integ}}}'
+                    ),
+                    "legendFormat": "{{ integration }} RSS",
+                },
+            ]
+
+
+def insert_after_panel(panels: list, after_id: int, new_panels: list) -> list:
+    out = []
+    for panel in panels:
+        out.append(panel)
+        if panel.get("id") == after_id:
+            out.extend(new_panels)
+    return out
 
 
 def generate(server: str, cfg: dict) -> dict:
     metrics = load_json(METRICS_SRC)
     features = cfg["features"]
+    is_receiver = server == "receiver"
 
     metric_panels = [
         copy.deepcopy(p)
@@ -241,9 +454,18 @@ def generate(server: str, cfg: dict) -> dict:
                 continue
         cleaned.append(p)
 
-    log_panels = build_log_panels(server, cfg["app_jobs"])
-    metric_h = sum(p["gridPos"]["h"] for p in cleaned)
-    panels = relayout(cleaned) + relayout(log_panels, start_y=metric_h)
+    if is_receiver:
+        customize_receiver_panels(cleaned)
+        cleaned = insert_after_panel(cleaned, 21, receiver_extra_panels())
+
+    log_panels = build_log_panels(
+        server, cfg["app_jobs"], receiver=is_receiver
+    )
+    panels = reflow_panels(cleaned + log_panels)
+
+    templating = [LOG_SEARCH_VAR]
+    if is_receiver:
+        templating.insert(0, INTEGRATION_VAR)
 
     dash = {
         "annotations": {"list": []},
@@ -254,7 +476,7 @@ def generate(server: str, cfg: dict) -> dict:
         "panels": panels,
         "schemaVersion": 39,
         "tags": ["monitoring", "server", server],
-        "templating": {"list": [LOG_SEARCH_VAR]},
+        "templating": {"list": templating},
         "time": {"from": "now-6h", "to": "now"},
         "title": cfg["title"],
         "uid": f"server-{server}",
