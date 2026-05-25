@@ -249,21 +249,23 @@ If your application exposes a `/metrics` endpoint (Prometheus format), create a 
 
 ### Comparison server (Python FastAPI)
 
-The comparison addon (`config-comparison.alloy`) only adds **logs** for the Image Comparison API. You do **not** need Prometheus or `/metrics` on the app.
+The comparison addon (`config-comparison.alloy`) scrapes **`GET /metrics` on port 3000** (queue/worker gauges from the app) and ships **PM2 logs** to Loki.
 
 | What | How |
 |------|-----|
-| **System metrics** (CPU, RAM, disk, network) | Alloy `prometheus.exporter.unix` in base `config.alloy` → `remote_write` to central Prometheus |
-| **HTTP uptime** | Central Blackbox probes `http://COMPARISON_IP:3000/health` |
-| **Application logs** | PM2 logs + Python log parsing in `config-comparison.alloy` → Loki (`job="comparison"`, not the Alloy block name `comparison_pm2_logs`) |
+| **System metrics** (CPU, RAM, disk, network) | Alloy `prometheus.exporter.unix` in base `config.alloy` → `remote_write` (label `server="comparison"`) |
+| **App metrics** (`comparison_queue_size`, `comparison_active_workers`, …) | `prometheus.scrape` in `config-comparison.alloy` → same `remote_write` |
+| **HTTP uptime** | Blackbox: `http://COMPARISON_IP:3000/health` in `prometheus/prometheus.yml` (open port 3000 from the monitoring host if probes stay DOWN) |
+| **Application logs** | PM2 logs + Python parsing → Loki (`job="comparison"`, `host="comparison"`) |
 
 | Item | Value |
 |------|-------|
 | App port | `3000` |
-| Logs | `/root/.pm2/logs/comparison-out.log`, `comparison-error.log` |
+| Grafana | **Server Overview** → select `comparison` → **Application Metrics** row |
+| Logs | `/root/.pm2/logs/` or `/home/<user>/.pm2/logs/` (`comparison-out.log`, `comparison-error.log`) |
 | Deploy path | `/var/www/comparison` (PM2 name: `comparison`) |
 
-Optional: only add `prometheus.scrape` + a `/metrics` endpoint on the app if you want **per-request** metrics (latency, status codes per route). That is separate from Alloy’s built-in host monitoring.
+**Per-route HTTP metrics** (like manager’s `http_request_duration_seconds_*`) require extra instrumentation in the FastAPI app (e.g. `prometheus-fastapi-instrumentator`). The comparison app currently exposes queue/worker gauges only.
 
 **Comparison logs missing in Grafana:** The Logs Overview dashboard queries `job=~"app|comparison|manager|receiver|worker"`. PM2 logs under `/root/.pm2/logs/` are not readable by the `alloy` user until traverse permissions are set (`/root` is mode `700` by default). On the comparison server:
 

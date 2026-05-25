@@ -357,6 +357,73 @@
     {
       "collapsed": false,
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 43 },
+      "id": 104,
+      "title": "Application Metrics",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": { "fillOpacity": 10, "lineWidth": 2 }
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 44 },
+      "id": 15,
+      "options": { "tooltip": { "mode": "multi" } },
+      "title": "Comparison Queue Size",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "comparison_queue_size{server=~\"$server\"}",
+          "legendFormat": "{{ server }}"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": { "fillOpacity": 10, "lineWidth": 2 }
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 44 },
+      "id": 16,
+      "options": { "tooltip": { "mode": "multi" } },
+      "title": "Comparison Active Workers",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "comparison_active_workers{server=~\"$server\"}",
+          "legendFormat": "{{ server }}"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": { "fillOpacity": 10, "lineWidth": 2 }
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 44 },
+      "id": 17,
+      "options": { "tooltip": { "mode": "multi" } },
+      "title": "HTTP Request Rate (app /metrics)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum by (server, method, path) (rate(http_request_duration_seconds_count{server=~\"$server\"}[5m]))",
+          "legendFormat": "{{ server }} {{ method }} {{ path }}"
+        }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 52 },
       "id": 105,
       "title": "HTTP Probes (Blackbox)",
       "type": "row"
@@ -377,7 +444,7 @@
           }
         }
       },
-      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 44 },
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 53 },
       "id": 13,
       "options": {
         "reduceOptions": { "calcs": ["lastNotNull"] },
@@ -410,7 +477,7 @@
           "custom": { "fillOpacity": 10, "lineWidth": 2 }
         }
       },
-      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 44 },
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 53 },
       "id": 14,
       "options": { "tooltip": { "mode": "multi" } },
       "title": "HTTP Response Time",
