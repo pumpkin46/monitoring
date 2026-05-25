@@ -64,6 +64,20 @@ LOG_OPTS = {
     "dedupStrategy": "none",
 }
 
+LOG_SEARCH_VAR = {
+    "current": {"selected": False, "text": "", "value": ""},
+    "description": "Filter log lines containing this text. Leave empty to show all.",
+    "label": "Search logs",
+    "name": "log_search",
+    "options": [{"selected": True, "text": "", "value": ""}],
+    "query": "",
+    "type": "textbox",
+}
+
+
+def with_log_search(selector: str) -> str:
+    return f'{selector} |= "${{log_search}}"'
+
 
 def load_json(path: Path) -> dict:
     with path.open(encoding="utf-8") as f:
@@ -171,19 +185,20 @@ def build_log_panels(server: str, app_jobs: list[str]) -> list:
             "type": "timeseries",
             "targets": [
                 {
-                    "expr": f'sum(rate({{host="{server}"}}[5m]))',
+                    "expr": f'sum(rate({{host="{server}"}} |= "${{log_search}}" [5m]))',
                     "legendFormat": "lines/s",
                 }
             ],
         },
     ]
-    for pid, title, expr in [
+    for pid, title, selector in [
         (202, "System Logs (syslog)", f'{{job="system", host="{server}"}}'),
         (203, "Auth Logs (SSH, sudo)", f'{{job="auth", host="{server}"}}'),
         (204, "Kernel Logs (kern.log)", f'{{job="kernel", host="{server}"}}'),
         (205, "Application Logs", f'{{job=~"{job_pattern}", host="{server}"}}'),
         (206, "Systemd Journal (warnings+)", f'{{job="journal", host="{server}"}}'),
     ]:
+        expr = with_log_search(selector)
         panels.append(
             {
                 "datasource": {"type": "loki", "uid": "loki"},
@@ -239,7 +254,7 @@ def generate(server: str, cfg: dict) -> dict:
         "panels": panels,
         "schemaVersion": 39,
         "tags": ["monitoring", "server", server],
-        "templating": {"list": []},
+        "templating": {"list": [LOG_SEARCH_VAR]},
         "time": {"from": "now-6h", "to": "now"},
         "title": cfg["title"],
         "uid": f"server-{server}",

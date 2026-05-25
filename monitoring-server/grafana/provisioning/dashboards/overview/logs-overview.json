@@ -27,7 +27,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum by(host) (rate({host=~\"$server\"} [5m]))",
+          "expr": "sum by(host) (rate({host=~\"$server\"} |= \"${log_search}\" [5m]))",
           "legendFormat": "{{ host }}"
         }
       ]
@@ -57,7 +57,7 @@
       "type": "logs",
       "targets": [
         {
-          "expr": "{job=\"system\", host=~\"$server\"}",
+          "expr": "{job=\"system\", host=~\"$server\"} |= \"${log_search}\"",
           "refId": "A"
         }
       ]
@@ -87,7 +87,7 @@
       "type": "logs",
       "targets": [
         {
-          "expr": "{job=\"auth\", host=~\"$server\"}",
+          "expr": "{job=\"auth\", host=~\"$server\"} |= \"${log_search}\"",
           "refId": "A"
         }
       ]
@@ -117,7 +117,7 @@
       "type": "logs",
       "targets": [
         {
-          "expr": "{job=\"kernel\", host=~\"$server\"}",
+          "expr": "{job=\"kernel\", host=~\"$server\"} |= \"${log_search}\"",
           "refId": "A"
         }
       ]
@@ -147,7 +147,7 @@
       "type": "logs",
       "targets": [
         {
-          "expr": "{job=~\"app|comparison|manager|receiver|worker|pms-api\", host=~\"$server\"}",
+          "expr": "{job=~\"app|comparison|manager|receiver|worker|pms-api\", host=~\"$server\"} |= \"${log_search}\"",
           "refId": "A"
         }
       ]
@@ -177,7 +177,7 @@
       "type": "logs",
       "targets": [
         {
-          "expr": "{job=\"journal\", host=~\"$server\"}",
+          "expr": "{job=\"journal\", host=~\"$server\"} |= \"${log_search}\"",
           "refId": "A"
         }
       ]
@@ -187,6 +187,15 @@
   "tags": ["monitoring", "logs", "loki"],
   "templating": {
     "list": [
+      {
+        "current": { "selected": false, "text": "", "value": "" },
+        "description": "Filter log lines containing this text. Leave empty to show all.",
+        "label": "Search logs",
+        "name": "log_search",
+        "options": [{ "selected": true, "text": "", "value": "" }],
+        "query": "",
+        "type": "textbox"
+      },
       {
         "current": { "selected": true, "text": "All", "value": "$__all" },
         "datasource": { "type": "loki", "uid": "loki" },

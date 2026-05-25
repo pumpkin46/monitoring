@@ -836,7 +836,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum(rate({host=\"comparison\"}[5m]))",
+          "expr": "sum(rate({host=\"comparison\"} |= \"${log_search}\" [5m]))",
           "legendFormat": "lines/s"
         }
       ]
@@ -867,7 +867,7 @@
       "type": "logs",
       "targets": [
         {
-          "expr": "{job=\"system\", host=\"comparison\"}",
+          "expr": "{job=\"system\", host=\"comparison\"} |= \"${log_search}\"",
           "refId": "A"
         }
       ]
@@ -898,7 +898,7 @@
       "type": "logs",
       "targets": [
         {
-          "expr": "{job=\"auth\", host=\"comparison\"}",
+          "expr": "{job=\"auth\", host=\"comparison\"} |= \"${log_search}\"",
           "refId": "A"
         }
       ]
@@ -929,7 +929,7 @@
       "type": "logs",
       "targets": [
         {
-          "expr": "{job=\"kernel\", host=\"comparison\"}",
+          "expr": "{job=\"kernel\", host=\"comparison\"} |= \"${log_search}\"",
           "refId": "A"
         }
       ]
@@ -960,7 +960,7 @@
       "type": "logs",
       "targets": [
         {
-          "expr": "{job=~\"comparison|app\", host=\"comparison\"}",
+          "expr": "{job=~\"comparison|app\", host=\"comparison\"} |= \"${log_search}\"",
           "refId": "A"
         }
       ]
@@ -991,7 +991,7 @@
       "type": "logs",
       "targets": [
         {
-          "expr": "{job=\"journal\", host=\"comparison\"}",
+          "expr": "{job=\"journal\", host=\"comparison\"} |= \"${log_search}\"",
           "refId": "A"
         }
       ]
@@ -1004,7 +1004,27 @@
     "comparison"
   ],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "",
+          "value": ""
+        },
+        "description": "Filter log lines containing this text. Leave empty to show all.",
+        "label": "Search logs",
+        "name": "log_search",
+        "options": [
+          {
+            "selected": true,
+            "text": "",
+            "value": ""
+          }
+        ],
+        "query": "",
+        "type": "textbox"
+      }
+    ]
   },
   "time": {
     "from": "now-6h",

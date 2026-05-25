@@ -956,7 +956,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum(rate({host=\"receiver\"}[5m]))",
+          "expr": "sum(rate({host=\"receiver\"} |= \"${log_search}\" [5m]))",
           "legendFormat": "lines/s"
         }
       ]
@@ -987,7 +987,7 @@
       "type": "logs",
       "targets": [
         {
-          "expr": "{job=\"system\", host=\"receiver\"}",
+          "expr": "{job=\"system\", host=\"receiver\"} |= \"${log_search}\"",
           "refId": "A"
         }
       ]
@@ -1018,7 +1018,7 @@
       "type": "logs",
       "targets": [
         {
-          "expr": "{job=\"auth\", host=\"receiver\"}",
+          "expr": "{job=\"auth\", host=\"receiver\"} |= \"${log_search}\"",
           "refId": "A"
         }
       ]
@@ -1049,7 +1049,7 @@
       "type": "logs",
       "targets": [
         {
-          "expr": "{job=\"kernel\", host=\"receiver\"}",
+          "expr": "{job=\"kernel\", host=\"receiver\"} |= \"${log_search}\"",
           "refId": "A"
         }
       ]
@@ -1080,7 +1080,7 @@
       "type": "logs",
       "targets": [
         {
-          "expr": "{job=~\"receiver|app\", host=\"receiver\"}",
+          "expr": "{job=~\"receiver|app\", host=\"receiver\"} |= \"${log_search}\"",
           "refId": "A"
         }
       ]
@@ -1111,7 +1111,7 @@
       "type": "logs",
       "targets": [
         {
-          "expr": "{job=\"journal\", host=\"receiver\"}",
+          "expr": "{job=\"journal\", host=\"receiver\"} |= \"${log_search}\"",
           "refId": "A"
         }
       ]
@@ -1124,7 +1124,27 @@
     "receiver"
   ],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "",
+          "value": ""
+        },
+        "description": "Filter log lines containing this text. Leave empty to show all.",
+        "label": "Search logs",
+        "name": "log_search",
+        "options": [
+          {
+            "selected": true,
+            "text": "",
+            "value": ""
+          }
+        ],
+        "query": "",
+        "type": "textbox"
+      }
+    ]
   },
   "time": {
     "from": "now-6h",
