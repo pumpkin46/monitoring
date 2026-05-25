@@ -6,6 +6,16 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
   "links": [],
+  "schemaVersion": 39,
+  "tags": [
+    "monitoring",
+    "server",
+    "worker"
+  ],
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
   "panels": [
     {
       "collapsed": false,
@@ -69,7 +79,7 @@
       "type": "gauge",
       "targets": [
         {
-          "expr": "(1 - avg by(server)(rate(node_cpu_seconds_total{mode=\"idle\", server=\"manager\"}[5m]))) * 100",
+          "expr": "(1 - avg by(server)(rate(node_cpu_seconds_total{mode=\"idle\", server=\"worker\"}[5m]))) * 100",
           "legendFormat": "{{ server }}"
         }
       ]
@@ -124,7 +134,7 @@
       "type": "gauge",
       "targets": [
         {
-          "expr": "(1 - (node_memory_MemAvailable_bytes{server=\"manager\"} / node_memory_MemTotal_bytes{server=\"manager\"})) * 100",
+          "expr": "(1 - (node_memory_MemAvailable_bytes{server=\"worker\"} / node_memory_MemTotal_bytes{server=\"worker\"})) * 100",
           "legendFormat": "{{ server }}"
         }
       ]
@@ -179,7 +189,7 @@
       "type": "gauge",
       "targets": [
         {
-          "expr": "(1 - (node_filesystem_avail_bytes{mountpoint=\"/\", server=\"manager\"} / node_filesystem_size_bytes{mountpoint=\"/\", server=\"manager\"})) * 100",
+          "expr": "(1 - (node_filesystem_avail_bytes{mountpoint=\"/\", server=\"worker\"} / node_filesystem_size_bytes{mountpoint=\"/\", server=\"worker\"})) * 100",
           "legendFormat": "{{ server }}"
         }
       ]
@@ -227,7 +237,7 @@
       "type": "stat",
       "targets": [
         {
-          "expr": "time() - node_boot_time_seconds{server=\"manager\"}",
+          "expr": "time() - node_boot_time_seconds{server=\"worker\"}",
           "legendFormat": "{{ server }}"
         }
       ]
@@ -276,7 +286,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "(1 - avg by(server)(rate(node_cpu_seconds_total{mode=\"idle\", server=\"manager\"}[5m]))) * 100",
+          "expr": "(1 - avg by(server)(rate(node_cpu_seconds_total{mode=\"idle\", server=\"worker\"}[5m]))) * 100",
           "legendFormat": "{{ server }}"
         }
       ]
@@ -311,7 +321,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "node_load15{server=\"manager\"}",
+          "expr": "node_load15{server=\"worker\"}",
           "legendFormat": "{{ server }}"
         }
       ]
@@ -361,11 +371,11 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "node_memory_MemTotal_bytes{server=\"manager\"} - node_memory_MemAvailable_bytes{server=\"manager\"}",
+          "expr": "node_memory_MemTotal_bytes{server=\"worker\"} - node_memory_MemAvailable_bytes{server=\"worker\"}",
           "legendFormat": "{{ server }} \u2014 Used"
         },
         {
-          "expr": "node_memory_MemAvailable_bytes{server=\"manager\"}",
+          "expr": "node_memory_MemAvailable_bytes{server=\"worker\"}",
           "legendFormat": "{{ server }} \u2014 Available"
         }
       ]
@@ -402,7 +412,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "(1 - (node_memory_MemAvailable_bytes{server=\"manager\"} / node_memory_MemTotal_bytes{server=\"manager\"})) * 100",
+          "expr": "(1 - (node_memory_MemAvailable_bytes{server=\"worker\"} / node_memory_MemTotal_bytes{server=\"worker\"})) * 100",
           "legendFormat": "{{ server }}"
         }
       ]
@@ -451,7 +461,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "(1 - (node_filesystem_avail_bytes{fstype!~\"tmpfs|devtmpfs\", server=\"manager\"} / node_filesystem_size_bytes{server=\"manager\"})) * 100",
+          "expr": "(1 - (node_filesystem_avail_bytes{fstype!~\"tmpfs|devtmpfs\", server=\"worker\"} / node_filesystem_size_bytes{server=\"worker\"})) * 100",
           "legendFormat": "{{ server }} \u2014 {{ mountpoint }}"
         }
       ]
@@ -486,11 +496,11 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "rate(node_disk_read_bytes_total{server=\"manager\"}[5m])",
+          "expr": "rate(node_disk_read_bytes_total{server=\"worker\"}[5m])",
           "legendFormat": "{{ server }} read \u2014 {{ device }}"
         },
         {
-          "expr": "rate(node_disk_written_bytes_total{server=\"manager\"}[5m])",
+          "expr": "rate(node_disk_written_bytes_total{server=\"worker\"}[5m])",
           "legendFormat": "{{ server }} write \u2014 {{ device }}"
         }
       ]
@@ -537,11 +547,11 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "rate(node_network_receive_bytes_total{device!~\"lo|docker.*\", server=\"manager\"}[5m])",
+          "expr": "rate(node_network_receive_bytes_total{device!~\"lo|docker.*\", server=\"worker\"}[5m])",
           "legendFormat": "{{ server }} RX \u2014 {{ device }}"
         },
         {
-          "expr": "-rate(node_network_transmit_bytes_total{device!~\"lo|docker.*\", server=\"manager\"}[5m])",
+          "expr": "-rate(node_network_transmit_bytes_total{device!~\"lo|docker.*\", server=\"worker\"}[5m])",
           "legendFormat": "{{ server }} TX \u2014 {{ device }}"
         }
       ]
@@ -576,11 +586,11 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "rate(node_network_receive_errs_total{server=\"manager\"}[5m])",
+          "expr": "rate(node_network_receive_errs_total{server=\"worker\"}[5m])",
           "legendFormat": "{{ server }} RX errors \u2014 {{ device }}"
         },
         {
-          "expr": "rate(node_network_transmit_errs_total{server=\"manager\"}[5m])",
+          "expr": "rate(node_network_transmit_errs_total{server=\"worker\"}[5m])",
           "legendFormat": "{{ server }} TX errors \u2014 {{ device }}"
         }
       ]
@@ -627,7 +637,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum by (method, path) (rate(http_request_duration_seconds_count{server=\"manager\"}[5m]))",
+          "expr": "sum by (method, path) (rate(http_request_duration_seconds_count{server=\"worker\"}[5m]))",
           "legendFormat": "{{ server }} {{ method }} {{ path }}"
         }
       ]
@@ -662,11 +672,11 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "histogram_quantile(0.50, sum by (le) (rate(http_request_duration_seconds_bucket{server=\"manager\"}[5m])))",
+          "expr": "histogram_quantile(0.50, sum by (le) (rate(http_request_duration_seconds_bucket{server=\"worker\"}[5m])))",
           "legendFormat": "{{ server }} p50"
         },
         {
-          "expr": "histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{server=\"manager\"}[5m])))",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{server=\"worker\"}[5m])))",
           "legendFormat": "{{ server }} p95"
         }
       ]
@@ -701,11 +711,11 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"manager\", status_code=~\"4..\"}[5m]))",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"worker\", status_code=~\"4..\"}[5m]))",
           "legendFormat": "{{ server }} 4xx"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"manager\", status_code=~\"5..\"}[5m]))",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"worker\", status_code=~\"5..\"}[5m]))",
           "legendFormat": "{{ server }} 5xx"
         }
       ]
@@ -740,11 +750,11 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "nodejs_heap_size_used_bytes{server=\"manager\"}",
+          "expr": "nodejs_heap_size_used_bytes{server=\"worker\"}",
           "legendFormat": "{{ server }} heap used"
         },
         {
-          "expr": "process_resident_memory_bytes{server=\"manager\"}",
+          "expr": "process_resident_memory_bytes{server=\"worker\"}",
           "legendFormat": "{{ server }} RSS"
         }
       ]
@@ -819,7 +829,7 @@
       "type": "stat",
       "targets": [
         {
-          "expr": "probe_success{instance=~\"146\\.190\\.166\\.199\"}",
+          "expr": "probe_success{instance=~\"WORKER\"}",
           "legendFormat": "{{ instance }}"
         }
       ]
@@ -871,247 +881,15 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "probe_duration_seconds{instance=~\"146\\.190\\.166\\.199\"}",
+          "expr": "probe_duration_seconds{instance=~\"WORKER\"}",
           "legendFormat": "{{ instance }}"
-        }
-      ]
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 67
-      },
-      "id": 200,
-      "title": "Logs",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "loki",
-        "uid": "loki"
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 24,
-        "x": 0,
-        "y": 68
-      },
-      "id": 201,
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "custom": {
-            "fillOpacity": 30,
-            "lineWidth": 1
-          }
-        }
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "Log Volume",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "sum(rate({host=\"manager\"} |= \"${log_search}\" [5m]))",
-          "legendFormat": "lines/s"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "loki",
-        "uid": "loki"
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 74
-      },
-      "id": 202,
-      "options": {
-        "showTime": true,
-        "showLabels": true,
-        "showCommonLabels": false,
-        "wrapLogMessage": true,
-        "prettifyLogMessage": false,
-        "enableLogDetails": true,
-        "sortOrder": "Descending",
-        "dedupStrategy": "none"
-      },
-      "title": "System Logs (syslog)",
-      "type": "logs",
-      "targets": [
-        {
-          "expr": "{job=\"system\", host=\"manager\"} |= \"${log_search}\"",
-          "refId": "A"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "loki",
-        "uid": "loki"
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 82
-      },
-      "id": 203,
-      "options": {
-        "showTime": true,
-        "showLabels": true,
-        "showCommonLabels": false,
-        "wrapLogMessage": true,
-        "prettifyLogMessage": false,
-        "enableLogDetails": true,
-        "sortOrder": "Descending",
-        "dedupStrategy": "none"
-      },
-      "title": "Auth Logs (SSH, sudo)",
-      "type": "logs",
-      "targets": [
-        {
-          "expr": "{job=\"auth\", host=\"manager\"} |= \"${log_search}\"",
-          "refId": "A"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "loki",
-        "uid": "loki"
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 90
-      },
-      "id": 204,
-      "options": {
-        "showTime": true,
-        "showLabels": true,
-        "showCommonLabels": false,
-        "wrapLogMessage": true,
-        "prettifyLogMessage": false,
-        "enableLogDetails": true,
-        "sortOrder": "Descending",
-        "dedupStrategy": "none"
-      },
-      "title": "Kernel Logs (kern.log)",
-      "type": "logs",
-      "targets": [
-        {
-          "expr": "{job=\"kernel\", host=\"manager\"} |= \"${log_search}\"",
-          "refId": "A"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "loki",
-        "uid": "loki"
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 98
-      },
-      "id": 205,
-      "options": {
-        "showTime": true,
-        "showLabels": true,
-        "showCommonLabels": false,
-        "wrapLogMessage": true,
-        "prettifyLogMessage": false,
-        "enableLogDetails": true,
-        "sortOrder": "Descending",
-        "dedupStrategy": "none"
-      },
-      "title": "Application Logs",
-      "type": "logs",
-      "targets": [
-        {
-          "expr": "{job=~\"manager|app\", host=\"manager\"} |= \"${log_search}\"",
-          "refId": "A"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "loki",
-        "uid": "loki"
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 106
-      },
-      "id": 206,
-      "options": {
-        "showTime": true,
-        "showLabels": true,
-        "showCommonLabels": false,
-        "wrapLogMessage": true,
-        "prettifyLogMessage": false,
-        "enableLogDetails": true,
-        "sortOrder": "Descending",
-        "dedupStrategy": "none"
-      },
-      "title": "Systemd Journal (warnings+)",
-      "type": "logs",
-      "targets": [
-        {
-          "expr": "{job=\"journal\", host=\"manager\"} |= \"${log_search}\"",
-          "refId": "A"
         }
       ]
     }
   ],
-  "schemaVersion": 39,
-  "tags": [
-    "monitoring",
-    "server",
-    "manager"
-  ],
   "templating": {
-    "list": [
-      {
-        "current": {
-          "selected": false,
-          "text": "",
-          "value": ""
-        },
-        "description": "Filter log lines containing this text. Leave empty to show all.",
-        "label": "Search logs",
-        "name": "log_search",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "type": "textbox"
-      }
-    ]
+    "list": []
   },
-  "time": {
-    "from": "now-6h",
-    "to": "now"
-  },
-  "title": "Manager",
-  "uid": "server-manager"
+  "title": "Metrics",
+  "uid": "worker-metrics"
 }

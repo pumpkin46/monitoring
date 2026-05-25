@@ -6,6 +6,16 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
   "links": [],
+  "schemaVersion": 39,
+  "tags": [
+    "monitoring",
+    "server",
+    "receiver"
+  ],
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
   "panels": [
     {
       "collapsed": false,
@@ -69,7 +79,7 @@
       "type": "gauge",
       "targets": [
         {
-          "expr": "(1 - avg by(server)(rate(node_cpu_seconds_total{mode=\"idle\", server=\"comparison\"}[5m]))) * 100",
+          "expr": "(1 - avg by(server)(rate(node_cpu_seconds_total{mode=\"idle\", server=\"receiver\"}[5m]))) * 100",
           "legendFormat": "{{ server }}"
         }
       ]
@@ -124,7 +134,7 @@
       "type": "gauge",
       "targets": [
         {
-          "expr": "(1 - (node_memory_MemAvailable_bytes{server=\"comparison\"} / node_memory_MemTotal_bytes{server=\"comparison\"})) * 100",
+          "expr": "(1 - (node_memory_MemAvailable_bytes{server=\"receiver\"} / node_memory_MemTotal_bytes{server=\"receiver\"})) * 100",
           "legendFormat": "{{ server }}"
         }
       ]
@@ -179,7 +189,7 @@
       "type": "gauge",
       "targets": [
         {
-          "expr": "(1 - (node_filesystem_avail_bytes{mountpoint=\"/\", server=\"comparison\"} / node_filesystem_size_bytes{mountpoint=\"/\", server=\"comparison\"})) * 100",
+          "expr": "(1 - (node_filesystem_avail_bytes{mountpoint=\"/\", server=\"receiver\"} / node_filesystem_size_bytes{mountpoint=\"/\", server=\"receiver\"})) * 100",
           "legendFormat": "{{ server }}"
         }
       ]
@@ -227,7 +237,7 @@
       "type": "stat",
       "targets": [
         {
-          "expr": "time() - node_boot_time_seconds{server=\"comparison\"}",
+          "expr": "time() - node_boot_time_seconds{server=\"receiver\"}",
           "legendFormat": "{{ server }}"
         }
       ]
@@ -276,7 +286,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "(1 - avg by(server)(rate(node_cpu_seconds_total{mode=\"idle\", server=\"comparison\"}[5m]))) * 100",
+          "expr": "(1 - avg by(server)(rate(node_cpu_seconds_total{mode=\"idle\", server=\"receiver\"}[5m]))) * 100",
           "legendFormat": "{{ server }}"
         }
       ]
@@ -311,7 +321,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "node_load15{server=\"comparison\"}",
+          "expr": "node_load15{server=\"receiver\"}",
           "legendFormat": "{{ server }}"
         }
       ]
@@ -361,11 +371,11 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "node_memory_MemTotal_bytes{server=\"comparison\"} - node_memory_MemAvailable_bytes{server=\"comparison\"}",
+          "expr": "node_memory_MemTotal_bytes{server=\"receiver\"} - node_memory_MemAvailable_bytes{server=\"receiver\"}",
           "legendFormat": "{{ server }} \u2014 Used"
         },
         {
-          "expr": "node_memory_MemAvailable_bytes{server=\"comparison\"}",
+          "expr": "node_memory_MemAvailable_bytes{server=\"receiver\"}",
           "legendFormat": "{{ server }} \u2014 Available"
         }
       ]
@@ -402,7 +412,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "(1 - (node_memory_MemAvailable_bytes{server=\"comparison\"} / node_memory_MemTotal_bytes{server=\"comparison\"})) * 100",
+          "expr": "(1 - (node_memory_MemAvailable_bytes{server=\"receiver\"} / node_memory_MemTotal_bytes{server=\"receiver\"})) * 100",
           "legendFormat": "{{ server }}"
         }
       ]
@@ -451,7 +461,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "(1 - (node_filesystem_avail_bytes{fstype!~\"tmpfs|devtmpfs\", server=\"comparison\"} / node_filesystem_size_bytes{server=\"comparison\"})) * 100",
+          "expr": "(1 - (node_filesystem_avail_bytes{fstype!~\"tmpfs|devtmpfs\", server=\"receiver\"} / node_filesystem_size_bytes{server=\"receiver\"})) * 100",
           "legendFormat": "{{ server }} \u2014 {{ mountpoint }}"
         }
       ]
@@ -486,11 +496,11 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "rate(node_disk_read_bytes_total{server=\"comparison\"}[5m])",
+          "expr": "rate(node_disk_read_bytes_total{server=\"receiver\"}[5m])",
           "legendFormat": "{{ server }} read \u2014 {{ device }}"
         },
         {
-          "expr": "rate(node_disk_written_bytes_total{server=\"comparison\"}[5m])",
+          "expr": "rate(node_disk_written_bytes_total{server=\"receiver\"}[5m])",
           "legendFormat": "{{ server }} write \u2014 {{ device }}"
         }
       ]
@@ -537,11 +547,11 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "rate(node_network_receive_bytes_total{device!~\"lo|docker.*\", server=\"comparison\"}[5m])",
+          "expr": "rate(node_network_receive_bytes_total{device!~\"lo|docker.*\", server=\"receiver\"}[5m])",
           "legendFormat": "{{ server }} RX \u2014 {{ device }}"
         },
         {
-          "expr": "-rate(node_network_transmit_bytes_total{device!~\"lo|docker.*\", server=\"comparison\"}[5m])",
+          "expr": "-rate(node_network_transmit_bytes_total{device!~\"lo|docker.*\", server=\"receiver\"}[5m])",
           "legendFormat": "{{ server }} TX \u2014 {{ device }}"
         }
       ]
@@ -576,11 +586,11 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "rate(node_network_receive_errs_total{server=\"comparison\"}[5m])",
+          "expr": "rate(node_network_receive_errs_total{server=\"receiver\"}[5m])",
           "legendFormat": "{{ server }} RX errors \u2014 {{ device }}"
         },
         {
-          "expr": "rate(node_network_transmit_errs_total{server=\"comparison\"}[5m])",
+          "expr": "rate(node_network_transmit_errs_total{server=\"receiver\"}[5m])",
           "legendFormat": "{{ server }} TX errors \u2014 {{ device }}"
         }
       ]
@@ -604,7 +614,7 @@
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
+          "unit": "reqps",
           "custom": {
             "fillOpacity": 10,
             "lineWidth": 2
@@ -617,18 +627,169 @@
         "x": 0,
         "y": 44
       },
-      "id": 15,
+      "id": 17,
       "options": {
         "tooltip": {
           "mode": "multi"
         }
       },
-      "title": "Comparison Queue Size",
+      "title": "HTTP Request Rate by Route",
       "type": "timeseries",
       "targets": [
         {
-          "expr": "comparison_queue_size{server=\"comparison\"}",
-          "legendFormat": "{{ server }}"
+          "expr": "sum by (integration, method, path) (rate(http_request_duration_seconds_count{server=\"receiver\", integration=~\"$integration\"}[5m]))",
+          "legendFormat": "{{ integration }} {{ method }} {{ path }}"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "fillOpacity": 10,
+            "lineWidth": 2
+          }
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 8,
+        "y": 44
+      },
+      "id": 18,
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "title": "HTTP Latency p95 by Integration",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (integration, le) (rate(http_request_duration_seconds_bucket{server=\"receiver\", integration=~\"$integration\"}[5m])))",
+          "legendFormat": "{{ integration }}"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "fillOpacity": 10,
+            "lineWidth": 2
+          }
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 52
+      },
+      "id": 19,
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "title": "HTTP Error Rate by Integration",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", status_code=~\"4..\", integration=~\"$integration\"}[5m]))",
+          "legendFormat": "{{ integration }} 4xx"
+        },
+        {
+          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", status_code=~\"5..\", integration=~\"$integration\"}[5m]))",
+          "legendFormat": "{{ integration }} 5xx"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "fillOpacity": 10,
+            "lineWidth": 2,
+            "stacking": {
+              "mode": "normal"
+            }
+          }
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 52
+      },
+      "id": 20,
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "title": "Receiver Request Rate by Integration",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", integration=~\"$integration\"}[5m]))",
+          "legendFormat": "{{ integration }}"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "custom": {
+            "fillOpacity": 10,
+            "lineWidth": 2
+          }
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 60
+      },
+      "id": 21,
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "title": "Node.js Memory by Integration",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "nodejs_heap_size_used_bytes{server=\"receiver\", integration=~\"$integration\"}",
+          "legendFormat": "{{ integration }} heap"
+        },
+        {
+          "expr": "process_resident_memory_bytes{server=\"receiver\", integration=~\"$integration\"}",
+          "legendFormat": "{{ integration }} RSS"
         }
       ]
     },
@@ -648,22 +809,60 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 8,
-        "x": 8,
-        "y": 44
+        "w": 12,
+        "x": 12,
+        "y": 60
       },
-      "id": 16,
+      "id": 22,
       "options": {
         "tooltip": {
           "mode": "multi"
         }
       },
-      "title": "Comparison Active Workers",
+      "title": "Integration Scrape Status",
       "type": "timeseries",
       "targets": [
         {
-          "expr": "comparison_active_workers{server=\"comparison\"}",
-          "legendFormat": "{{ server }}"
+          "expr": "max by (integration) (up{server=\"receiver\", integration=~\"$integration\"})",
+          "legendFormat": "{{ integration }}"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "fillOpacity": 10,
+            "lineWidth": 2,
+            "stacking": {
+              "mode": "normal"
+            }
+          }
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 68
+      },
+      "id": 23,
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "title": "HTTP 5xx Rate by Integration",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", status_code=~\"5..\", integration=~\"$integration\"}[5m]))",
+          "legendFormat": "{{ integration }}"
         }
       ]
     },
@@ -673,7 +872,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 52
+        "y": 76
       },
       "id": 105,
       "title": "HTTP Probes (Blackbox)",
@@ -720,7 +919,7 @@
         "h": 6,
         "w": 12,
         "x": 0,
-        "y": 53
+        "y": 77
       },
       "id": 13,
       "options": {
@@ -737,7 +936,7 @@
       "type": "stat",
       "targets": [
         {
-          "expr": "probe_success{instance=~\"tools\\.localota\"}",
+          "expr": "probe_success{instance=~\"ota-receiver\"}",
           "legendFormat": "{{ instance }}"
         }
       ]
@@ -777,7 +976,7 @@
         "h": 6,
         "w": 12,
         "x": 12,
-        "y": 53
+        "y": 77
       },
       "id": 14,
       "options": {
@@ -789,247 +988,41 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "probe_duration_seconds{instance=~\"tools\\.localota\"}",
+          "expr": "probe_duration_seconds{instance=~\"ota-receiver\"}",
           "legendFormat": "{{ instance }}"
-        }
-      ]
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 59
-      },
-      "id": 200,
-      "title": "Logs",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "loki",
-        "uid": "loki"
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 24,
-        "x": 0,
-        "y": 60
-      },
-      "id": 201,
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "custom": {
-            "fillOpacity": 30,
-            "lineWidth": 1
-          }
-        }
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "Log Volume",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "sum(rate({host=\"comparison\"} |= \"${log_search}\" [5m]))",
-          "legendFormat": "lines/s"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "loki",
-        "uid": "loki"
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 66
-      },
-      "id": 202,
-      "options": {
-        "showTime": true,
-        "showLabels": true,
-        "showCommonLabels": false,
-        "wrapLogMessage": true,
-        "prettifyLogMessage": false,
-        "enableLogDetails": true,
-        "sortOrder": "Descending",
-        "dedupStrategy": "none"
-      },
-      "title": "System Logs (syslog)",
-      "type": "logs",
-      "targets": [
-        {
-          "expr": "{job=\"system\", host=\"comparison\"} |= \"${log_search}\"",
-          "refId": "A"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "loki",
-        "uid": "loki"
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 74
-      },
-      "id": 203,
-      "options": {
-        "showTime": true,
-        "showLabels": true,
-        "showCommonLabels": false,
-        "wrapLogMessage": true,
-        "prettifyLogMessage": false,
-        "enableLogDetails": true,
-        "sortOrder": "Descending",
-        "dedupStrategy": "none"
-      },
-      "title": "Auth Logs (SSH, sudo)",
-      "type": "logs",
-      "targets": [
-        {
-          "expr": "{job=\"auth\", host=\"comparison\"} |= \"${log_search}\"",
-          "refId": "A"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "loki",
-        "uid": "loki"
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 82
-      },
-      "id": 204,
-      "options": {
-        "showTime": true,
-        "showLabels": true,
-        "showCommonLabels": false,
-        "wrapLogMessage": true,
-        "prettifyLogMessage": false,
-        "enableLogDetails": true,
-        "sortOrder": "Descending",
-        "dedupStrategy": "none"
-      },
-      "title": "Kernel Logs (kern.log)",
-      "type": "logs",
-      "targets": [
-        {
-          "expr": "{job=\"kernel\", host=\"comparison\"} |= \"${log_search}\"",
-          "refId": "A"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "loki",
-        "uid": "loki"
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 90
-      },
-      "id": 205,
-      "options": {
-        "showTime": true,
-        "showLabels": true,
-        "showCommonLabels": false,
-        "wrapLogMessage": true,
-        "prettifyLogMessage": false,
-        "enableLogDetails": true,
-        "sortOrder": "Descending",
-        "dedupStrategy": "none"
-      },
-      "title": "Application Logs",
-      "type": "logs",
-      "targets": [
-        {
-          "expr": "{job=~\"comparison|app\", host=\"comparison\"} |= \"${log_search}\"",
-          "refId": "A"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "loki",
-        "uid": "loki"
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 98
-      },
-      "id": 206,
-      "options": {
-        "showTime": true,
-        "showLabels": true,
-        "showCommonLabels": false,
-        "wrapLogMessage": true,
-        "prettifyLogMessage": false,
-        "enableLogDetails": true,
-        "sortOrder": "Descending",
-        "dedupStrategy": "none"
-      },
-      "title": "Systemd Journal (warnings+)",
-      "type": "logs",
-      "targets": [
-        {
-          "expr": "{job=\"journal\", host=\"comparison\"} |= \"${log_search}\"",
-          "refId": "A"
         }
       ]
     }
   ],
-  "schemaVersion": 39,
-  "tags": [
-    "monitoring",
-    "server",
-    "comparison"
-  ],
   "templating": {
     "list": [
       {
+        "allValue": ".+",
         "current": {
-          "selected": false,
-          "text": "",
-          "value": ""
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
         },
-        "description": "Filter log lines containing this text. Leave empty to show all.",
-        "label": "Search logs",
-        "name": "log_search",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "type": "textbox"
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "definition": "label_values(http_request_duration_seconds_count{server=\"receiver\"}, integration)",
+        "includeAll": true,
+        "label": "Integration",
+        "multi": true,
+        "name": "integration",
+        "options": [],
+        "query": {
+          "query": "label_values(http_request_duration_seconds_count{server=\"receiver\"}, integration)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "sort": 1,
+        "type": "query"
       }
     ]
   },
-  "time": {
-    "from": "now-6h",
-    "to": "now"
-  },
-  "title": "Comparison",
-  "uid": "server-comparison"
+  "title": "Metrics",
+  "uid": "receiver-metrics"
 }

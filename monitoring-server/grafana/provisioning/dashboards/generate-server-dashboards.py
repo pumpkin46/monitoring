@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate one combined Grafana dashboard (metrics + logs) per server."""
+"""Generate per-server Grafana dashboards: servers/<name>/metrics and logs."""
 
 import copy
 import json
@@ -440,6 +440,47 @@ def insert_after_panel(panels: list, after_id: int, new_panels: list) -> list:
     return out
 
 
+def split_metrics_and_logs(panels: list) -> tuple[list, list]:
+    """Split combined panels at the Logs row (id 200)."""
+    split_at = 0
+    for i, panel in enumerate(panels):
+        if panel.get("type") == "row" and panel.get("title") == "Logs":
+            split_at = i
+            break
+    return reflow_panels(panels[:split_at]), reflow_panels(panels[split_at:])
+
+
+def generate_split(server: str, cfg: dict) -> tuple[dict, dict]:
+    """servers/<name>/metrics and servers/<name>/logs dashboards."""
+    combined = generate(server, cfg)
+    metric_panels, log_panels = split_metrics_and_logs(combined["panels"])
+
+    metrics_templating: list = []
+    if server == "receiver":
+        metrics_templating = [INTEGRATION_VAR]
+
+    base = {
+        k: v
+        for k, v in combined.items()
+        if k not in ("panels", "title", "uid", "templating")
+    }
+    metrics = {
+        **base,
+        "panels": metric_panels,
+        "templating": {"list": metrics_templating},
+        "title": "Metrics",
+        "uid": f"{server}-metrics",
+    }
+    logs = {
+        **base,
+        "panels": log_panels,
+        "templating": combined["templating"],
+        "title": "Logs",
+        "uid": f"{server}-logs",
+    }
+    return metrics, logs
+
+
 def generate(server: str, cfg: dict) -> dict:
     metrics = load_json(METRICS_SRC)
     features = cfg["features"]
@@ -493,12 +534,29 @@ def generate(server: str, cfg: dict) -> dict:
 
 def main() -> None:
     OUT_DIR.mkdir(exist_ok=True)
+    legacy_flat = list(OUT_DIR.glob("*.json"))
+
     for server, cfg in SERVERS.items():
-        path = OUT_DIR / f"{server}.json"
-        with path.open("w", encoding="utf-8") as f:
-            json.dump(generate(server, cfg), f, indent=2)
-            f.write("\n")
-        print(f"Wrote {path.name}")
+        server_dir = OUT_DIR / server
+        server_dir.mkdir(exist_ok=True)
+        metrics, logs = generate_split(server, cfg)
+        for name, dash in (("metrics", metrics), ("logs", logs)):
+            path = server_dir / f"{name}.json"
+            with path.open("w", encoding="utf-8") as f:
+                json.dump(dash, f, indent=2)
+                f.write("\n")
+            print(f"Wrote servers/{server}/{path.name}")
+
+    for path in legacy_flat:
+        path.unlink()
+        print(f"Removed servers/{path.name}")
+
+    legacy_comparison_dir = ROOT / "comparison"
+    if legacy_comparison_dir.is_dir():
+        for path in legacy_comparison_dir.glob("*.json"):
+            path.unlink()
+            print(f"Removed comparison/{path.name}")
+        legacy_comparison_dir.rmdir()
 
 
 if __name__ == "__main__":

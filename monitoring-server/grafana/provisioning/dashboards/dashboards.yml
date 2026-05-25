@@ -12,9 +12,9 @@ providers:
 
   - name: servers
     orgId: 1
-    folder: Servers
     type: file
     disableDeletion: true
     editable: true
     options:
       path: /etc/grafana/provisioning/dashboards/servers
+      foldersFromFilesStructure: true

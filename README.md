@@ -73,18 +73,20 @@ monitoring/
             ├── datasources/
             │   └── datasources.yml   # Prometheus + Loki auto-provisioned
             └── dashboards/
-                ├── dashboards.yml              # Overview + per-server providers
+                ├── dashboards.yml              # Overview + per-server folder providers
                 ├── generate-server-dashboards.py
                 ├── overview/
                 │   ├── server-overview.json    # All servers — metrics
                 │   └── logs-overview.json      # All servers — logs
-                └── servers/
-                    ├── manager.json            # Per-server (metrics + logs)
-                    ├── receiver.json
-                    ├── worker.json
-                    ├── comparison.json
-                    ├── pms-api.json
-                    └── scraper.json
+                └── servers/                    # Per-server folders (Grafana: <server>/Metrics, Logs)
+                    ├── manager/
+                    │   ├── metrics.json
+                    │   └── logs.json
+                    ├── receiver/
+                    ├── worker/
+                    ├── comparison/
+                    ├── pms-api/
+                    └── scraper/
 ```
 
 ## Prerequisites
@@ -273,7 +275,7 @@ The comparison addon (`config-comparison.alloy`) scrapes **`GET /metrics` on por
 | Item | Value |
 |------|-------|
 | App port | `3000` |
-| Grafana | **Server Overview** → select `comparison` → **Application Metrics** row |
+| Grafana | Open the server folder (e.g. **comparison**) → **Metrics** or **Logs**; all servers: **Server Overview** |
 | Logs | `/root/.pm2/logs/` or `/home/<user>/.pm2/logs/` (`comparison-out.log`, `comparison-error.log`) |
 | Deploy path | `/var/www/comparison` (PM2 name: `comparison`) |
 
@@ -288,7 +290,7 @@ The scraper addon (`config-scraper.alloy`) scrapes **`GET /metrics` on port 8080
 | App port | `8080` |
 | PM2 name | `scraper` |
 | Deploy path | `/var/www/scraper` |
-| Grafana | **Servers → Scraper** dashboard |
+| Grafana | **scraper** → **Metrics** / **Logs** |
 | Logs | `scraper-out.log`, `scraper-error.log` under `/root/.pm2/logs/` |
 | HTTP uptime | Blackbox: `http://SCRAPER_IP:8080/` in `prometheus/prometheus.yml` |
 
