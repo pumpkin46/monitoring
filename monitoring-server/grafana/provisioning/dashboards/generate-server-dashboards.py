@@ -468,14 +468,14 @@ def generate_split(server: str, cfg: dict) -> tuple[dict, dict]:
         **base,
         "panels": metric_panels,
         "templating": {"list": metrics_templating},
-        "title": "Metrics",
+        "title": f"{cfg['title']} — Metrics",
         "uid": f"{server}-metrics",
     }
     logs = {
         **base,
         "panels": log_panels,
         "templating": combined["templating"],
-        "title": "Logs",
+        "title": f"{cfg['title']} — Logs",
         "uid": f"{server}-logs",
     }
     return metrics, logs
@@ -532,6 +532,43 @@ def generate(server: str, cfg: dict) -> dict:
     return dash
 
 
+def write_dashboards_yml() -> None:
+    """Emit dashboards.yml with one explicit folder provider per server."""
+    path = ROOT / "dashboards.yml"
+    lines = [
+        "apiVersion: 1",
+        "",
+        "providers:",
+        "  - name: overview",
+        "    orgId: 1",
+        "    folder: Overview",
+        "    type: file",
+        "    disableDeletion: true",
+        "    editable: true",
+        "    options:",
+        "      path: /etc/grafana/provisioning/dashboards/overview",
+        "",
+        "  # One provider per server — explicit folder (manager/Metrics, manager/Logs, …)",
+    ]
+    for server in SERVERS:
+        lines.extend(
+            [
+                f"  - name: {server}",
+                "    orgId: 1",
+                f"    folder: {server}",
+                "    type: file",
+                "    disableDeletion: false",
+                "    editable: true",
+                "    updateIntervalSeconds: 30",
+                "    options:",
+                f"      path: /etc/grafana/provisioning/dashboards/servers/{server}",
+                "",
+            ]
+        )
+    path.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
+    print("Wrote dashboards.yml")
+
+
 def main() -> None:
     OUT_DIR.mkdir(exist_ok=True)
     legacy_flat = list(OUT_DIR.glob("*.json"))
@@ -557,6 +594,8 @@ def main() -> None:
             path.unlink()
             print(f"Removed comparison/{path.name}")
         legacy_comparison_dir.rmdir()
+
+    write_dashboards_yml()
 
 
 if __name__ == "__main__":

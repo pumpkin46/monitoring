@@ -10,11 +10,63 @@ providers:
     options:
       path: /etc/grafana/provisioning/dashboards/overview
 
-  - name: servers
+  # One provider per server — explicit folder (manager/Metrics, manager/Logs, …)
+  - name: manager
     orgId: 1
+    folder: manager
     type: file
-    disableDeletion: true
+    disableDeletion: false
     editable: true
+    updateIntervalSeconds: 30
     options:
-      path: /etc/grafana/provisioning/dashboards/servers
-      foldersFromFilesStructure: true
+      path: /etc/grafana/provisioning/dashboards/servers/manager
+
+  - name: receiver
+    orgId: 1
+    folder: receiver
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/provisioning/dashboards/servers/receiver
+
+  - name: worker
+    orgId: 1
+    folder: worker
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/provisioning/dashboards/servers/worker
+
+  - name: comparison
+    orgId: 1
+    folder: comparison
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/provisioning/dashboards/servers/comparison
+
+  - name: pms-api
+    orgId: 1
+    folder: pms-api
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/provisioning/dashboards/servers/pms-api
+
+  - name: scraper
+    orgId: 1
+    folder: scraper
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/provisioning/dashboards/servers/scraper
