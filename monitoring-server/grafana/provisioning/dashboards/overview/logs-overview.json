@@ -201,6 +201,6 @@
     ]
   },
   "time": { "from": "now-1h", "to": "now" },
-  "title": "Logs Overview",
+  "title": "All Servers — Logs",
   "uid": "logs-overview"
 }

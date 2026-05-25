@@ -71,9 +71,17 @@ monitoring/
             ├── datasources/
             │   └── datasources.yml   # Prometheus + Loki auto-provisioned
             └── dashboards/
-                ├── dashboards.yml        # Dashboard provider config
-                ├── server-overview.json  # Server metrics dashboard
-                └── logs-overview.json    # Logs viewer dashboard
+                ├── dashboards.yml              # Overview + per-server providers
+                ├── generate-server-dashboards.py
+                ├── overview/
+                │   ├── server-overview.json    # All servers — metrics
+                │   └── logs-overview.json      # All servers — logs
+                └── servers/
+                    ├── manager.json            # Per-server (metrics + logs)
+                    ├── receiver.json
+                    ├── worker.json
+                    ├── comparison.json
+                    └── pms-api.json
 ```
 
 ## Prerequisites
