@@ -77,7 +77,8 @@ monitoring/
                 ├── generate-server-dashboards.py
                 ├── overview/
                 │   ├── server-overview.json    # All servers — metrics
-                │   └── logs-overview.json      # All servers — logs
+                │   ├── logs-overview.json      # All servers — system/auth/kernel logs
+                │   └── app-logs-overview.json    # All servers — application logs (generated)
                 └── servers/                    # Per-server folders (Grafana: <server>/Metrics, Logs)
                     ├── manager/
                     │   ├── metrics.json
@@ -294,7 +295,7 @@ The scraper addon (`config-scraper.alloy`) scrapes **`GET /metrics` on port 8080
 | Logs | `scraper-out.log`, `scraper-error.log` under `/root/.pm2/logs/` |
 | HTTP uptime | Blackbox: `http://SCRAPER_IP:8080/` in `prometheus/prometheus.yml` |
 
-**Comparison logs missing in Grafana:** The Logs Overview dashboard queries `job=~"app|comparison|manager|receiver|worker|pms-api|scraper"`. PM2 logs under `/root/.pm2/logs/` are not readable by the `alloy` user until traverse permissions are set (`/root` is mode `700` by default). On the comparison server:
+**Comparison logs missing in Grafana:** The **All Servers — Application Logs** dashboard queries `job=~"app|comparison|manager|receiver|worker|pms-api|scraper"`. PM2 logs under `/root/.pm2/logs/` are not readable by the `alloy` user until traverse permissions are set (`/root` is mode `700` by default). On the comparison server:
 
 ```bash
 sudo bash grant-alloy-access.sh comparison   # PM2 + Docker + base log path checks

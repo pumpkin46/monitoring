@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate per-server Grafana dashboards: servers/<name>/metrics and logs."""
+"""Generate Grafana dashboards: overview app logs + per-server metrics/logs."""
 
 import copy
 import json
@@ -80,6 +80,13 @@ LOG_SEARCH_VAR = {
     "type": "textbox",
 }
 
+# Alloy scrapes GET /metrics every 15s (~4 req/min per container). Health and
+# realtime polling are ops traffic, not channel API load.
+RECEIVER_HTTP_EXCLUDE = (
+    'path!="/metrics", path!="/readyz", path!~"/healthz?", '
+    'path!~"/healthcheck?"'
+)
+
 INTEGRATION_VAR = {
     "allValue": ".+",
     "current": {"selected": True, "text": "All", "value": "$__all"},
@@ -120,16 +127,16 @@ RECEIVER_CHANNELS = [
 ]
 RECEIVER_CHANNEL_MATCH = "|".join(name for name, _ in RECEIVER_CHANNELS)
 
-# Alloy scrapes GET /metrics every 15s (~4 req/min per container). Health and
-# realtime polling are ops traffic, not channel API load.
-RECEIVER_HTTP_EXCLUDE = (
-    'path!="/metrics", path!="/readyz", path!~"/healthz?", '
-    'path!~"/healthcheck?"'
-)
-
 
 def with_log_search(selector: str) -> str:
     return f'{selector} |= "${{log_search}}"'
+
+
+def all_app_jobs() -> str:
+    jobs: set[str] = set()
+    for cfg in SERVERS.values():
+        jobs.update(cfg["app_jobs"])
+    return "|".join(sorted(jobs))
 
 
 def load_json(path: Path) -> dict:
@@ -309,6 +316,96 @@ def build_log_panels(server: str, app_jobs: list[str], *, receiver: bool = False
             }
         )
     return panels
+
+
+def build_app_logs_overview() -> dict:
+    """All-servers application log dashboard (overview/app-logs-overview.json)."""
+    job_pattern = all_app_jobs()
+    app_selector = f'{{job=~"{job_pattern}", host=~"$server"}}'
+    volume_expr = (
+        f'sum by (host) (rate({app_selector} |= "${{log_search}}" [5m]))'
+    )
+    server_query = f'label_values({{job=~"{job_pattern}"}}, host)'
+    panels = reflow_panels(
+        [
+            {
+                "collapsed": False,
+                "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
+                "id": 100,
+                "title": "Application Logs",
+                "type": "row",
+            },
+            {
+                "datasource": {"type": "loki", "uid": "loki"},
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "short",
+                        "custom": {
+                            "fillOpacity": 30,
+                            "lineWidth": 1,
+                            "stacking": {"mode": "normal"},
+                        },
+                    }
+                },
+                "gridPos": {"h": 6, "w": 24, "x": 0, "y": 0},
+                "id": 1,
+                "options": {"tooltip": {"mode": "multi"}},
+                "title": "Log Lines per Server",
+                "type": "timeseries",
+                "targets": [
+                    {
+                        "expr": volume_expr,
+                        "legendFormat": "{{ host }}",
+                    }
+                ],
+            },
+            {
+                "datasource": {"type": "loki", "uid": "loki"},
+                "gridPos": {"h": 18, "w": 24, "x": 0, "y": 0},
+                "id": 2,
+                "options": LOG_OPTS,
+                "title": "Application Logs",
+                "type": "logs",
+                "targets": [
+                    {
+                        "expr": with_log_search(app_selector),
+                        "refId": "A",
+                    }
+                ],
+            },
+        ]
+    )
+    return {
+        "annotations": {"list": []},
+        "editable": True,
+        "fiscalYearStartMonth": 0,
+        "graphTooltip": 1,
+        "links": [],
+        "panels": panels,
+        "schemaVersion": 39,
+        "tags": ["monitoring", "logs", "loki", "application"],
+        "templating": {
+            "list": [
+                LOG_SEARCH_VAR,
+                {
+                    "current": {"selected": True, "text": "All", "value": "$__all"},
+                    "datasource": {"type": "loki", "uid": "loki"},
+                    "definition": server_query,
+                    "includeAll": True,
+                    "label": "Server",
+                    "multi": True,
+                    "name": "server",
+                    "options": [],
+                    "query": server_query,
+                    "refresh": 2,
+                    "type": "query",
+                },
+            ]
+        },
+        "time": {"from": "now-1h", "to": "now"},
+        "title": "All Servers — Application Logs",
+        "uid": "app-logs-overview",
+    }
 
 
 def reflow_panels(panels: list, start_y: int = 0) -> list:
@@ -861,6 +958,14 @@ def write_dashboards_yml() -> None:
 def main() -> None:
     OUT_DIR.mkdir(exist_ok=True)
     legacy_flat = list(OUT_DIR.glob("*.json"))
+
+    overview_dir = ROOT / "overview"
+    overview_dir.mkdir(exist_ok=True)
+    app_logs_path = overview_dir / "app-logs-overview.json"
+    with app_logs_path.open("w", encoding="utf-8") as f:
+        json.dump(build_app_logs_overview(), f, indent=2)
+        f.write("\n")
+    print("Wrote overview/app-logs-overview.json")
 
     for server, cfg in SERVERS.items():
         server_dir = OUT_DIR / server
