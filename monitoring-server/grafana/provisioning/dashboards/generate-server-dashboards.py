@@ -85,19 +85,21 @@ INTEGRATION_VAR = {
     "current": {"selected": True, "text": "All", "value": "$__all"},
     "datasource": {"type": "prometheus", "uid": "prometheus"},
     "definition": (
-        'label_values(http_request_duration_seconds_count{server="receiver"}, '
-        "integration)"
+        "label_values(http_request_duration_seconds_count"
+        '{server="receiver", '
+        f"{RECEIVER_HTTP_EXCLUDE}}}, integration)"
     ),
     "includeAll": True,
     "label": "Integration",
     "multi": True,
     "name": "integration",
     "options": [],
-    "query": {
-        "query": (
-            'label_values(http_request_duration_seconds_count{server="receiver"}, '
-            "integration)"
-        ),
+        "query": {
+            "query": (
+                "label_values(http_request_duration_seconds_count"
+                '{server="receiver", '
+                f"{RECEIVER_HTTP_EXCLUDE}}}, integration)"
+            ),
         "refId": "StandardVariableQuery",
     },
     "refresh": 2,
@@ -117,6 +119,12 @@ RECEIVER_CHANNELS = [
     ("localota", "Localota"),
 ]
 RECEIVER_CHANNEL_MATCH = "|".join(name for name, _ in RECEIVER_CHANNELS)
+
+# Alloy scrapes GET /metrics every 15s (~4 req/min per container). Health and
+# realtime polling are ops traffic, not channel API load.
+RECEIVER_HTTP_EXCLUDE = (
+    'path!="/metrics", path!~"/healthz?", path!~".*[Rr]ealtime.*"'
+)
 
 
 def with_log_search(selector: str) -> str:
@@ -163,6 +171,32 @@ def fix_queries(obj, server: str, app_jobs: list[str]) -> None:
                     val = val.replace("{{ server }} ", "")
                     val = val.replace("{{ server }}", server)
                     item[key] = val
+                else:
+                    walk(val)
+        elif isinstance(item, list):
+            for child in item:
+                walk(child)
+
+    walk(obj)
+
+
+def inject_receiver_http_excludes(obj: dict) -> None:
+    """Drop scrape/health/realtime paths from receiver HTTP metric queries."""
+
+    def walk(item):
+        if isinstance(item, dict):
+            for key, val in list(item.items()):
+                if key == "expr" and isinstance(val, str):
+                    if (
+                        "http_request_duration_seconds" in val
+                        and 'server="receiver"' in val
+                        and 'path!="/metrics"' not in val
+                    ):
+                        item[key] = val.replace(
+                            '{server="receiver"',
+                            f'{{server="receiver", {RECEIVER_HTTP_EXCLUDE}',
+                            1,
+                        )
                 else:
                     walk(val)
         elif isinstance(item, list):
@@ -410,7 +444,7 @@ def prom_bargauge_panel(
 
 def receiver_legacy_panels() -> list:
     """Migrated Receiver Dashboard (integration label, server=receiver)."""
-    base = 'server="receiver"'
+    base = f'server="receiver", {RECEIVER_HTTP_EXCLUDE}'
     ch = f'integration=~"{RECEIVER_CHANNEL_MATCH}"'
 
     bargauge_targets = [
@@ -781,6 +815,8 @@ def generate(server: str, cfg: dict) -> dict:
         "uid": f"server-{server}",
     }
     fix_queries(dash, server, cfg["app_jobs"])
+    if is_receiver:
+        inject_receiver_http_excludes(dash)
     return dash
 
 
