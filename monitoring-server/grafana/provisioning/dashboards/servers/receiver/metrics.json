@@ -608,6 +608,614 @@
       "type": "row"
     },
     {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 44
+      },
+      "id": 299,
+      "title": "Receiver Channels",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 45
+      },
+      "id": 300,
+      "options": {
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value"
+      },
+      "title": "Total Requests Count",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\"}[24h]))",
+          "legendFormat": ""
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgba(50, 172, 45, 0.97)",
+                "value": null
+              },
+              {
+                "color": "rgba(237, 129, 40, 0.89)",
+                "value": 10
+              },
+              {
+                "color": "rgba(245, 54, 54, 0.9)",
+                "value": 40
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 18,
+        "x": 6,
+        "y": 45
+      },
+      "id": 301,
+      "options": {
+        "displayMode": "basic",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "valueMode": "text"
+      },
+      "title": "Total Request Count by Channel",
+      "type": "bargauge",
+      "targets": [
+        {
+          "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\", integration=\"myallocator\"}[$__range]))",
+          "legendFormat": "Myallocator"
+        },
+        {
+          "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\", integration=\"hyperguest\"}[$__range]))",
+          "legendFormat": "Hyperguest"
+        },
+        {
+          "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\", integration=\"ownerrez\"}[$__range]))",
+          "legendFormat": "OwnerRez"
+        },
+        {
+          "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\", integration=\"channex\"}[$__range]))",
+          "legendFormat": "Channex"
+        },
+        {
+          "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\", integration=\"ratedock\"}[$__range]))",
+          "legendFormat": "RateDock"
+        },
+        {
+          "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\", integration=\"localota\"}[$__range]))",
+          "legendFormat": "Localota"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "fillOpacity": 10,
+            "lineWidth": 2
+          }
+        }
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 50
+      },
+      "id": 302,
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "title": "Global Request Rate by Channel (per Minute)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=~\"myallocator|hyperguest|ownerrez|channex|ratedock|localota\"}[1m]))",
+          "legendFormat": "Total"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"myallocator\"}[1m]))",
+          "legendFormat": "Myallocator"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"hyperguest\"}[1m]))",
+          "legendFormat": "Hyperguest"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"ownerrez\"}[1m]))",
+          "legendFormat": "OwnerRez"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"channex\"}[1m]))",
+          "legendFormat": "Channex"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"ratedock\"}[1m]))",
+          "legendFormat": "RateDock"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"localota\"}[1m]))",
+          "legendFormat": "Localota"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "fillOpacity": 10,
+            "lineWidth": 2
+          }
+        }
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 50
+      },
+      "id": 303,
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "title": "Top 10 API calls (by path) In Last 24 hours",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "topk(10, sum by (integration, path) (increase(http_request_duration_seconds_count{server=\"receiver\"}[24h])))",
+          "legendFormat": "{{ integration }} {{ path }}"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "fillOpacity": 10,
+            "lineWidth": 2
+          }
+        }
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 59
+      },
+      "id": 310,
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "title": "Myallocator Request and Error Rates (per Minute)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"myallocator\"}[1m]))",
+          "legendFormat": "Request"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"myallocator\", status_code=~\"2..\"}[1m]))",
+          "legendFormat": "2XX Success"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"myallocator\", status_code=~\"3..\"}[1m]))",
+          "legendFormat": "3XX Success"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"myallocator\", status_code=~\"4..\"}[1m]))",
+          "legendFormat": "4XX Errors"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"myallocator\", status_code=~\"5..\"}[1m]))",
+          "legendFormat": "5XX Errors"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "fillOpacity": 10,
+            "lineWidth": 2
+          }
+        }
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 59
+      },
+      "id": 311,
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "title": "Hyperguest Request and Error Rates (per Minute)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"hyperguest\"}[1m]))",
+          "legendFormat": "Request"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"hyperguest\", status_code=~\"2..\"}[1m]))",
+          "legendFormat": "2XX Success"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"hyperguest\", status_code=~\"3..\"}[1m]))",
+          "legendFormat": "3XX Success"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"hyperguest\", status_code=~\"4..\"}[1m]))",
+          "legendFormat": "4XX Errors"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"hyperguest\", status_code=~\"5..\"}[1m]))",
+          "legendFormat": "5XX Errors"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "fillOpacity": 10,
+            "lineWidth": 2
+          }
+        }
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 68
+      },
+      "id": 312,
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "title": "OwnerRez Request and Error Rates (per Minute)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"ownerrez\"}[1m]))",
+          "legendFormat": "Request"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"ownerrez\", status_code=~\"2..\"}[1m]))",
+          "legendFormat": "2XX Success"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"ownerrez\", status_code=~\"3..\"}[1m]))",
+          "legendFormat": "3XX Success"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"ownerrez\", status_code=~\"4..\"}[1m]))",
+          "legendFormat": "4XX Errors"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"ownerrez\", status_code=~\"5..\"}[1m]))",
+          "legendFormat": "5XX Errors"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "fillOpacity": 10,
+            "lineWidth": 2
+          }
+        }
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 68
+      },
+      "id": 313,
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "title": "Channex Request and Error Rates (per Minute)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"channex\"}[1m]))",
+          "legendFormat": "Request"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"channex\", status_code=~\"2..\"}[1m]))",
+          "legendFormat": "2XX Success"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"channex\", status_code=~\"3..\"}[1m]))",
+          "legendFormat": "3XX Success"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"channex\", status_code=~\"4..\"}[1m]))",
+          "legendFormat": "4XX Errors"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"channex\", status_code=~\"5..\"}[1m]))",
+          "legendFormat": "5XX Errors"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "fillOpacity": 10,
+            "lineWidth": 2
+          }
+        }
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 77
+      },
+      "id": 314,
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "title": "RateDock Request and Error Rates (per Minute)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"ratedock\"}[1m]))",
+          "legendFormat": "Request"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"ratedock\", status_code=~\"2..\"}[1m]))",
+          "legendFormat": "2XX Success"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"ratedock\", status_code=~\"3..\"}[1m]))",
+          "legendFormat": "3XX Success"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"ratedock\", status_code=~\"4..\"}[1m]))",
+          "legendFormat": "4XX Errors"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"ratedock\", status_code=~\"5..\"}[1m]))",
+          "legendFormat": "5XX Errors"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "fillOpacity": 10,
+            "lineWidth": 2
+          }
+        }
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 77
+      },
+      "id": 315,
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "title": "Localota Request and Error Rates (per Minute)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"localota\"}[1m]))",
+          "legendFormat": "Request"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"localota\", status_code=~\"2..\"}[1m]))",
+          "legendFormat": "2XX Success"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"localota\", status_code=~\"3..\"}[1m]))",
+          "legendFormat": "3XX Success"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"localota\", status_code=~\"4..\"}[1m]))",
+          "legendFormat": "4XX Errors"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"localota\", status_code=~\"5..\"}[1m]))",
+          "legendFormat": "5XX Errors"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "custom": {
+            "fillOpacity": 10,
+            "lineWidth": 2
+          }
+        }
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 86
+      },
+      "id": 320,
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "title": "Request Duration (%)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", le=\"+Inf\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\"}[1m]))) * 100",
+          "legendFormat": "Duration < 1ms (%)"
+        },
+        {
+          "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", le=\"0.003\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\"}[1m]))) * 100",
+          "legendFormat": "Duration < 3ms (%)"
+        },
+        {
+          "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", le=\"0.03\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\"}[1m]))) * 100",
+          "legendFormat": "Duration < 30ms (%)"
+        },
+        {
+          "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", le=\"0.1\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\"}[1m]))) * 100",
+          "legendFormat": "Duration < 100ms (%)"
+        },
+        {
+          "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", le=\"0.3\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\"}[1m]))) * 100",
+          "legendFormat": "Duration < 300ms (%)"
+        },
+        {
+          "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", le=\"1.5\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\"}[1m]))) * 100",
+          "legendFormat": "Duration < 1500ms (%)"
+        },
+        {
+          "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", le=\"10\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\"}[1m]))) * 100",
+          "legendFormat": "Duration < 10000ms (%)"
+        }
+      ]
+    },
+    {
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -624,8 +1232,8 @@
       "gridPos": {
         "h": 8,
         "w": 8,
-        "x": 0,
-        "y": 44
+        "x": 12,
+        "y": 86
       },
       "id": 17,
       "options": {
@@ -659,8 +1267,8 @@
       "gridPos": {
         "h": 8,
         "w": 12,
-        "x": 8,
-        "y": 44
+        "x": 0,
+        "y": 95
       },
       "id": 18,
       "options": {
@@ -694,8 +1302,8 @@
       "gridPos": {
         "h": 8,
         "w": 12,
-        "x": 0,
-        "y": 52
+        "x": 12,
+        "y": 95
       },
       "id": 19,
       "options": {
@@ -736,8 +1344,8 @@
       "gridPos": {
         "h": 8,
         "w": 12,
-        "x": 12,
-        "y": 52
+        "x": 0,
+        "y": 103
       },
       "id": 20,
       "options": {
@@ -771,8 +1379,8 @@
       "gridPos": {
         "h": 8,
         "w": 12,
-        "x": 0,
-        "y": 60
+        "x": 12,
+        "y": 103
       },
       "id": 21,
       "options": {
@@ -810,8 +1418,8 @@
       "gridPos": {
         "h": 8,
         "w": 12,
-        "x": 12,
-        "y": 60
+        "x": 0,
+        "y": 111
       },
       "id": 22,
       "options": {
@@ -848,8 +1456,8 @@
       "gridPos": {
         "h": 8,
         "w": 12,
-        "x": 0,
-        "y": 68
+        "x": 12,
+        "y": 111
       },
       "id": 23,
       "options": {
@@ -872,7 +1480,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 76
+        "y": 119
       },
       "id": 105,
       "title": "HTTP Probes (Blackbox)",
@@ -919,7 +1527,7 @@
         "h": 6,
         "w": 12,
         "x": 0,
-        "y": 77
+        "y": 120
       },
       "id": 13,
       "options": {
@@ -976,7 +1584,7 @@
         "h": 6,
         "w": 12,
         "x": 12,
-        "y": 77
+        "y": 120
       },
       "id": 14,
       "options": {
@@ -1024,5 +1632,7 @@
     ]
   },
   "title": "Receiver \u2014 Metrics",
-  "uid": "receiver-metrics"
+  "uid": "receiver-metrics",
+  "refresh": "10s",
+  "description": "Receiver metrics (migrated channel dashboards + host metrics)"
 }

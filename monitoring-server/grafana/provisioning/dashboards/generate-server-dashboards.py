@@ -107,6 +107,17 @@ INTEGRATION_VAR = {
 
 TS_DEFAULTS = {"fillOpacity": 10, "lineWidth": 2}
 
+# Legacy Receiver Dashboard channels (path regex → integration label)
+RECEIVER_CHANNELS = [
+    ("myallocator", "Myallocator"),
+    ("hyperguest", "Hyperguest"),
+    ("ownerrez", "OwnerRez"),
+    ("channex", "Channex"),
+    ("ratedock", "RateDock"),
+    ("localota", "Localota"),
+]
+RECEIVER_CHANNEL_MATCH = "|".join(name for name, _ in RECEIVER_CHANNELS)
+
 
 def with_log_search(selector: str) -> str:
     return f'{selector} |= "${{log_search}}"'
@@ -309,6 +320,7 @@ def prom_ts_panel(
     w: int = 12,
     h: int = 8,
     stacking: str | None = None,
+    targets: list[dict] | None = None,
 ) -> dict:
     custom = dict(TS_DEFAULTS)
     if stacking:
@@ -321,9 +333,245 @@ def prom_ts_panel(
         "options": {"tooltip": {"mode": "multi"}},
         "title": title,
         "type": "timeseries",
-        "targets": [{"expr": expr, "legendFormat": legend}],
+        "targets": targets
+        if targets is not None
+        else [{"expr": expr, "legendFormat": legend}],
     }
     return panel
+
+
+def prom_stat_panel(pid: int, title: str, expr: str, *, w: int = 5, h: int = 5) -> dict:
+    return {
+        "datasource": {"type": "prometheus", "uid": "prometheus"},
+        "fieldConfig": {
+            "defaults": {
+                "mappings": [
+                    {
+                        "options": {"match": "null", "result": {"text": "N/A"}},
+                        "type": "special",
+                    }
+                ],
+                "thresholds": {
+                    "mode": "absolute",
+                    "steps": [{"color": "green", "value": None}],
+                },
+                "unit": "none",
+            }
+        },
+        "gridPos": {"h": h, "w": w, "x": 0, "y": 0},
+        "id": pid,
+        "options": {
+            "colorMode": "none",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": False},
+            "textMode": "value",
+        },
+        "title": title,
+        "type": "stat",
+        "targets": [{"expr": expr, "legendFormat": ""}],
+    }
+
+
+def prom_bargauge_panel(
+    pid: int, title: str, targets: list[dict], *, w: int = 12, h: int = 5
+) -> dict:
+    return {
+        "datasource": {"type": "prometheus", "uid": "prometheus"},
+        "fieldConfig": {
+            "defaults": {
+                "decimals": 0,
+                "min": 0,
+                "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                        {"color": "rgba(50, 172, 45, 0.97)", "value": None},
+                        {"color": "rgba(237, 129, 40, 0.89)", "value": 10},
+                        {"color": "rgba(245, 54, 54, 0.9)", "value": 40},
+                    ],
+                },
+                "unit": "none",
+            }
+        },
+        "gridPos": {"h": h, "w": w, "x": 0, "y": 0},
+        "id": pid,
+        "options": {
+            "displayMode": "basic",
+            "orientation": "horizontal",
+            "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": False},
+            "showUnfilled": True,
+            "valueMode": "text",
+        },
+        "title": title,
+        "type": "bargauge",
+        "targets": targets,
+    }
+
+
+def receiver_legacy_panels() -> list:
+    """Migrated Receiver Dashboard (integration label, server=receiver)."""
+    base = 'server="receiver"'
+    ch = f'integration=~"{RECEIVER_CHANNEL_MATCH}"'
+
+    bargauge_targets = [
+        {
+            "expr": (
+                "sum(increase(http_request_duration_seconds_count"
+                f'{{{base}, integration="{name}"}}[$__range]))'
+            ),
+            "legendFormat": label,
+        }
+        for name, label in RECEIVER_CHANNELS
+    ]
+
+    global_rate_targets = [
+        {
+            "expr": (
+                "sum(rate(http_request_duration_seconds_count"
+                f'{{{base}, {ch}}}[1m]))'
+            ),
+            "legendFormat": "Total",
+        }
+    ]
+    global_rate_targets.extend(
+        {
+            "expr": (
+                "sum(rate(http_request_duration_seconds_count"
+                f'{{{base}, integration="{name}"}}[1m]))'
+            ),
+            "legendFormat": label,
+        }
+        for name, label in RECEIVER_CHANNELS
+    )
+
+    duration_buckets = [
+        ("+Inf", "Duration < 1ms (%)"),
+        ("0.003", "Duration < 3ms (%)"),
+        ("0.03", "Duration < 30ms (%)"),
+        ("0.1", "Duration < 100ms (%)"),
+        ("0.3", "Duration < 300ms (%)"),
+        ("1.5", "Duration < 1500ms (%)"),
+        ("10", "Duration < 10000ms (%)"),
+    ]
+    duration_targets = [
+        {
+            "expr": (
+                f"(sum(irate(http_request_duration_seconds_bucket"
+                f'{{{base}, le="{le}"}}[1m])) / '
+                f"sum(irate(http_request_duration_seconds_bucket{{{base}}}[1m]))) * 100"
+            ),
+            "legendFormat": legend,
+        }
+        for le, legend in duration_buckets
+    ]
+
+    panels: list[dict] = [
+        {
+            "collapsed": False,
+            "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
+            "id": 299,
+            "title": "Receiver Channels",
+            "type": "row",
+        },
+        prom_stat_panel(
+            300,
+            "Total Requests Count",
+            f"sum(increase(http_request_duration_seconds_count{{{base}}}[24h]))",
+            w=6,
+        ),
+        prom_bargauge_panel(
+            301,
+            "Total Request Count by Channel",
+            bargauge_targets,
+            w=18,
+        ),
+        prom_ts_panel(
+            302,
+            "Global Request Rate by Channel (per Minute)",
+            "",
+            unit="reqps",
+            w=12,
+            h=9,
+            targets=global_rate_targets,
+        ),
+        prom_ts_panel(
+            303,
+            "Top 10 API calls (by path) In Last 24 hours",
+            (
+                "topk(10, sum by (integration, path) "
+                "(increase(http_request_duration_seconds_count"
+                f'{{{base}}}[24h])))'
+            ),
+            legend="{{ integration }} {{ path }}",
+            w=12,
+            h=9,
+        ),
+    ]
+
+    pid = 310
+    for name, label in RECEIVER_CHANNELS:
+        integ = f'integration="{name}"'
+        panels.append(
+            prom_ts_panel(
+                pid,
+                f"{label} Request and Error Rates (per Minute)",
+                "",
+                unit="reqps",
+                w=12,
+                h=9,
+                targets=[
+                    {
+                        "expr": (
+                            "sum(rate(http_request_duration_seconds_count"
+                            f'{{{base}, {integ}}}[1m]))'
+                        ),
+                        "legendFormat": "Request",
+                    },
+                    {
+                        "expr": (
+                            "sum(rate(http_request_duration_seconds_count"
+                            f'{{{base}, {integ}, status_code=~"2.."}}[1m]))'
+                        ),
+                        "legendFormat": "2XX Success",
+                    },
+                    {
+                        "expr": (
+                            "sum(rate(http_request_duration_seconds_count"
+                            f'{{{base}, {integ}, status_code=~"3.."}}[1m]))'
+                        ),
+                        "legendFormat": "3XX Success",
+                    },
+                    {
+                        "expr": (
+                            "sum(rate(http_request_duration_seconds_count"
+                            f'{{{base}, {integ}, status_code=~"4.."}}[1m]))'
+                        ),
+                        "legendFormat": "4XX Errors",
+                    },
+                    {
+                        "expr": (
+                            "sum(rate(http_request_duration_seconds_count"
+                            f'{{{base}, {integ}, status_code=~"5.."}}[1m]))'
+                        ),
+                        "legendFormat": "5XX Errors",
+                    },
+                ],
+            )
+        )
+        pid += 1
+
+    panels.append(
+        prom_ts_panel(
+            320,
+            "Request Duration (%)",
+            "",
+            unit="percent",
+            w=12,
+            h=9,
+            targets=duration_targets,
+        )
+    )
+    return panels
 
 
 def receiver_extra_panels() -> list:
@@ -471,6 +719,9 @@ def generate_split(server: str, cfg: dict) -> tuple[dict, dict]:
         "title": f"{cfg['title']} — Metrics",
         "uid": f"{server}-metrics",
     }
+    if server == "receiver":
+        metrics["refresh"] = "10s"
+        metrics["description"] = "Receiver metrics (migrated channel dashboards + host metrics)"
     logs = {
         **base,
         "panels": log_panels,
@@ -503,6 +754,7 @@ def generate(server: str, cfg: dict) -> dict:
 
     if is_receiver:
         customize_receiver_panels(cleaned)
+        cleaned = insert_after_panel(cleaned, 106, receiver_legacy_panels())
         cleaned = insert_after_panel(cleaned, 21, receiver_extra_panels())
 
     log_panels = build_log_panels(
