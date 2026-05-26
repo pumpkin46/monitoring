@@ -21,17 +21,36 @@ scrape_configs:
     static_configs:
       - targets: ["127.0.0.1:9090"]
 
+  # Blackbox HTTP probes — one target per server (see generate-server-dashboards.py probe_url)
   - job_name: http-probes
     metrics_path: /probe
     params:
       module: [http_2xx]
     static_configs:
       - targets:
-          - http://146.190.166.199
+          - http://146.190.166.199:9000/
+        labels:
+          server: manager
+      - targets:
           - https://ota-receiver.localota.stream/healthz
-          - http://147.182.204.142
-          - https://tools.localota.stream/health
+        labels:
+          server: receiver
+      - targets:
+          - http://144.202.109.77:8001/
+        labels:
+          server: worker
+      - targets:
+          - http://147.182.204.142:3000/health
+        labels:
+          server: comparison
+      - targets:
           - https://gha.localota.stream
+        labels:
+          server: pms-api
+      - targets:
+          - http://144.202.107.141:8080/
+        labels:
+          server: scraper
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target

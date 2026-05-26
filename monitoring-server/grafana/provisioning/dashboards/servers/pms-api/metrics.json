@@ -829,7 +829,7 @@
       "type": "stat",
       "targets": [
         {
-          "expr": "probe_success{instance=~\"gha[.]localota\"}",
+          "expr": "probe_success{instance=~\"gha[.]localota[.]stream\"}",
           "legendFormat": "{{ instance }}"
         }
       ]
@@ -881,7 +881,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "probe_duration_seconds{instance=~\"gha[.]localota\"}",
+          "expr": "probe_duration_seconds{instance=~\"gha[.]localota[.]stream\"}",
           "legendFormat": "{{ instance }}"
         }
       ]

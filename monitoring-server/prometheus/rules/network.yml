@@ -2,15 +2,17 @@ groups:
   - name: network  
     rules:  
 
-      # Server down — no scrape for 2 minutes  
-      - alert: ServerDown  
-        expr: up == 0  
-        for: 2m  
-        labels:  
-          severity: critical  
-        annotations:  
-          summary: "Server DOWN: {{ $labels.server }}"  
-          description: "{{ $labels.instance }} has been unreachable for 2 minutes"  
+      # Server down — no host metrics via remote_write for 3+ minutes
+      # (agents are not Prometheus scrape targets; up == 0 does not apply)
+      - alert: ServerDown
+        expr: |
+          (time() - max by (server) (timestamp(node_boot_time_seconds))) > 180
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Server DOWN: {{ $labels.server }}"
+          description: "No host metrics from {{ $labels.server }} for 3+ minutes (Alloy remote_write stale)"
 
       # High network traffic (&gt; 100 MB/s receive)  
       - alert: HighNetworkReceive  

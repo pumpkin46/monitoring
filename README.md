@@ -132,7 +132,7 @@ Then edit the following config placeholder values:
 | File | What to change |
 |------|---------------|
 | `.env` | Grafana password, SMTP credentials, alert email |
-| `prometheus/prometheus.yml` | Replace `MANAGER_IP`, `RECEIVER_IP`, `SCRAPER_IP`, etc. with real IPs/URLs |
+| `prometheus/prometheus.yml` | HTTP probe URLs per server (must match `probe_url` in `generate-server-dashboards.py`) |
 
 Start all services:
 
@@ -181,13 +181,20 @@ Before running, edit `install-agent.sh` and set `MONITORING_IP` (line 19) to you
 ### 3. Verify
 
 - **Grafana:** http://MONITORING_IP:3000 (credentials from your `.env` file)
-- **Prometheus:** http://MONITORING_IP:9090/targets (check agents are reporting)
+- **Prometheus:** http://MONITORING_IP:9090 — use PromQL and **Status → Remote Write** (agents push via remote write, not scrape targets)
 - **Alertmanager:** http://MONITORING_IP:9093
+- **Overview dashboard:** Grafana → **Overview** → **All Servers — Metrics**
 
-Query to verify an agent is connected:
+Confirm each agent is sending host metrics:
 
 ```promql
 node_uname_info{server="manager"}
+```
+
+Confirm Blackbox HTTP probes (all six servers):
+
+```promql
+probe_success
 ```
 
 ## Alert Rules
@@ -204,7 +211,7 @@ node_uname_info{server="manager"}
 | HTTPEndpointDown | critical | HTTP probe fails for 2 min |
 | SlowHTTPResponse | warning | Response > 2s for 5 min |
 | SSLCertExpiringSoon | warning | SSL cert expires in < 14 days |
-| ServerDown | critical | No scrape data for 2 min |
+| ServerDown | critical | No host metrics via remote_write for 3+ min |
 | HighNetworkReceive | warning | > 100 MB/s for 5 min |
 | NetworkErrors | warning | > 10 errors/s for 5 min |
 | TooManyOpenFiles | warning | > 80% FDs used for 5 min |
@@ -252,10 +259,23 @@ systemctl restart alloy               # Restart after config change
 
 ## Configuration Reference
 
+### Regenerating dashboards
+
+When HTTP probe URLs, server list, or panel features change, update `probe_url` in `generate-server-dashboards.py` and matching targets in `prometheus/prometheus.yml`, then:
+
+```bash
+cd monitoring-server/grafana/provisioning/dashboards
+python generate-server-dashboards.py
+```
+
+Commit `overview/app-logs-overview.json` and `servers/**/*.json`.
+
+**Note:** `servers/receiver/metrics.json` and `logs.json` are hand-maintained; the generator skips them (`HAND_MAINTAINED` in `generate-server-dashboards.py`). Edit those files directly for receiver panel changes.
+
 ### Adding a New Server
 
 1. Run `install-agent.sh <new-server-name>` on the target server.
-2. Optionally add HTTP probe targets in `prometheus/prometheus.yml`.
+2. Add HTTP probe targets in `prometheus/prometheus.yml` and `probe_url` in `generate-server-dashboards.py`, then regenerate dashboards.
 3. The server will appear automatically in Grafana queries using the `server` label.
 
 ### Adding App Metrics
@@ -270,7 +290,7 @@ The comparison addon (`config-comparison.alloy`) scrapes **`GET /metrics` on por
 |------|-----|
 | **System metrics** (CPU, RAM, disk, network) | Alloy `prometheus.exporter.unix` in base `config.alloy` → `remote_write` (label `server="comparison"`) |
 | **App metrics** (`comparison_queue_size`, `comparison_active_workers`, …) | `prometheus.scrape` in `config-comparison.alloy` → same `remote_write` |
-| **HTTP uptime** | Blackbox: `http://COMPARISON_IP:3000/health` in `prometheus/prometheus.yml` (open port 3000 from the monitoring host if probes stay DOWN) |
+| **HTTP uptime** | Blackbox: `http://147.182.204.142:3000/health` in `prometheus/prometheus.yml` (open port 3000 from the monitoring host if probes stay DOWN) |
 | **Application logs** | PM2 logs + Python parsing → Loki (`job="comparison"`, `host="comparison"`) |
 
 | Item | Value |
@@ -293,7 +313,7 @@ The scraper addon (`config-scraper.alloy`) scrapes **`GET /metrics` on port 8080
 | Deploy path | `/var/www/scraper` |
 | Grafana | **scraper** → **Metrics** / **Logs** |
 | Logs | `scraper-out.log`, `scraper-error.log` under `/root/.pm2/logs/` |
-| HTTP uptime | Blackbox: `http://SCRAPER_IP:8080/` in `prometheus/prometheus.yml` |
+| HTTP uptime | Blackbox: `http://144.202.107.141:8080/` in `prometheus/prometheus.yml` |
 
 **Comparison logs missing in Grafana:** The **All Servers — Application Logs** dashboard queries `job=~"app|comparison|manager|receiver|worker|pms-api|scraper"`. PM2 logs under `/root/.pm2/logs/` are not readable by the `alloy` user until traverse permissions are set (`/root` is mode `700` by default). On the comparison server:
 

@@ -829,7 +829,7 @@
       "type": "stat",
       "targets": [
         {
-          "expr": "probe_success{instance=~\"WORKER\"}",
+          "expr": "probe_success{instance=~\"144[.]202[.]109[.]77\"}",
           "legendFormat": "{{ instance }}"
         }
       ]
@@ -881,7 +881,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "probe_duration_seconds{instance=~\"WORKER\"}",
+          "expr": "probe_duration_seconds{instance=~\"144[.]202[.]109[.]77\"}",
           "legendFormat": "{{ instance }}"
         }
       ]

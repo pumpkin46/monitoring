@@ -829,7 +829,7 @@
       "type": "stat",
       "targets": [
         {
-          "expr": "probe_success{instance=~\"SCRAPER\"}",
+          "expr": "probe_success{instance=~\"144[.]202[.]107[.]141\"}",
           "legendFormat": "{{ instance }}"
         }
       ]
@@ -881,7 +881,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "probe_duration_seconds{instance=~\"SCRAPER\"}",
+          "expr": "probe_duration_seconds{instance=~\"144[.]202[.]107[.]141\"}",
           "legendFormat": "{{ instance }}"
         }
       ]

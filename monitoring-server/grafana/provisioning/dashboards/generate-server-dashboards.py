@@ -10,44 +10,54 @@ ROOT = Path(__file__).parent
 METRICS_SRC = ROOT / "overview" / "server-overview.json"
 OUT_DIR = ROOT / "servers"
 
+# Servers whose dashboards are edited manually — never overwritten by main()
+HAND_MAINTAINED = frozenset({"receiver"})
+
+# probe_url must match monitoring-server/prometheus/prometheus.yml http-probes targets
 SERVERS = {
     "manager": {
         "title": "Manager",
         "app_jobs": ["manager", "app"],
         "features": {"http", "nodejs"},
-        "probe_match": r"146[.]190[.]166[.]199",
+        "probe_url": "http://146.190.166.199:9000/",
     },
     "receiver": {
         "title": "Receiver",
         "app_jobs": ["receiver", "app"],
         "features": {"http", "nodejs", "receiver_integrations"},
-        "probe_match": r"ota-receiver",
+        "probe_url": "https://ota-receiver.localota.stream/healthz",
     },
     "worker": {
         "title": "Worker",
         "app_jobs": ["worker", "app"],
         "features": {"http", "nodejs"},
-        "probe_match": r"WORKER",
+        "probe_url": "http://144.202.109.77:8001/",
     },
     "comparison": {
         "title": "Comparison",
         "app_jobs": ["comparison", "app"],
         "features": {"comparison"},
-        "probe_match": r"tools[.]localota",
+        "probe_url": "http://147.182.204.142:3000/health",
     },
     "pms-api": {
         "title": "PMS API",
         "app_jobs": ["pms-api", "app"],
         "features": {"http", "nodejs"},
-        "probe_match": r"gha[.]localota",
+        "probe_url": "https://gha.localota.stream",
     },
     "scraper": {
         "title": "Scraper",
         "app_jobs": ["scraper", "app"],
         "features": {"http", "nodejs"},
-        "probe_match": r"SCRAPER",
+        "probe_url": "http://144.202.107.141:8080/",
     },
 }
+
+
+def probe_match_from_url(url: str) -> str:
+    """PromQL-safe regex for probe_success{instance=~\"...\"} from Blackbox target URL."""
+    host = re.sub(r"^https?://", "", url).split("/")[0].split(":")[0]
+    return re.sub(r"\.", r"[.]", host)
 
 PANEL_FEATURES = {
     15: "comparison",
@@ -874,7 +884,9 @@ def generate(server: str, cfg: dict) -> dict:
         for p in metrics["panels"]
         if keep_metric_panel(p, features)
     ]
-    metric_panels.extend(probe_panels(metrics["panels"], cfg["probe_match"]))
+    metric_panels.extend(
+        probe_panels(metrics["panels"], probe_match_from_url(cfg["probe_url"]))
+    )
 
     # Drop duplicate consecutive rows
     cleaned = []
@@ -970,6 +982,9 @@ def main() -> None:
     for server, cfg in SERVERS.items():
         server_dir = OUT_DIR / server
         server_dir.mkdir(exist_ok=True)
+        if server in HAND_MAINTAINED:
+            print(f"Skipped servers/{server}/ (hand-maintained)")
+            continue
         metrics, logs = generate_split(server, cfg)
         for name, dash in (("metrics", metrics), ("logs", logs)):
             path = server_dir / f"{name}.json"
