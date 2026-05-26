@@ -608,18 +608,6 @@
       "type": "row"
     },
     {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 44
-      },
-      "id": 299,
-      "title": "Receiver Channels",
-      "type": "row"
-    },
-    {
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -887,7 +875,7 @@
           "mode": "multi"
         }
       },
-      "title": "DEPRECATED (combined above) \u2014 Hyperguest Request and Error Rates (per Minute)",
+      "title": "\u2014 Hyperguest Request and Error Rates (per Minute)",
       "type": "timeseries",
       "targets": [
         {
@@ -938,7 +926,7 @@
           "mode": "multi"
         }
       },
-      "title": "DEPRECATED (combined above) \u2014 OwnerRez Request and Error Rates (per Minute)",
+      "title": "\u2014 OwnerRez Request and Error Rates (per Minute)",
       "type": "timeseries",
       "targets": [
         {
@@ -989,7 +977,7 @@
           "mode": "multi"
         }
       },
-      "title": "DEPRECATED (combined above) \u2014 Channex Request and Error Rates (per Minute)",
+      "title": "\u2014 Channex Request and Error Rates (per Minute)",
       "type": "timeseries",
       "targets": [
         {
@@ -1040,7 +1028,7 @@
           "mode": "multi"
         }
       },
-      "title": "DEPRECATED (combined above) \u2014 RateDock Request and Error Rates (per Minute)",
+      "title": "\u2014 RateDock Request and Error Rates (per Minute)",
       "type": "timeseries",
       "targets": [
         {
@@ -1091,7 +1079,7 @@
           "mode": "multi"
         }
       },
-      "title": "DEPRECATED (combined above) \u2014 Localota Request and Error Rates (per Minute)",
+      "title": "\u2014 Localota Request and Error Rates (per Minute)",
       "type": "timeseries",
       "targets": [
         {
