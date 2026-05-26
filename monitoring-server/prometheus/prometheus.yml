@@ -29,7 +29,7 @@ scrape_configs:
       - targets:
           - http://146.190.166.199
           - https://ota-receiver.localota.stream/healthz
-          - http://WORKER_IP
+          - http://147.182.204.142
           - https://tools.localota.stream/health
           - https://gha.localota.stream
     relabel_configs:

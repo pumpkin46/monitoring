@@ -15,7 +15,7 @@ SERVERS = {
         "title": "Manager",
         "app_jobs": ["manager", "app"],
         "features": {"http", "nodejs"},
-        "probe_match": r"146\.190\.166\.199",
+        "probe_match": r"146[.]190[.]166[.]199",
     },
     "receiver": {
         "title": "Receiver",
@@ -33,13 +33,13 @@ SERVERS = {
         "title": "Comparison",
         "app_jobs": ["comparison", "app"],
         "features": {"comparison"},
-        "probe_match": r"tools\.localota",
+        "probe_match": r"tools[.]localota",
     },
     "pms-api": {
         "title": "PMS API",
         "app_jobs": ["pms-api", "app"],
         "features": {"http", "nodejs"},
-        "probe_match": r"gha\.localota",
+        "probe_match": r"gha[.]localota",
     },
     "scraper": {
         "title": "Scraper",

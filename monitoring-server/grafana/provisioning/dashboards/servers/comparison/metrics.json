@@ -747,7 +747,7 @@
       "type": "stat",
       "targets": [
         {
-          "expr": "probe_success{instance=~\"tools\\.localota\"}",
+          "expr": "probe_success{instance=~\"tools[.]localota\"}",
           "legendFormat": "{{ instance }}"
         }
       ]
@@ -799,7 +799,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "probe_duration_seconds{instance=~\"tools\\.localota\"}",
+          "expr": "probe_duration_seconds{instance=~\"tools[.]localota\"}",
           "legendFormat": "{{ instance }}"
         }
       ]
