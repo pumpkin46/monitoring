@@ -762,7 +762,7 @@
           "mode": "multi"
         }
       },
-      "title": "IGMS Global Request Rate by Channel (per Minute)",
+      "title": "Global Request Rate by Channel (per Minute)",
       "type": "timeseries",
       "targets": [
         {
@@ -836,7 +836,7 @@
           "mode": "multi"
         }
       },
-      "title": "Requests & Errors by Channel (per Minute)",
+      "title": "$integration Requests & Errors by Channel (per Minute)",
       "type": "timeseries",
       "targets": [
         {
