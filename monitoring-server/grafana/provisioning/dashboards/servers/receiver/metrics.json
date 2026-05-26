@@ -731,28 +731,8 @@
       "type": "bargauge",
       "targets": [
         {
-          "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\", integration=\"myallocator\"}[$__range]))",
-          "legendFormat": "Myallocator"
-        },
-        {
-          "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\", integration=\"hyperguest\"}[$__range]))",
-          "legendFormat": "Hyperguest"
-        },
-        {
-          "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\", integration=\"ownerrez\"}[$__range]))",
-          "legendFormat": "OwnerRez"
-        },
-        {
-          "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\", integration=\"channex\"}[$__range]))",
-          "legendFormat": "Channex"
-        },
-        {
-          "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\", integration=\"ratedock\"}[$__range]))",
-          "legendFormat": "RateDock"
-        },
-        {
-          "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\", integration=\"localota\"}[$__range]))",
-          "legendFormat": "Localota"
+          "expr": "sum by (integration) (increase(http_request_duration_seconds_count{server=\"receiver\"}[$__range]))",
+          "legendFormat": "{{ integration }}"
         }
       ]
     },
@@ -782,36 +762,16 @@
           "mode": "multi"
         }
       },
-      "title": "Global Request Rate by Channel (per Minute)",
+      "title": "IGMS Global Request Rate by Channel (per Minute)",
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=~\"myallocator|hyperguest|ownerrez|channex|ratedock|localota\"}[1m]))",
-          "legendFormat": "Total"
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\"}[1m])) * 60",
+          "legendFormat": "Total (all channels)"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"myallocator\"}[1m]))",
-          "legendFormat": "Myallocator"
-        },
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"hyperguest\"}[1m]))",
-          "legendFormat": "Hyperguest"
-        },
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"ownerrez\"}[1m]))",
-          "legendFormat": "OwnerRez"
-        },
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"channex\"}[1m]))",
-          "legendFormat": "Channex"
-        },
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"ratedock\"}[1m]))",
-          "legendFormat": "RateDock"
-        },
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"localota\"}[1m]))",
-          "legendFormat": "Localota"
+          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\"}[1m])) * 60",
+          "legendFormat": "{{ integration }}"
         }
       ]
     },
