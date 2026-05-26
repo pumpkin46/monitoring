@@ -484,7 +484,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\".*[Rr]ealtime.*\", integration=~\".+\"}[5m]))",
+          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=~\".+\"}[5m]))",
           "legendFormat": "{{ integration }}"
         }
       ]

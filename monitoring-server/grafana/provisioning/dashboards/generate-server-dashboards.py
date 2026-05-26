@@ -123,7 +123,8 @@ RECEIVER_CHANNEL_MATCH = "|".join(name for name, _ in RECEIVER_CHANNELS)
 # Alloy scrapes GET /metrics every 15s (~4 req/min per container). Health and
 # realtime polling are ops traffic, not channel API load.
 RECEIVER_HTTP_EXCLUDE = (
-    'path!="/metrics", path!="/readyz", path!~"/healthz?", path!~".*[Rr]ealtime.*"'
+    'path!="/metrics", path!="/readyz", path!~"/healthz?", '
+    'path!~"/healthcheck/.*", path!~".*[Rr]ealtime.*"'
 )
 
 
