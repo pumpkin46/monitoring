@@ -840,23 +840,23 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
+          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
           "legendFormat": "Requests / min — {{ integration }}"
         },
         {
-          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", status_code=~\"4..\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
+          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", status_code=~\"4..\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
           "legendFormat": "4XX / min — {{ integration }}"
         },
         {
-          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", status_code=~\"5..\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
+          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", status_code=~\"5..\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
           "legendFormat": "5XX / min — {{ integration }}"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", status_code=~\"4..\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", status_code=~\"4..\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
           "legendFormat": "4XX total / min"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", status_code=~\"5..\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", status_code=~\"5..\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
           "legendFormat": "5XX total / min"
         }
       ]
