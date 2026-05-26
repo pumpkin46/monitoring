@@ -731,7 +731,7 @@
       "type": "bargauge",
       "targets": [
         {
-          "expr": "sum by (integration) (increase(http_request_duration_seconds_count{server=\"receiver\"}[$__range]))",
+          "expr": "sum by (integration) (increase(http_request_duration_seconds_count{server=\"receiver\", integration!=\"ari-ingest-worker\"}[$__range]))",
           "legendFormat": "{{ integration }}"
         }
       ]
@@ -766,11 +766,11 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\"}[1m])) * 60",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
           "legendFormat": "Total (all channels)"
         },
         {
-          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\"}[1m])) * 60",
+          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
           "legendFormat": "{{ integration }}"
         }
       ]
@@ -836,28 +836,28 @@
           "mode": "multi"
         }
       },
-      "title": "Myallocator Request and Error Rates (per Minute)",
+      "title": "Requests & Errors by Channel (per Minute)",
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"myallocator\"}[1m]))",
-          "legendFormat": "Request"
+          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
+          "legendFormat": "Requests / min — {{ integration }}"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"myallocator\", status_code=~\"2..\"}[1m]))",
-          "legendFormat": "2XX Success"
+          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", status_code=~\"4..\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
+          "legendFormat": "4XX / min — {{ integration }}"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"myallocator\", status_code=~\"3..\"}[1m]))",
-          "legendFormat": "3XX Success"
+          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", status_code=~\"5..\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
+          "legendFormat": "5XX / min — {{ integration }}"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"myallocator\", status_code=~\"4..\"}[1m]))",
-          "legendFormat": "4XX Errors"
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", status_code=~\"4..\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
+          "legendFormat": "4XX total / min"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", integration=\"myallocator\", status_code=~\"5..\"}[1m]))",
-          "legendFormat": "5XX Errors"
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", status_code=~\"5..\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
+          "legendFormat": "5XX total / min"
         }
       ]
     },
@@ -887,7 +887,7 @@
           "mode": "multi"
         }
       },
-      "title": "Hyperguest Request and Error Rates (per Minute)",
+      "title": "DEPRECATED (combined above) \u2014 Hyperguest Request and Error Rates (per Minute)",
       "type": "timeseries",
       "targets": [
         {
@@ -938,7 +938,7 @@
           "mode": "multi"
         }
       },
-      "title": "OwnerRez Request and Error Rates (per Minute)",
+      "title": "DEPRECATED (combined above) \u2014 OwnerRez Request and Error Rates (per Minute)",
       "type": "timeseries",
       "targets": [
         {
@@ -989,7 +989,7 @@
           "mode": "multi"
         }
       },
-      "title": "Channex Request and Error Rates (per Minute)",
+      "title": "DEPRECATED (combined above) \u2014 Channex Request and Error Rates (per Minute)",
       "type": "timeseries",
       "targets": [
         {
@@ -1040,7 +1040,7 @@
           "mode": "multi"
         }
       },
-      "title": "RateDock Request and Error Rates (per Minute)",
+      "title": "DEPRECATED (combined above) \u2014 RateDock Request and Error Rates (per Minute)",
       "type": "timeseries",
       "targets": [
         {
@@ -1091,7 +1091,7 @@
           "mode": "multi"
         }
       },
-      "title": "Localota Request and Error Rates (per Minute)",
+      "title": "DEPRECATED (combined above) \u2014 Localota Request and Error Rates (per Minute)",
       "type": "timeseries",
       "targets": [
         {
