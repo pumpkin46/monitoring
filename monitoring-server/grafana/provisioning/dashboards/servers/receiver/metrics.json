@@ -661,7 +661,7 @@
       "type": "stat",
       "targets": [
         {
-          "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\"}[24h]))",
+          "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}[24h]))",
           "legendFormat": ""
         }
       ]
@@ -719,7 +719,7 @@
       "type": "bargauge",
       "targets": [
         {
-          "expr": "sum by (integration) (increase(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration!=\"ari-ingest-worker\"}[$__range]))",
+          "expr": "sum by (integration) (increase(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration!=\"ari-ingest-worker\"}[$__range]))",
           "legendFormat": "{{ integration }}"
         }
       ]
@@ -754,11 +754,11 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
           "legendFormat": "Total (all channels)"
         },
         {
-          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
+          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
           "legendFormat": "{{ integration }}"
         }
       ]
@@ -793,7 +793,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "topk(10, sum by (integration, path) (increase(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\"}[24h])))",
+          "expr": "topk(10, sum by (integration, path) (increase(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}[24h])))",
           "legendFormat": "{{ integration }} {{ path }}"
         }
       ]
@@ -828,23 +828,23 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
+          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
           "legendFormat": "Requests / min \u2014 {{ integration }}"
         },
         {
-          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", status_code=~\"4..\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
+          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", status_code=~\"4..\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
           "legendFormat": "4XX / min \u2014 {{ integration }}"
         },
         {
-          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", status_code=~\"5..\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
+          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", status_code=~\"5..\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
           "legendFormat": "5XX / min \u2014 {{ integration }}"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", status_code=~\"4..\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", status_code=~\"4..\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
           "legendFormat": "4XX total / min"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", status_code=~\"5..\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", status_code=~\"5..\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
           "legendFormat": "5XX total / min"
         }
       ]
@@ -879,23 +879,23 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=\"hyperguest\"}[1m]))",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"hyperguest\"}[1m]))",
           "legendFormat": "Request"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=\"hyperguest\", status_code=~\"2..\"}[1m]))",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"hyperguest\", status_code=~\"2..\"}[1m]))",
           "legendFormat": "2XX Success"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=\"hyperguest\", status_code=~\"3..\"}[1m]))",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"hyperguest\", status_code=~\"3..\"}[1m]))",
           "legendFormat": "3XX Success"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=\"hyperguest\", status_code=~\"4..\"}[1m]))",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"hyperguest\", status_code=~\"4..\"}[1m]))",
           "legendFormat": "4XX Errors"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=\"hyperguest\", status_code=~\"5..\"}[1m]))",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"hyperguest\", status_code=~\"5..\"}[1m]))",
           "legendFormat": "5XX Errors"
         }
       ]
@@ -930,23 +930,23 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=\"ownerrez\"}[1m]))",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ownerrez\"}[1m]))",
           "legendFormat": "Request"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=\"ownerrez\", status_code=~\"2..\"}[1m]))",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ownerrez\", status_code=~\"2..\"}[1m]))",
           "legendFormat": "2XX Success"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=\"ownerrez\", status_code=~\"3..\"}[1m]))",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ownerrez\", status_code=~\"3..\"}[1m]))",
           "legendFormat": "3XX Success"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=\"ownerrez\", status_code=~\"4..\"}[1m]))",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ownerrez\", status_code=~\"4..\"}[1m]))",
           "legendFormat": "4XX Errors"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=\"ownerrez\", status_code=~\"5..\"}[1m]))",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ownerrez\", status_code=~\"5..\"}[1m]))",
           "legendFormat": "5XX Errors"
         }
       ]
@@ -981,23 +981,23 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=\"channex\"}[1m]))",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"channex\"}[1m]))",
           "legendFormat": "Request"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=\"channex\", status_code=~\"2..\"}[1m]))",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"channex\", status_code=~\"2..\"}[1m]))",
           "legendFormat": "2XX Success"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=\"channex\", status_code=~\"3..\"}[1m]))",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"channex\", status_code=~\"3..\"}[1m]))",
           "legendFormat": "3XX Success"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=\"channex\", status_code=~\"4..\"}[1m]))",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"channex\", status_code=~\"4..\"}[1m]))",
           "legendFormat": "4XX Errors"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=\"channex\", status_code=~\"5..\"}[1m]))",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"channex\", status_code=~\"5..\"}[1m]))",
           "legendFormat": "5XX Errors"
         }
       ]
@@ -1032,23 +1032,23 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=\"ratedock\"}[1m]))",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ratedock\"}[1m]))",
           "legendFormat": "Request"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=\"ratedock\", status_code=~\"2..\"}[1m]))",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ratedock\", status_code=~\"2..\"}[1m]))",
           "legendFormat": "2XX Success"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=\"ratedock\", status_code=~\"3..\"}[1m]))",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ratedock\", status_code=~\"3..\"}[1m]))",
           "legendFormat": "3XX Success"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=\"ratedock\", status_code=~\"4..\"}[1m]))",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ratedock\", status_code=~\"4..\"}[1m]))",
           "legendFormat": "4XX Errors"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=\"ratedock\", status_code=~\"5..\"}[1m]))",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ratedock\", status_code=~\"5..\"}[1m]))",
           "legendFormat": "5XX Errors"
         }
       ]
@@ -1083,23 +1083,23 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=\"localota\"}[1m]))",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"localota\"}[1m]))",
           "legendFormat": "Request"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=\"localota\", status_code=~\"2..\"}[1m]))",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"localota\", status_code=~\"2..\"}[1m]))",
           "legendFormat": "2XX Success"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=\"localota\", status_code=~\"3..\"}[1m]))",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"localota\", status_code=~\"3..\"}[1m]))",
           "legendFormat": "3XX Success"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=\"localota\", status_code=~\"4..\"}[1m]))",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"localota\", status_code=~\"4..\"}[1m]))",
           "legendFormat": "4XX Errors"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=\"localota\", status_code=~\"5..\"}[1m]))",
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"localota\", status_code=~\"5..\"}[1m]))",
           "legendFormat": "5XX Errors"
         }
       ]
@@ -1134,31 +1134,31 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", le=\"+Inf\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\"}[1m]))) * 100",
+          "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", le=\"+Inf\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}[1m]))) * 100",
           "legendFormat": "Duration < 1ms (%)"
         },
         {
-          "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", le=\"0.003\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\"}[1m]))) * 100",
+          "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", le=\"0.003\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}[1m]))) * 100",
           "legendFormat": "Duration < 3ms (%)"
         },
         {
-          "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", le=\"0.03\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\"}[1m]))) * 100",
+          "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", le=\"0.03\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}[1m]))) * 100",
           "legendFormat": "Duration < 30ms (%)"
         },
         {
-          "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", le=\"0.1\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\"}[1m]))) * 100",
+          "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", le=\"0.1\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}[1m]))) * 100",
           "legendFormat": "Duration < 100ms (%)"
         },
         {
-          "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", le=\"0.3\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\"}[1m]))) * 100",
+          "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", le=\"0.3\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}[1m]))) * 100",
           "legendFormat": "Duration < 300ms (%)"
         },
         {
-          "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", le=\"1.5\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\"}[1m]))) * 100",
+          "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", le=\"1.5\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}[1m]))) * 100",
           "legendFormat": "Duration < 1500ms (%)"
         },
         {
-          "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", le=\"10\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\"}[1m]))) * 100",
+          "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", le=\"10\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}[1m]))) * 100",
           "legendFormat": "Duration < 10000ms (%)"
         }
       ]
@@ -1193,7 +1193,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum by (integration, method, path) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=~\"$integration\"}[5m]))",
+          "expr": "sum by (integration, method, path) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=~\"$integration\"}[5m]))",
           "legendFormat": "{{ integration }} {{ method }} {{ path }}"
         }
       ]
@@ -1228,7 +1228,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "histogram_quantile(0.95, sum by (integration, le) (rate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=~\"$integration\"}[5m])))",
+          "expr": "histogram_quantile(0.95, sum by (integration, le) (rate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=~\"$integration\"}[5m])))",
           "legendFormat": "{{ integration }}"
         }
       ]
@@ -1263,11 +1263,11 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", status_code=~\"4..\", integration=~\"$integration\"}[5m]))",
+          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", status_code=~\"4..\", integration=~\"$integration\"}[5m]))",
           "legendFormat": "{{ integration }} 4xx"
         },
         {
-          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", status_code=~\"5..\", integration=~\"$integration\"}[5m]))",
+          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", status_code=~\"5..\", integration=~\"$integration\"}[5m]))",
           "legendFormat": "{{ integration }} 5xx"
         }
       ]
@@ -1305,7 +1305,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", integration=~\"$integration\"}[5m]))",
+          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=~\"$integration\"}[5m]))",
           "legendFormat": "{{ integration }}"
         }
       ]
@@ -1417,7 +1417,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\", status_code=~\"5..\", integration=~\"$integration\"}[5m]))",
+          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", status_code=~\"5..\", integration=~\"$integration\"}[5m]))",
           "legendFormat": "{{ integration }}"
         }
       ]
@@ -1563,14 +1563,14 @@
           "type": "prometheus",
           "uid": "prometheus"
         },
-        "definition": "label_values(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\"}, integration)",
+        "definition": "label_values(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}, integration)",
         "includeAll": true,
         "label": "Integration",
         "multi": true,
         "name": "integration",
         "options": [],
         "query": {
-          "query": "label_values(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck/.*\", path!~\".*[Rr]ealtime.*\"}, integration)",
+          "query": "label_values(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}, integration)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,

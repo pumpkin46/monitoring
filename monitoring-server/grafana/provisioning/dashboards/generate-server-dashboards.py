@@ -124,7 +124,7 @@ RECEIVER_CHANNEL_MATCH = "|".join(name for name, _ in RECEIVER_CHANNELS)
 # realtime polling are ops traffic, not channel API load.
 RECEIVER_HTTP_EXCLUDE = (
     'path!="/metrics", path!="/readyz", path!~"/healthz?", '
-    'path!~"/healthcheck/.*", path!~".*[Rr]ealtime.*"'
+    'path!~"/healthcheck?"'
 )
 
 
