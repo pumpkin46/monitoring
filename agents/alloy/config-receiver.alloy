@@ -123,16 +123,13 @@ loki.process "receiver_logs" {
     }
   }
 
-  // Only parse lines that look like logfmt (level= / request_id=). Morgan and
-  // console logs are not logfmt; unconditional logfmt spams decode errors.
-  stage.match {
-    selector = "{job=\"receiver\"} |~ \"level=|request_id=\""
-    stage.logfmt {
-      mapping = {
-        level      = "",
-        request_id = "",
-      }
-    }
+  // Optional logfmt-style fields (level= / request_id=): regex only — stage.logfmt
+  // errors on Morgan, URLs, and any line with extra '='; it has no passthrough mode.
+  stage.regex {
+    expression = "\\blevel=(?P<level>[^\\s\"=]+)"
+  }
+  stage.regex {
+    expression = "\\brequest_id=(?P<request_id>[^\\s\"=]+)"
   }
 
   stage.labels {

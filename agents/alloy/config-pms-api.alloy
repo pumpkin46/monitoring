@@ -73,11 +73,13 @@ loki.process "pms_api_logs" {
     }
   }
 
-  stage.logfmt {
-    mapping = {
-      level      = "",
-      request_id = "",
-    }
+  // Optional logfmt-style fields (level= / request_id=): regex only — stage.logfmt
+  // errors on Morgan, URLs, and any line with extra '='; it has no passthrough mode.
+  stage.regex {
+    expression = "\\blevel=(?P<level>[^\\s\"=]+)"
+  }
+  stage.regex {
+    expression = "\\brequest_id=(?P<request_id>[^\\s\"=]+)"
   }
 
   stage.labels {
