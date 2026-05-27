@@ -98,6 +98,31 @@ loki.process "receiver_logs" {
     expression = "rid=(?P<request_id>\\S+)"
   }
 
+  // Morgan access log: derive level from HTTP status (5xx=error, 4xx=warn, else info)
+  stage.match {
+    selector = "|~ \"\\\\b(?:GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS) \\\\S+ 5\\\\d{2}\\\\b\""
+    stage.template {
+      source   = "level"
+      template = "error"
+    }
+  }
+
+  stage.match {
+    selector = "|~ \"\\\\b(?:GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS) \\\\S+ 4\\\\d{2}\\\\b\""
+    stage.template {
+      source   = "level"
+      template = "warn"
+    }
+  }
+
+  stage.match {
+    selector = "|~ \"\\\\b(?:GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS) \\\\S+ [123]\\\\d{2}\\\\b\""
+    stage.template {
+      source   = "level"
+      template = "info"
+    }
+  }
+
   // Only parse lines that look like logfmt (level= / request_id=). Morgan and
   // console logs are not logfmt; unconditional logfmt spams decode errors.
   stage.match {
