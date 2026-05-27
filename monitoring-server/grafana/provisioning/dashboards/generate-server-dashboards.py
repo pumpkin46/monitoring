@@ -31,13 +31,13 @@ SERVERS = {
         "title": "Worker",
         "app_jobs": ["worker", "app"],
         "features": {"http", "nodejs"},
-        "probe_url": "http://144.202.109.77:8001/",
+        "probe_url": "http:/147.182.204.142:8001/",
     },
     "comparison": {
         "title": "Comparison",
         "app_jobs": ["comparison", "app"],
         "features": {"comparison"},
-        "probe_url": "http://147.182.204.142:3000/health",
+        "probe_url": "https://tools.localota.stream/health",
     },
     "pms-api": {
         "title": "PMS API",
@@ -49,7 +49,7 @@ SERVERS = {
         "title": "Scraper",
         "app_jobs": ["scraper", "app"],
         "features": {"http", "nodejs"},
-        "probe_url": "http://144.202.107.141:8080/",
+        "probe_url": "https://scrape.localota.stream",
     },
 }
 

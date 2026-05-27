@@ -36,11 +36,11 @@ scrape_configs:
         labels:
           server: receiver
       - targets:
-          - http://144.202.109.77:8001/
+          - http:/147.182.204.142:8001/
         labels:
           server: worker
       - targets:
-          - http://147.182.204.142:3000/health
+          - https://tools.localota.stream/health
         labels:
           server: comparison
       - targets:
@@ -48,7 +48,7 @@ scrape_configs:
         labels:
           server: pms-api
       - targets:
-          - http://144.202.107.141:8080/
+          - https://scrape.localota.stream
         labels:
           server: scraper
     relabel_configs:
