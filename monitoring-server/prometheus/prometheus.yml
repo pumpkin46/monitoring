@@ -36,7 +36,7 @@ scrape_configs:
         labels:
           server: receiver
       - targets:
-          - http:/147.182.204.142:8001/
+          - http://147.182.204.142:8001/
         labels:
           server: worker
       - targets:
@@ -48,7 +48,7 @@ scrape_configs:
         labels:
           server: pms-api
       - targets:
-          - https://scrape.localota.stream
+          - https://scrape.localota.com/
         labels:
           server: scraper
     relabel_configs:

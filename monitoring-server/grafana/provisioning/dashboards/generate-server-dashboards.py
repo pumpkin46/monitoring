@@ -31,7 +31,7 @@ SERVERS = {
         "title": "Worker",
         "app_jobs": ["worker", "app"],
         "features": {"http", "nodejs"},
-        "probe_url": "http:/147.182.204.142:8001/",
+        "probe_url": "http://147.182.204.142:8001/",
     },
     "comparison": {
         "title": "Comparison",
@@ -49,7 +49,7 @@ SERVERS = {
         "title": "Scraper",
         "app_jobs": ["scraper", "app"],
         "features": {"http", "nodejs"},
-        "probe_url": "https://scrape.localota.stream",
+        "probe_url": "https://scrape.localota.com/",
     },
 }
 
