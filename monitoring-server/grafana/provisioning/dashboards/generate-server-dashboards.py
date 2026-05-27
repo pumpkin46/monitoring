@@ -355,6 +355,97 @@ def build_log_panels(server: str, app_jobs: list[str], *, receiver: bool = False
     return panels
 
 
+def build_app_error_logs_overview() -> dict:
+    """All-servers application error log dashboard (overview/app-error-logs-overview.json)."""
+    job_pattern = all_app_jobs()
+    app_jobs = job_pattern.split("|")
+    error_selector = app_error_selector(None, app_jobs, all_servers=True)
+    error_volume_expr = (
+        f'sum by (host) (rate({error_selector} |= "${{log_search}}" [5m]))'
+    )
+    server_query = f'label_values({{job=~"{job_pattern}"}}, host)'
+    panels = reflow_panels(
+        [
+            {
+                "collapsed": False,
+                "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
+                "id": 100,
+                "title": "Application Error Logs",
+                "type": "row",
+            },
+            {
+                "datasource": {"type": "loki", "uid": "loki"},
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "short",
+                        "custom": {
+                            "fillOpacity": 30,
+                            "lineWidth": 1,
+                            "stacking": {"mode": "normal"},
+                        },
+                    }
+                },
+                "gridPos": {"h": 6, "w": 24, "x": 0, "y": 0},
+                "id": 1,
+                "options": {"tooltip": {"mode": "multi"}},
+                "title": "Error Log Lines per Server (PM2 *-error.log / stderr)",
+                "type": "timeseries",
+                "targets": [
+                    {
+                        "expr": error_volume_expr,
+                        "legendFormat": "{{ host }}",
+                    }
+                ],
+            },
+            {
+                "datasource": {"type": "loki", "uid": "loki"},
+                "gridPos": {"h": 18, "w": 24, "x": 0, "y": 0},
+                "id": 2,
+                "options": LOG_OPTS,
+                "title": "Application Error Logs",
+                "type": "logs",
+                "targets": [
+                    {
+                        "expr": with_log_search(error_selector),
+                        "refId": "A",
+                    }
+                ],
+            },
+        ]
+    )
+    return {
+        "annotations": {"list": []},
+        "editable": True,
+        "fiscalYearStartMonth": 0,
+        "graphTooltip": 1,
+        "links": [],
+        "panels": panels,
+        "schemaVersion": 39,
+        "tags": ["monitoring", "logs", "loki", "application", "errors"],
+        "templating": {
+            "list": [
+                LOG_SEARCH_VAR,
+                {
+                    "current": {"selected": True, "text": "All", "value": "$__all"},
+                    "datasource": {"type": "loki", "uid": "loki"},
+                    "definition": server_query,
+                    "includeAll": True,
+                    "label": "Server",
+                    "multi": True,
+                    "name": "server",
+                    "options": [],
+                    "query": server_query,
+                    "refresh": 2,
+                    "type": "query",
+                },
+            ]
+        },
+        "time": {"from": "now-1h", "to": "now"},
+        "title": "All Servers — Application Error Logs",
+        "uid": "app-error-logs-overview",
+    }
+
+
 def build_app_logs_overview() -> dict:
     """All-servers application log dashboard (overview/app-logs-overview.json)."""
     job_pattern = all_app_jobs()
@@ -1057,6 +1148,12 @@ def main() -> None:
         json.dump(build_app_logs_overview(), f, indent=2)
         f.write("\n")
     print("Wrote overview/app-logs-overview.json")
+
+    app_error_logs_path = overview_dir / "app-error-logs-overview.json"
+    with app_error_logs_path.open("w", encoding="utf-8") as f:
+        json.dump(build_app_error_logs_overview(), f, indent=2)
+        f.write("\n")
+    print("Wrote overview/app-error-logs-overview.json")
 
     for server, cfg in SERVERS.items():
         server_dir = OUT_DIR / server
