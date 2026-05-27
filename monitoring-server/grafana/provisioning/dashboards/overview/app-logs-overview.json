@@ -63,7 +63,7 @@
         "uid": "loki"
       },
       "gridPos": {
-        "h": 18,
+        "h": 14,
         "w": 24,
         "x": 0,
         "y": 7
@@ -84,6 +84,87 @@
       "targets": [
         {
           "expr": "{job=~\"app|comparison|manager|pms-api|receiver|scraper|worker\", host=~\"$server\"} |= \"${log_search}\"",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 21
+      },
+      "id": 101,
+      "title": "Application Error Logs",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "fillOpacity": 30,
+            "lineWidth": 1,
+            "stacking": {
+              "mode": "normal"
+            }
+          }
+        }
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 24,
+        "x": 0,
+        "y": 22
+      },
+      "id": 3,
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "title": "Error Log Lines per Server (PM2 *-error.log / stderr)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum by (host) (rate({job=~\"app|comparison|manager|pms-api|receiver|scraper|worker\", host=~\"$server\"} | filename=~\".*-error\\\\.log\" or stream=\"stderr\" |= \"${log_search}\" [5m]))",
+          "legendFormat": "{{ host }}"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 24,
+        "x": 0,
+        "y": 28
+      },
+      "id": 4,
+      "options": {
+        "showTime": true,
+        "showLabels": true,
+        "showCommonLabels": false,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": false,
+        "enableLogDetails": true,
+        "sortOrder": "Descending",
+        "dedupStrategy": "none"
+      },
+      "title": "Application Error Logs",
+      "type": "logs",
+      "targets": [
+        {
+          "expr": "{job=~\"app|comparison|manager|pms-api|receiver|scraper|worker\", host=~\"$server\"} | filename=~\".*-error\\\\.log\" or stream=\"stderr\" |= \"${log_search}\"",
           "refId": "A"
         }
       ]

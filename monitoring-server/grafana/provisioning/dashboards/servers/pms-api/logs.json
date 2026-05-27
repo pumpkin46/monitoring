@@ -199,6 +199,37 @@
         "x": 0,
         "y": 39
       },
+      "id": 207,
+      "options": {
+        "showTime": true,
+        "showLabels": true,
+        "showCommonLabels": false,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": false,
+        "enableLogDetails": true,
+        "sortOrder": "Descending",
+        "dedupStrategy": "none"
+      },
+      "title": "Application Error Logs (PM2 *-error.log / stderr)",
+      "type": "logs",
+      "targets": [
+        {
+          "expr": "{job=~\"pms-api|app\", host=\"pms-api\"} | filename=~\".*-error\\\\.log\" or stream=\"stderr\" |= \"${log_search}\"",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 47
+      },
       "id": 206,
       "options": {
         "showTime": true,

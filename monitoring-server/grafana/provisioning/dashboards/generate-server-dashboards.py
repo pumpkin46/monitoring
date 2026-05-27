@@ -142,6 +142,26 @@ def with_log_search(selector: str) -> str:
     return f'{selector} |= "${{log_search}}"'
 
 
+def app_error_selector(
+    server: str | None,
+    app_jobs: list[str],
+    *,
+    receiver: bool = False,
+    all_servers: bool = False,
+) -> str:
+    """PM2 *-error.log (filename) and Docker stderr (stream)."""
+    job_pattern = "|".join(app_jobs)
+    if all_servers:
+        host = 'host=~"$server"'
+    else:
+        host = f'host="{server}"'
+    extra = ', integration=~"$integration"' if receiver else ""
+    return (
+        f'{{job=~"{job_pattern}", {host}{extra}}} '
+        f'| filename=~".*-error\\\\.log" or stream="stderr"'
+    )
+
+
 def all_app_jobs() -> str:
     jobs: set[str] = set()
     for cfg in SERVERS.values():
@@ -310,6 +330,13 @@ def build_log_panels(server: str, app_jobs: list[str], *, receiver: bool = False
             + (', integration=~"$integration"' if receiver else "")
             + "}",
         ),
+        (
+            207,
+            "Application Error Logs (PM2 *-error.log / stderr)",
+            app_error_selector(
+                server, app_jobs, receiver=receiver
+            ),
+        ),
         (206, "Systemd Journal (warnings+)", f'{{job="journal", host="{server}"}}'),
     ]
     for pid, title, selector in log_streams:
@@ -331,9 +358,16 @@ def build_log_panels(server: str, app_jobs: list[str], *, receiver: bool = False
 def build_app_logs_overview() -> dict:
     """All-servers application log dashboard (overview/app-logs-overview.json)."""
     job_pattern = all_app_jobs()
+    app_jobs = job_pattern.split("|")
     app_selector = f'{{job=~"{job_pattern}", host=~"$server"}}'
+    error_selector = app_error_selector(
+        None, app_jobs, all_servers=True
+    )
     volume_expr = (
         f'sum by (host) (rate({app_selector} |= "${{log_search}}" [5m]))'
+    )
+    error_volume_expr = (
+        f'sum by (host) (rate({error_selector} |= "${{log_search}}" [5m]))'
     )
     server_query = f'label_values({{job=~"{job_pattern}"}}, host)'
     panels = reflow_panels(
@@ -371,7 +405,7 @@ def build_app_logs_overview() -> dict:
             },
             {
                 "datasource": {"type": "loki", "uid": "loki"},
-                "gridPos": {"h": 18, "w": 24, "x": 0, "y": 0},
+                "gridPos": {"h": 14, "w": 24, "x": 0, "y": 0},
                 "id": 2,
                 "options": LOG_OPTS,
                 "title": "Application Logs",
@@ -379,6 +413,51 @@ def build_app_logs_overview() -> dict:
                 "targets": [
                     {
                         "expr": with_log_search(app_selector),
+                        "refId": "A",
+                    }
+                ],
+            },
+            {
+                "collapsed": False,
+                "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
+                "id": 101,
+                "title": "Application Error Logs",
+                "type": "row",
+            },
+            {
+                "datasource": {"type": "loki", "uid": "loki"},
+                "fieldConfig": {
+                    "defaults": {
+                        "unit": "short",
+                        "custom": {
+                            "fillOpacity": 30,
+                            "lineWidth": 1,
+                            "stacking": {"mode": "normal"},
+                        },
+                    }
+                },
+                "gridPos": {"h": 6, "w": 24, "x": 0, "y": 0},
+                "id": 3,
+                "options": {"tooltip": {"mode": "multi"}},
+                "title": "Error Log Lines per Server (PM2 *-error.log / stderr)",
+                "type": "timeseries",
+                "targets": [
+                    {
+                        "expr": error_volume_expr,
+                        "legendFormat": "{{ host }}",
+                    }
+                ],
+            },
+            {
+                "datasource": {"type": "loki", "uid": "loki"},
+                "gridPos": {"h": 14, "w": 24, "x": 0, "y": 0},
+                "id": 4,
+                "options": LOG_OPTS,
+                "title": "Application Error Logs",
+                "type": "logs",
+                "targets": [
+                    {
+                        "expr": with_log_search(error_selector),
                         "refId": "A",
                     }
                 ],

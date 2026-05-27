@@ -22,11 +22,13 @@ local.file_match "worker_pm2_logs" {
       __path__ = "/root/.pm2/logs/worker-out.log",
       job      = "worker",
       host     = "SERVER_NAME",
+      stream   = "stdout",
     },
     {
       __path__ = "/root/.pm2/logs/worker-error.log",
       job      = "worker",
       host     = "SERVER_NAME",
+      stream   = "stderr",
     },
   ]
 }

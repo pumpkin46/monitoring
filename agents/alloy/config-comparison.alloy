@@ -26,11 +26,13 @@ local.file_match "comparison_pm2_logs" {
       __path__ = "/root/.pm2/logs/comparison-out.log",
       job      = "comparison",
       host     = "SERVER_NAME",
+      stream   = "stdout",
     },
     {
       __path__ = "/root/.pm2/logs/comparison-error.log",
       job      = "comparison",
       host     = "SERVER_NAME",
+      stream   = "stderr",
     },
   ]
 }

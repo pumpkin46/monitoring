@@ -23,11 +23,13 @@ local.file_match "scraper_pm2_logs" {
       __path__ = "/root/.pm2/logs/scraper-out.log",
       job      = "scraper",
       host     = "SERVER_NAME",
+      stream   = "stdout",
     },
     {
       __path__ = "/root/.pm2/logs/scraper-error.log",
       job      = "scraper",
       host     = "SERVER_NAME",
+      stream   = "stderr",
     },
   ]
 }

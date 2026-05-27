@@ -23,11 +23,13 @@ local.file_match "pms_api_pm2_logs" {
       __path__ = "/root/.pm2/logs/pms-out.log",
       job      = "pms-api",
       host     = "SERVER_NAME",
+      stream   = "stdout",
     },
     {
       __path__ = "/root/.pm2/logs/pms-error.log",
       job      = "pms-api",
       host     = "SERVER_NAME",
+      stream   = "stderr",
     },
   ]
 }

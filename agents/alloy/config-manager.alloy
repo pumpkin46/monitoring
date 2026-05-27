@@ -22,11 +22,13 @@ local.file_match "manager_pm2_logs" {
       __path__ = "/root/.pm2/logs/manager-out.log",
       job      = "manager",
       host     = "SERVER_NAME",
+      stream   = "stdout",
     },
     {
       __path__ = "/root/.pm2/logs/manager-error.log",
       job      = "manager",
       host     = "SERVER_NAME",
+      stream   = "stderr",
     },
   ]
 }
