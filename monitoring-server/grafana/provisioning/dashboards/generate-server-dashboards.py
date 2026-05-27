@@ -332,7 +332,7 @@ def build_log_panels(server: str, app_jobs: list[str], *, receiver: bool = False
         ),
         (
             207,
-            "Application Error Logs (PM2 *-error.log / stderr)",
+            "Application Error Logs",
             app_error_selector(
                 server, app_jobs, receiver=receiver
             ),
@@ -388,7 +388,7 @@ def build_app_error_logs_overview() -> dict:
                 "gridPos": {"h": 6, "w": 24, "x": 0, "y": 0},
                 "id": 1,
                 "options": {"tooltip": {"mode": "multi"}},
-                "title": "Error Log Lines per Server (PM2 *-error.log / stderr)",
+                "title": "Error Log Lines per Server",
                 "type": "timeseries",
                 "targets": [
                     {
@@ -530,7 +530,7 @@ def build_app_logs_overview() -> dict:
                 "gridPos": {"h": 6, "w": 24, "x": 0, "y": 0},
                 "id": 3,
                 "options": {"tooltip": {"mode": "multi"}},
-                "title": "Error Log Lines per Server (PM2 *-error.log / stderr)",
+                "title": "Error Log Lines per Server",
                 "type": "timeseries",
                 "targets": [
                     {

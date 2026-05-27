@@ -210,7 +210,7 @@
         "sortOrder": "Descending",
         "dedupStrategy": "none"
       },
-      "title": "Application Error Logs (PM2 *-error.log / stderr)",
+      "title": "Application Error Logs",
       "type": "logs",
       "targets": [
         {

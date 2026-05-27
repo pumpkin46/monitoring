@@ -129,7 +129,7 @@
           "mode": "multi"
         }
       },
-      "title": "Error Log Lines per Server (PM2 *-error.log / stderr)",
+      "title": "Error Log Lines per Server",
       "type": "timeseries",
       "targets": [
         {
