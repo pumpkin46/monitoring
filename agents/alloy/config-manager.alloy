@@ -47,7 +47,7 @@ loki.process "manager_logs" {
 
   // Morgan access log: derive level from HTTP status (5xx=error, 4xx=warn, else info)
   stage.match {
-    selector = "|~ \"\\\\b(?:GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS) \\\\S+ 5\\\\d{2}\\\\b\""
+    selector = "{job=\"manager\"} |~ \"\\\\b(?:GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS) \\\\S+ 5\\\\d{2}\\\\b\""
     stage.template {
       source   = "level"
       template = "error"
@@ -55,7 +55,7 @@ loki.process "manager_logs" {
   }
 
   stage.match {
-    selector = "|~ \"\\\\b(?:GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS) \\\\S+ 4\\\\d{2}\\\\b\""
+    selector = "{job=\"manager\"} |~ \"\\\\b(?:GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS) \\\\S+ 4\\\\d{2}\\\\b\""
     stage.template {
       source   = "level"
       template = "warn"
@@ -63,7 +63,7 @@ loki.process "manager_logs" {
   }
 
   stage.match {
-    selector = "|~ \"\\\\b(?:GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS) \\\\S+ [123]\\\\d{2}\\\\b\""
+    selector = "{job=\"manager\"} |~ \"\\\\b(?:GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS) \\\\S+ [123]\\\\d{2}\\\\b\""
     stage.template {
       source   = "level"
       template = "info"
