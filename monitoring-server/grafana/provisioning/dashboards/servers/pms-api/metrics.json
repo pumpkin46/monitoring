@@ -1,895 +1,899 @@
 {
-  "annotations": {
-    "list": []
-  },
-  "editable": true,
-  "fiscalYearStartMonth": 0,
-  "graphTooltip": 1,
-  "links": [],
-  "schemaVersion": 39,
-  "tags": [
-    "monitoring",
-    "server",
-    "pms-api"
-  ],
-  "time": {
-    "from": "now-6h",
-    "to": "now"
-  },
-  "panels": [
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 0
-      },
-      "id": 100,
-      "title": "Overview",
-      "type": "row"
+  "dashboard": {
+    "annotations": {
+      "list": []
     },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 85
-              },
-              {
-                "color": "red",
-                "value": 95
-              }
-            ]
-          },
-          "unit": "percent",
-          "min": 0,
-          "max": 100
-        }
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 6,
-        "x": 0,
-        "y": 1
-      },
-      "id": 1,
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 1,
+    "links": [],
+    "schemaVersion": 39,
+    "tags": [
+      "monitoring",
+      "server",
+      "pms-api"
+    ],
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 0
         },
-        "orientation": "auto",
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
+        "id": 100,
+        "title": "Overview",
+        "type": "row"
       },
-      "title": "CPU Usage",
-      "type": "gauge",
-      "targets": [
-        {
-          "expr": "(1 - avg by(server)(rate(node_cpu_seconds_total{mode=\"idle\", server=\"pms-api\"}[5m]))) * 100",
-          "legendFormat": "{{ server }}"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 85
-              },
-              {
-                "color": "red",
-                "value": 95
-              }
-            ]
-          },
-          "unit": "percent",
-          "min": 0,
-          "max": 100
-        }
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 6,
-        "x": 6,
-        "y": 1
-      },
-      "id": 2,
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
         },
-        "orientation": "auto",
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
-      },
-      "title": "Memory Usage",
-      "type": "gauge",
-      "targets": [
-        {
-          "expr": "(1 - (node_memory_MemAvailable_bytes{server=\"pms-api\"} / node_memory_MemTotal_bytes{server=\"pms-api\"})) * 100",
-          "legendFormat": "{{ server }}"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 80
-              },
-              {
-                "color": "red",
-                "value": 90
-              }
-            ]
-          },
-          "unit": "percent",
-          "min": 0,
-          "max": 100
-        }
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 6,
-        "x": 12,
-        "y": 1
-      },
-      "id": 3,
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "orientation": "auto",
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
-      },
-      "title": "Disk Usage (/)",
-      "type": "gauge",
-      "targets": [
-        {
-          "expr": "(1 - (node_filesystem_avail_bytes{mountpoint=\"/\", server=\"pms-api\"} / node_filesystem_size_bytes{mountpoint=\"/\", server=\"pms-api\"})) * 100",
-          "legendFormat": "{{ server }}"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "s",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              },
-              {
-                "color": "green",
-                "value": 3600
-              }
-            ]
-          }
-        }
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 6,
-        "x": 18,
-        "y": 1
-      },
-      "id": 4,
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "colorMode": "value",
-        "graphMode": "none"
-      },
-      "title": "Uptime",
-      "type": "stat",
-      "targets": [
-        {
-          "expr": "time() - node_boot_time_seconds{server=\"pms-api\"}",
-          "legendFormat": "{{ server }}"
-        }
-      ]
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 7
-      },
-      "id": 101,
-      "title": "CPU & Load",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percent",
-          "min": 0,
-          "max": 100,
-          "custom": {
-            "fillOpacity": 15,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 8
-      },
-      "id": 5,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "CPU Usage Over Time",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "(1 - avg by(server)(rate(node_cpu_seconds_total{mode=\"idle\", server=\"pms-api\"}[5m]))) * 100",
-          "legendFormat": "{{ server }}"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 8
-      },
-      "id": 6,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "System Load (15m avg)",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "node_load15{server=\"pms-api\"}",
-          "legendFormat": "{{ server }}"
-        }
-      ]
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 16
-      },
-      "id": 102,
-      "title": "Memory",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "bytes",
-          "custom": {
-            "fillOpacity": 20,
-            "lineWidth": 2,
-            "stacking": {
-              "mode": "normal"
-            }
-          }
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 17
-      },
-      "id": 7,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "Memory Breakdown",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "node_memory_MemTotal_bytes{server=\"pms-api\"} - node_memory_MemAvailable_bytes{server=\"pms-api\"}",
-          "legendFormat": "{{ server }} \u2014 Used"
-        },
-        {
-          "expr": "node_memory_MemAvailable_bytes{server=\"pms-api\"}",
-          "legendFormat": "{{ server }} \u2014 Available"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percent",
-          "min": 0,
-          "max": 100,
-          "custom": {
-            "fillOpacity": 15,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 17
-      },
-      "id": 8,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "Memory Usage %",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "(1 - (node_memory_MemAvailable_bytes{server=\"pms-api\"} / node_memory_MemTotal_bytes{server=\"pms-api\"})) * 100",
-          "legendFormat": "{{ server }}"
-        }
-      ]
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 25
-      },
-      "id": 103,
-      "title": "Disk",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percent",
-          "min": 0,
-          "max": 100,
-          "custom": {
-            "fillOpacity": 15,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 26
-      },
-      "id": 9,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "Disk Usage %",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "(1 - (node_filesystem_avail_bytes{fstype!~\"tmpfs|devtmpfs\", server=\"pms-api\"} / node_filesystem_size_bytes{server=\"pms-api\"})) * 100",
-          "legendFormat": "{{ server }} \u2014 {{ mountpoint }}"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "Bps",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 26
-      },
-      "id": 10,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "Disk I/O (read/write bytes)",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "rate(node_disk_read_bytes_total{server=\"pms-api\"}[5m])",
-          "legendFormat": "{{ server }} read \u2014 {{ device }}"
-        },
-        {
-          "expr": "rate(node_disk_written_bytes_total{server=\"pms-api\"}[5m])",
-          "legendFormat": "{{ server }} write \u2014 {{ device }}"
-        }
-      ]
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 34
-      },
-      "id": 104,
-      "title": "Network",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "Bps",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 35
-      },
-      "id": 11,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "Network Traffic (receive / transmit)",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "rate(node_network_receive_bytes_total{device!~\"lo|docker.*\", server=\"pms-api\"}[5m])",
-          "legendFormat": "{{ server }} RX \u2014 {{ device }}"
-        },
-        {
-          "expr": "-rate(node_network_transmit_bytes_total{device!~\"lo|docker.*\", server=\"pms-api\"}[5m])",
-          "legendFormat": "{{ server }} TX \u2014 {{ device }}"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 35
-      },
-      "id": 12,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "Network Errors",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "rate(node_network_receive_errs_total{server=\"pms-api\"}[5m])",
-          "legendFormat": "{{ server }} RX errors \u2014 {{ device }}"
-        },
-        {
-          "expr": "rate(node_network_transmit_errs_total{server=\"pms-api\"}[5m])",
-          "legendFormat": "{{ server }} TX errors \u2014 {{ device }}"
-        }
-      ]
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 43
-      },
-      "id": 106,
-      "title": "Application Metrics",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "reqps",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 0,
-        "y": 44
-      },
-      "id": 17,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "HTTP Request Rate (app /metrics)",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "sum by (method, path) (rate(http_request_duration_seconds_count{server=\"pms-api\"}[5m]))",
-          "legendFormat": "{{ server }} {{ method }} {{ path }}"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "s",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 8,
-        "y": 44
-      },
-      "id": 18,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "HTTP Latency p50 / p95",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "histogram_quantile(0.50, sum by (le) (rate(http_request_duration_seconds_bucket{server=\"pms-api\"}[5m])))",
-          "legendFormat": "{{ server }} p50"
-        },
-        {
-          "expr": "histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{server=\"pms-api\"}[5m])))",
-          "legendFormat": "{{ server }} p95"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "reqps",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 52
-      },
-      "id": 19,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "HTTP Error Rate (4xx / 5xx)",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"pms-api\", status_code=~\"4..\"}[5m]))",
-          "legendFormat": "{{ server }} 4xx"
-        },
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"pms-api\", status_code=~\"5..\"}[5m]))",
-          "legendFormat": "{{ server }} 5xx"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "bytes",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 52
-      },
-      "id": 21,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "Node.js Memory (heap / RSS)",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "nodejs_heap_size_used_bytes{server=\"pms-api\"}",
-          "legendFormat": "{{ server }} heap used"
-        },
-        {
-          "expr": "process_resident_memory_bytes{server=\"pms-api\"}",
-          "legendFormat": "{{ server }} RSS"
-        }
-      ]
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 60
-      },
-      "id": 105,
-      "title": "HTTP Probes (Blackbox)",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "mappings": [
-            {
-              "options": {
-                "0": {
-                  "color": "red",
-                  "text": "DOWN"
-                },
-                "1": {
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
                   "color": "green",
-                  "text": "UP"
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 85
+                },
+                {
+                  "color": "red",
+                  "value": 95
                 }
-              },
-              "type": "value"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              },
-              {
-                "color": "green",
-                "value": 1
-              }
-            ]
+              ]
+            },
+            "unit": "percent",
+            "min": 0,
+            "max": 100
           }
-        }
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 12,
-        "x": 0,
-        "y": 61
-      },
-      "id": 13,
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
         },
-        "colorMode": "background",
-        "graphMode": "none",
-        "textMode": "value"
-      },
-      "title": "Endpoint Status",
-      "type": "stat",
-      "targets": [
-        {
-          "expr": "probe_success{instance=~\"gha[.]localota[.]stream\"}",
-          "legendFormat": "{{ instance }}"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "s",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 1
-              },
-              {
-                "color": "red",
-                "value": 2
-              }
+        "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 0,
+          "y": 1
+        },
+        "id": 1,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
             ]
           },
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
+          "orientation": "auto",
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "title": "CPU Usage",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "(1 - avg by(server)(rate(node_cpu_seconds_total{mode=\"idle\", server=\"pms-api\"}[5m]))) * 100",
+            "legendFormat": "{{ server }}"
           }
-        }
+        ]
       },
-      "gridPos": {
-        "h": 6,
-        "w": 12,
-        "x": 12,
-        "y": 61
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 85
+                },
+                {
+                  "color": "red",
+                  "value": 95
+                }
+              ]
+            },
+            "unit": "percent",
+            "min": 0,
+            "max": 100
+          }
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 6,
+          "y": 1
+        },
+        "id": 2,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ]
+          },
+          "orientation": "auto",
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "title": "Memory Usage",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "(1 - (node_memory_MemAvailable_bytes{server=\"pms-api\"} / node_memory_MemTotal_bytes{server=\"pms-api\"})) * 100",
+            "legendFormat": "{{ server }}"
+          }
+        ]
       },
-      "id": 14,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 80
+                },
+                {
+                  "color": "red",
+                  "value": 90
+                }
+              ]
+            },
+            "unit": "percent",
+            "min": 0,
+            "max": 100
+          }
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 12,
+          "y": 1
+        },
+        "id": 3,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ]
+          },
+          "orientation": "auto",
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "title": "Disk Usage (/)",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "(1 - (node_filesystem_avail_bytes{mountpoint=\"/\", server=\"pms-api\"} / node_filesystem_size_bytes{mountpoint=\"/\", server=\"pms-api\"})) * 100",
+            "legendFormat": "{{ server }}"
+          }
+        ]
       },
-      "title": "HTTP Response Time",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "probe_duration_seconds{instance=~\"gha[.]localota[.]stream\"}",
-          "legendFormat": "{{ instance }}"
-        }
-      ]
-    }
-  ],
-  "templating": {
-    "list": []
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "green",
+                  "value": 3600
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 18,
+          "y": 1
+        },
+        "id": 4,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ]
+          },
+          "colorMode": "value",
+          "graphMode": "none"
+        },
+        "title": "Uptime",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "time() - node_boot_time_seconds{server=\"pms-api\"}",
+            "legendFormat": "{{ server }}"
+          }
+        ]
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 7
+        },
+        "id": 101,
+        "title": "CPU & Load",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "custom": {
+              "fillOpacity": 15,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        },
+        "id": 5,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "CPU Usage Over Time",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "(1 - avg by(server)(rate(node_cpu_seconds_total{mode=\"idle\", server=\"pms-api\"}[5m]))) * 100",
+            "legendFormat": "{{ server }}"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        },
+        "id": 6,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "System Load (15m avg)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "node_load15{server=\"pms-api\"}",
+            "legendFormat": "{{ server }}"
+          }
+        ]
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 16
+        },
+        "id": 102,
+        "title": "Memory",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "bytes",
+            "custom": {
+              "fillOpacity": 20,
+              "lineWidth": 2,
+              "stacking": {
+                "mode": "normal"
+              }
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 17
+        },
+        "id": 7,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "Memory Breakdown",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "node_memory_MemTotal_bytes{server=\"pms-api\"} - node_memory_MemAvailable_bytes{server=\"pms-api\"}",
+            "legendFormat": "{{ server }} \u2014 Used"
+          },
+          {
+            "expr": "node_memory_MemAvailable_bytes{server=\"pms-api\"}",
+            "legendFormat": "{{ server }} \u2014 Available"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "custom": {
+              "fillOpacity": 15,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 17
+        },
+        "id": 8,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "Memory Usage %",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "(1 - (node_memory_MemAvailable_bytes{server=\"pms-api\"} / node_memory_MemTotal_bytes{server=\"pms-api\"})) * 100",
+            "legendFormat": "{{ server }}"
+          }
+        ]
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 25
+        },
+        "id": 103,
+        "title": "Disk",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "custom": {
+              "fillOpacity": 15,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 26
+        },
+        "id": 9,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "Disk Usage %",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "(1 - (node_filesystem_avail_bytes{fstype!~\"tmpfs|devtmpfs\", server=\"pms-api\"} / node_filesystem_size_bytes{server=\"pms-api\"})) * 100",
+            "legendFormat": "{{ server }} \u2014 {{ mountpoint }}"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "Bps",
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 26
+        },
+        "id": 10,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "Disk I/O (read/write bytes)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(node_disk_read_bytes_total{server=\"pms-api\"}[5m])",
+            "legendFormat": "{{ server }} read \u2014 {{ device }}"
+          },
+          {
+            "expr": "rate(node_disk_written_bytes_total{server=\"pms-api\"}[5m])",
+            "legendFormat": "{{ server }} write \u2014 {{ device }}"
+          }
+        ]
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 34
+        },
+        "id": 104,
+        "title": "Network",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "Bps",
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 35
+        },
+        "id": 11,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "Network Traffic (receive / transmit)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(node_network_receive_bytes_total{device!~\"lo|docker.*\", server=\"pms-api\"}[5m])",
+            "legendFormat": "{{ server }} RX \u2014 {{ device }}"
+          },
+          {
+            "expr": "-rate(node_network_transmit_bytes_total{device!~\"lo|docker.*\", server=\"pms-api\"}[5m])",
+            "legendFormat": "{{ server }} TX \u2014 {{ device }}"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 35
+        },
+        "id": 12,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "Network Errors",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(node_network_receive_errs_total{server=\"pms-api\"}[5m])",
+            "legendFormat": "{{ server }} RX errors \u2014 {{ device }}"
+          },
+          {
+            "expr": "rate(node_network_transmit_errs_total{server=\"pms-api\"}[5m])",
+            "legendFormat": "{{ server }} TX errors \u2014 {{ device }}"
+          }
+        ]
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 43
+        },
+        "id": 106,
+        "title": "Application Metrics",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps",
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 0,
+          "y": 44
+        },
+        "id": 17,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "HTTP Request Rate (app /metrics)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum by (method, path) (rate(http_request_duration_seconds_count{server=\"pms-api\"}[5m]))",
+            "legendFormat": "{{ server }} {{ method }} {{ path }}"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s",
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 8,
+          "y": 44
+        },
+        "id": 18,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "HTTP Latency p50 / p95",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, sum by (le) (rate(http_request_duration_seconds_bucket{server=\"pms-api\"}[5m])))",
+            "legendFormat": "{{ server }} p50"
+          },
+          {
+            "expr": "histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{server=\"pms-api\"}[5m])))",
+            "legendFormat": "{{ server }} p95"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps",
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 52
+        },
+        "id": 19,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "HTTP Error Rate (4xx / 5xx)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"pms-api\", status_code=~\"4..\"}[5m]))",
+            "legendFormat": "{{ server }} 4xx"
+          },
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"pms-api\", status_code=~\"5..\"}[5m]))",
+            "legendFormat": "{{ server }} 5xx"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "bytes",
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 52
+        },
+        "id": 21,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "Node.js Memory (heap / RSS)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "nodejs_heap_size_used_bytes{server=\"pms-api\"}",
+            "legendFormat": "{{ server }} heap used"
+          },
+          {
+            "expr": "process_resident_memory_bytes{server=\"pms-api\"}",
+            "legendFormat": "{{ server }} RSS"
+          }
+        ]
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 60
+        },
+        "id": 105,
+        "title": "HTTP Probes (Blackbox)",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {
+                "options": {
+                  "0": {
+                    "color": "red",
+                    "text": "DOWN"
+                  },
+                  "1": {
+                    "color": "green",
+                    "text": "UP"
+                  }
+                },
+                "type": "value"
+              }
+            ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "green",
+                  "value": 1
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 0,
+          "y": 61
+        },
+        "id": 13,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ]
+          },
+          "colorMode": "background",
+          "graphMode": "none",
+          "textMode": "value"
+        },
+        "title": "Endpoint Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "probe_success{instance=~\"gha[.]localota[.]stream\"}",
+            "legendFormat": "{{ instance }}"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 1
+                },
+                {
+                  "color": "red",
+                  "value": 2
+                }
+              ]
+            },
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 12,
+          "y": 61
+        },
+        "id": 14,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "HTTP Response Time",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "probe_duration_seconds{instance=~\"gha[.]localota[.]stream\"}",
+            "legendFormat": "{{ instance }}"
+          }
+        ]
+      }
+    ],
+    "templating": {
+      "list": []
+    },
+    "title": "PMS API \u2014 Metrics",
+    "uid": "pms-api-metrics"
   },
-  "title": "PMS API \u2014 Metrics",
-  "uid": "pms-api-metrics"
+  "folderUid": "servers-pms-api",
+  "overwrite": true
 }

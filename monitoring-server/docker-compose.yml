@@ -113,9 +113,11 @@ services:
     networks: [monitoring]  
     ports:  
       - "3000:3000"  
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
     volumes:  
       - grafana_data:/var/lib/grafana  
       - ./grafana/provisioning:/etc/grafana/provisioning  
+      - ./grafana/entrypoint.sh:/entrypoint.sh:ro
     env_file:
       - .env
     environment:  
@@ -134,20 +136,3 @@ services:
         condition: service_healthy
       loki:
         condition: service_healthy
-
-  # Creates Servers > <server> folders (parentUid). Required for nested layout on Grafana 13.
-  grafana-folder-init:
-    image: curlimages/curl:8.12.1
-    container_name: grafana-folder-init
-    networks: [monitoring]
-    env_file:
-      - .env
-    environment:
-      GRAFANA_URL: http://grafana:3000
-    volumes:
-      - ./grafana/provisioning/init-folders.sh:/init-folders.sh:ro
-    entrypoint: ["/bin/sh", "/init-folders.sh"]
-    depends_on:
-      grafana:
-        condition: service_healthy
-    restart: "no"

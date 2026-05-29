@@ -1,1586 +1,1590 @@
 {
-  "annotations": {
-    "list": []
-  },
-  "editable": true,
-  "fiscalYearStartMonth": 0,
-  "graphTooltip": 1,
-  "links": [],
-  "schemaVersion": 39,
-  "tags": [
-    "monitoring",
-    "server",
-    "receiver"
-  ],
-  "time": {
-    "from": "now-6h",
-    "to": "now"
-  },
-  "panels": [
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 0
-      },
-      "id": 100,
-      "title": "Overview",
-      "type": "row"
+  "dashboard": {
+    "annotations": {
+      "list": []
     },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 85
-              },
-              {
-                "color": "red",
-                "value": 95
-              }
-            ]
-          },
-          "unit": "percent",
-          "min": 0,
-          "max": 100
-        }
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 6,
-        "x": 0,
-        "y": 1
-      },
-      "id": 1,
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "orientation": "auto",
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
-      },
-      "title": "CPU Usage",
-      "type": "gauge",
-      "targets": [
-        {
-          "expr": "(1 - avg by(server)(rate(node_cpu_seconds_total{mode=\"idle\", server=\"receiver\"}[5m]))) * 100",
-          "legendFormat": "{{ server }}"
-        }
-      ]
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 1,
+    "links": [],
+    "schemaVersion": 39,
+    "tags": [
+      "monitoring",
+      "server",
+      "receiver"
+    ],
+    "time": {
+      "from": "now-6h",
+      "to": "now"
     },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 85
-              },
-              {
-                "color": "red",
-                "value": 95
-              }
-            ]
-          },
-          "unit": "percent",
-          "min": 0,
-          "max": 100
-        }
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 6,
-        "x": 6,
-        "y": 1
-      },
-      "id": 2,
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "orientation": "auto",
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
-      },
-      "title": "Memory Usage",
-      "type": "gauge",
-      "targets": [
-        {
-          "expr": "(1 - (node_memory_MemAvailable_bytes{server=\"receiver\"} / node_memory_MemTotal_bytes{server=\"receiver\"})) * 100",
-          "legendFormat": "{{ server }}"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 80
-              },
-              {
-                "color": "red",
-                "value": 90
-              }
-            ]
-          },
-          "unit": "percent",
-          "min": 0,
-          "max": 100
-        }
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 6,
-        "x": 12,
-        "y": 1
-      },
-      "id": 3,
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "orientation": "auto",
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
-      },
-      "title": "Disk Usage (/)",
-      "type": "gauge",
-      "targets": [
-        {
-          "expr": "(1 - (node_filesystem_avail_bytes{mountpoint=\"/\", server=\"receiver\"} / node_filesystem_size_bytes{mountpoint=\"/\", server=\"receiver\"})) * 100",
-          "legendFormat": "{{ server }}"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "s",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              },
-              {
-                "color": "green",
-                "value": 3600
-              }
-            ]
-          }
-        }
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 6,
-        "x": 18,
-        "y": 1
-      },
-      "id": 4,
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "colorMode": "value",
-        "graphMode": "none"
-      },
-      "title": "Uptime",
-      "type": "stat",
-      "targets": [
-        {
-          "expr": "time() - node_boot_time_seconds{server=\"receiver\"}",
-          "legendFormat": "{{ server }}"
-        }
-      ]
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 7
-      },
-      "id": 101,
-      "title": "CPU & Load",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percent",
-          "min": 0,
-          "max": 100,
-          "custom": {
-            "fillOpacity": 15,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 8
-      },
-      "id": 5,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "CPU Usage Over Time",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "(1 - avg by(server)(rate(node_cpu_seconds_total{mode=\"idle\", server=\"receiver\"}[5m]))) * 100",
-          "legendFormat": "{{ server }}"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 8
-      },
-      "id": 6,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "System Load (15m avg)",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "node_load15{server=\"receiver\"}",
-          "legendFormat": "{{ server }}"
-        }
-      ]
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 16
-      },
-      "id": 102,
-      "title": "Memory",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "bytes",
-          "custom": {
-            "fillOpacity": 20,
-            "lineWidth": 2,
-            "stacking": {
-              "mode": "normal"
-            }
-          }
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 17
-      },
-      "id": 7,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "Memory Breakdown",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "node_memory_MemTotal_bytes{server=\"receiver\"} - node_memory_MemAvailable_bytes{server=\"receiver\"}",
-          "legendFormat": "{{ server }} \u2014 Used"
-        },
-        {
-          "expr": "node_memory_MemAvailable_bytes{server=\"receiver\"}",
-          "legendFormat": "{{ server }} \u2014 Available"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percent",
-          "min": 0,
-          "max": 100,
-          "custom": {
-            "fillOpacity": 15,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 17
-      },
-      "id": 8,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "Memory Usage %",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "(1 - (node_memory_MemAvailable_bytes{server=\"receiver\"} / node_memory_MemTotal_bytes{server=\"receiver\"})) * 100",
-          "legendFormat": "{{ server }}"
-        }
-      ]
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 25
-      },
-      "id": 103,
-      "title": "Disk",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percent",
-          "min": 0,
-          "max": 100,
-          "custom": {
-            "fillOpacity": 15,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 26
-      },
-      "id": 9,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "Disk Usage %",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "(1 - (node_filesystem_avail_bytes{fstype!~\"tmpfs|devtmpfs\", server=\"receiver\"} / node_filesystem_size_bytes{server=\"receiver\"})) * 100",
-          "legendFormat": "{{ server }} \u2014 {{ mountpoint }}"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "Bps",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 26
-      },
-      "id": 10,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "Disk I/O (read/write bytes)",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "rate(node_disk_read_bytes_total{server=\"receiver\"}[5m])",
-          "legendFormat": "{{ server }} read \u2014 {{ device }}"
-        },
-        {
-          "expr": "rate(node_disk_written_bytes_total{server=\"receiver\"}[5m])",
-          "legendFormat": "{{ server }} write \u2014 {{ device }}"
-        }
-      ]
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 34
-      },
-      "id": 104,
-      "title": "Network",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "Bps",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 35
-      },
-      "id": 11,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "Network Traffic (receive / transmit)",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "rate(node_network_receive_bytes_total{device!~\"lo|docker.*\", server=\"receiver\"}[5m])",
-          "legendFormat": "{{ server }} RX \u2014 {{ device }}"
-        },
-        {
-          "expr": "-rate(node_network_transmit_bytes_total{device!~\"lo|docker.*\", server=\"receiver\"}[5m])",
-          "legendFormat": "{{ server }} TX \u2014 {{ device }}"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 35
-      },
-      "id": 12,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "Network Errors",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "rate(node_network_receive_errs_total{server=\"receiver\"}[5m])",
-          "legendFormat": "{{ server }} RX errors \u2014 {{ device }}"
-        },
-        {
-          "expr": "rate(node_network_transmit_errs_total{server=\"receiver\"}[5m])",
-          "legendFormat": "{{ server }} TX errors \u2014 {{ device }}"
-        }
-      ]
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 43
-      },
-      "id": 106,
-      "title": "Application Metrics",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "none"
-        }
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 6,
-        "x": 0,
-        "y": 45
-      },
-      "id": 300,
-      "options": {
-        "colorMode": "none",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "value"
-      },
-      "title": "Total Requests Count",
-      "type": "stat",
-      "targets": [
-        {
-          "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}[24h]))",
-          "legendFormat": ""
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "decimals": 0,
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "rgba(50, 172, 45, 0.97)",
-                "value": null
-              },
-              {
-                "color": "rgba(237, 129, 40, 0.89)",
-                "value": 10
-              },
-              {
-                "color": "rgba(245, 54, 54, 0.9)",
-                "value": 40
-              }
-            ]
-          },
-          "unit": "none"
-        }
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 18,
-        "x": 6,
-        "y": 45
-      },
-      "id": 301,
-      "options": {
-        "displayMode": "basic",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showUnfilled": true,
-        "valueMode": "text"
-      },
-      "title": "Total Request Count by Channel",
-      "type": "bargauge",
-      "targets": [
-        {
-          "expr": "sum by (integration) (increase(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration!=\"ari-ingest-worker\"}[$__range]))",
-          "legendFormat": "{{ integration }}"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "reqpm",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 0,
-        "y": 50
-      },
-      "id": 302,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "Global Request Rate by Channel (per Minute)",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
-          "legendFormat": "Total (all channels)"
-        },
-        {
-          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
-          "legendFormat": "{{ integration }}"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 12,
-        "y": 50
-      },
-      "id": 303,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "Top 10 API calls (by path) In Last 24 hours",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "topk(10, sum by (integration, path) (increase(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}[24h])))",
-          "legendFormat": "{{ integration }} {{ path }}"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "reqpm",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 0,
-        "y": 59
-      },
-      "id": 310,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "$integration Requests & Errors by Channel (per Minute)",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
-          "legendFormat": "Requests / min \u2014 {{ integration }}"
-        },
-        {
-          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", status_code=~\"4..\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
-          "legendFormat": "4XX / min \u2014 {{ integration }}"
-        },
-        {
-          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", status_code=~\"5..\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
-          "legendFormat": "5XX / min \u2014 {{ integration }}"
-        },
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", status_code=~\"4..\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
-          "legendFormat": "4XX total / min"
-        },
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", status_code=~\"5..\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
-          "legendFormat": "5XX total / min"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "reqps",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 12,
-        "y": 59
-      },
-      "id": 311,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "\u2014 Hyperguest Request and Error Rates (per Minute)",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"hyperguest\"}[1m]))",
-          "legendFormat": "Request"
-        },
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"hyperguest\", status_code=~\"2..\"}[1m]))",
-          "legendFormat": "2XX Success"
-        },
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"hyperguest\", status_code=~\"3..\"}[1m]))",
-          "legendFormat": "3XX Success"
-        },
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"hyperguest\", status_code=~\"4..\"}[1m]))",
-          "legendFormat": "4XX Errors"
-        },
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"hyperguest\", status_code=~\"5..\"}[1m]))",
-          "legendFormat": "5XX Errors"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "reqps",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 0,
-        "y": 68
-      },
-      "id": 312,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "\u2014 OwnerRez Request and Error Rates (per Minute)",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ownerrez\"}[1m]))",
-          "legendFormat": "Request"
-        },
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ownerrez\", status_code=~\"2..\"}[1m]))",
-          "legendFormat": "2XX Success"
-        },
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ownerrez\", status_code=~\"3..\"}[1m]))",
-          "legendFormat": "3XX Success"
-        },
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ownerrez\", status_code=~\"4..\"}[1m]))",
-          "legendFormat": "4XX Errors"
-        },
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ownerrez\", status_code=~\"5..\"}[1m]))",
-          "legendFormat": "5XX Errors"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "reqps",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 12,
-        "y": 68
-      },
-      "id": 313,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "\u2014 Channex Request and Error Rates (per Minute)",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"channex\"}[1m]))",
-          "legendFormat": "Request"
-        },
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"channex\", status_code=~\"2..\"}[1m]))",
-          "legendFormat": "2XX Success"
-        },
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"channex\", status_code=~\"3..\"}[1m]))",
-          "legendFormat": "3XX Success"
-        },
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"channex\", status_code=~\"4..\"}[1m]))",
-          "legendFormat": "4XX Errors"
-        },
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"channex\", status_code=~\"5..\"}[1m]))",
-          "legendFormat": "5XX Errors"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "reqps",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 0,
-        "y": 77
-      },
-      "id": 314,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "\u2014 RateDock Request and Error Rates (per Minute)",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ratedock\"}[1m]))",
-          "legendFormat": "Request"
-        },
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ratedock\", status_code=~\"2..\"}[1m]))",
-          "legendFormat": "2XX Success"
-        },
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ratedock\", status_code=~\"3..\"}[1m]))",
-          "legendFormat": "3XX Success"
-        },
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ratedock\", status_code=~\"4..\"}[1m]))",
-          "legendFormat": "4XX Errors"
-        },
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ratedock\", status_code=~\"5..\"}[1m]))",
-          "legendFormat": "5XX Errors"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "reqps",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 12,
-        "y": 77
-      },
-      "id": 315,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "\u2014 Localota Request and Error Rates (per Minute)",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"localota\"}[1m]))",
-          "legendFormat": "Request"
-        },
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"localota\", status_code=~\"2..\"}[1m]))",
-          "legendFormat": "2XX Success"
-        },
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"localota\", status_code=~\"3..\"}[1m]))",
-          "legendFormat": "3XX Success"
-        },
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"localota\", status_code=~\"4..\"}[1m]))",
-          "legendFormat": "4XX Errors"
-        },
-        {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"localota\", status_code=~\"5..\"}[1m]))",
-          "legendFormat": "5XX Errors"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percent",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 0,
-        "y": 86
-      },
-      "id": 320,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "Request Duration (%)",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", le=\"+Inf\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}[1m]))) * 100",
-          "legendFormat": "Duration < 1ms (%)"
-        },
-        {
-          "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", le=\"0.003\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}[1m]))) * 100",
-          "legendFormat": "Duration < 3ms (%)"
-        },
-        {
-          "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", le=\"0.03\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}[1m]))) * 100",
-          "legendFormat": "Duration < 30ms (%)"
-        },
-        {
-          "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", le=\"0.1\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}[1m]))) * 100",
-          "legendFormat": "Duration < 100ms (%)"
-        },
-        {
-          "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", le=\"0.3\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}[1m]))) * 100",
-          "legendFormat": "Duration < 300ms (%)"
-        },
-        {
-          "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", le=\"1.5\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}[1m]))) * 100",
-          "legendFormat": "Duration < 1500ms (%)"
-        },
-        {
-          "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", le=\"10\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}[1m]))) * 100",
-          "legendFormat": "Duration < 10000ms (%)"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "reqps",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 12,
-        "y": 86
-      },
-      "id": 17,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "HTTP Request Rate by Route",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "sum by (integration, method, path) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=~\"$integration\"}[5m]))",
-          "legendFormat": "{{ integration }} {{ method }} {{ path }}"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "s",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 95
-      },
-      "id": 18,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "HTTP Latency p95 by Integration",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "histogram_quantile(0.95, sum by (integration, le) (rate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=~\"$integration\"}[5m])))",
-          "legendFormat": "{{ integration }}"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "reqps",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 95
-      },
-      "id": 19,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "HTTP Error Rate by Integration",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", status_code=~\"4..\", integration=~\"$integration\"}[5m]))",
-          "legendFormat": "{{ integration }} 4xx"
-        },
-        {
-          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", status_code=~\"5..\", integration=~\"$integration\"}[5m]))",
-          "legendFormat": "{{ integration }} 5xx"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "reqps",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2,
-            "stacking": {
-              "mode": "normal"
-            }
-          }
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 103
-      },
-      "id": 20,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "Receiver Request Rate by Integration",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=~\"$integration\"}[5m]))",
-          "legendFormat": "{{ integration }}"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "bytes",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 103
-      },
-      "id": 21,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "Node.js Memory by Integration",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "nodejs_heap_size_used_bytes{server=\"receiver\", integration=~\"$integration\"}",
-          "legendFormat": "{{ integration }} heap"
-        },
-        {
-          "expr": "process_resident_memory_bytes{server=\"receiver\", integration=~\"$integration\"}",
-          "legendFormat": "{{ integration }} RSS"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 111
-      },
-      "id": 22,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "Integration Scrape Status",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "max by (integration) (up{server=\"receiver\", integration=~\"$integration\"})",
-          "legendFormat": "{{ integration }}"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "reqps",
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2,
-            "stacking": {
-              "mode": "normal"
-            }
-          }
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 111
-      },
-      "id": 23,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "HTTP 5xx Rate by Integration",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", status_code=~\"5..\", integration=~\"$integration\"}[5m]))",
-          "legendFormat": "{{ integration }}"
-        }
-      ]
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 119
-      },
-      "id": 105,
-      "title": "HTTP Probes (Blackbox)",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "mappings": [
-            {
-              "options": {
-                "0": {
-                  "color": "red",
-                  "text": "DOWN"
-                },
-                "1": {
-                  "color": "green",
-                  "text": "UP"
-                }
-              },
-              "type": "value"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              },
-              {
-                "color": "green",
-                "value": 1
-              }
-            ]
-          }
-        }
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 12,
-        "x": 0,
-        "y": 120
-      },
-      "id": 13,
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "colorMode": "background",
-        "graphMode": "none",
-        "textMode": "value"
-      },
-      "title": "Endpoint Status",
-      "type": "stat",
-      "targets": [
-        {
-          "expr": "probe_success{instance=~\"ota-receiver\"}",
-          "legendFormat": "{{ instance }}"
-        }
-      ]
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "s",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 1
-              },
-              {
-                "color": "red",
-                "value": 2
-              }
-            ]
-          },
-          "custom": {
-            "fillOpacity": 10,
-            "lineWidth": 2
-          }
-        }
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 12,
-        "x": 12,
-        "y": 120
-      },
-      "id": 14,
-      "options": {
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "title": "HTTP Response Time",
-      "type": "timeseries",
-      "targets": [
-        {
-          "expr": "probe_duration_seconds{instance=~\"ota-receiver\"}",
-          "legendFormat": "{{ instance }}"
-        }
-      ]
-    }
-  ],
-  "templating": {
-    "list": [
+    "panels": [
       {
-        "allValue": ".+",
-        "current": {
-          "selected": true,
-          "text": "All",
-          "value": "$__all"
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 0
         },
+        "id": 100,
+        "title": "Overview",
+        "type": "row"
+      },
+      {
         "datasource": {
           "type": "prometheus",
           "uid": "prometheus"
         },
-        "definition": "label_values(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}, integration)",
-        "includeAll": true,
-        "label": "Integration",
-        "multi": true,
-        "name": "integration",
-        "options": [],
-        "query": {
-          "query": "label_values(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}, integration)",
-          "refId": "StandardVariableQuery"
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 85
+                },
+                {
+                  "color": "red",
+                  "value": 95
+                }
+              ]
+            },
+            "unit": "percent",
+            "min": 0,
+            "max": 100
+          }
         },
-        "refresh": 2,
-        "sort": 1,
-        "type": "query"
+        "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 0,
+          "y": 1
+        },
+        "id": 1,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ]
+          },
+          "orientation": "auto",
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "title": "CPU Usage",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "(1 - avg by(server)(rate(node_cpu_seconds_total{mode=\"idle\", server=\"receiver\"}[5m]))) * 100",
+            "legendFormat": "{{ server }}"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 85
+                },
+                {
+                  "color": "red",
+                  "value": 95
+                }
+              ]
+            },
+            "unit": "percent",
+            "min": 0,
+            "max": 100
+          }
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 6,
+          "y": 1
+        },
+        "id": 2,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ]
+          },
+          "orientation": "auto",
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "title": "Memory Usage",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "(1 - (node_memory_MemAvailable_bytes{server=\"receiver\"} / node_memory_MemTotal_bytes{server=\"receiver\"})) * 100",
+            "legendFormat": "{{ server }}"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 80
+                },
+                {
+                  "color": "red",
+                  "value": 90
+                }
+              ]
+            },
+            "unit": "percent",
+            "min": 0,
+            "max": 100
+          }
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 12,
+          "y": 1
+        },
+        "id": 3,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ]
+          },
+          "orientation": "auto",
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "title": "Disk Usage (/)",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "(1 - (node_filesystem_avail_bytes{mountpoint=\"/\", server=\"receiver\"} / node_filesystem_size_bytes{mountpoint=\"/\", server=\"receiver\"})) * 100",
+            "legendFormat": "{{ server }}"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "green",
+                  "value": 3600
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 18,
+          "y": 1
+        },
+        "id": 4,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ]
+          },
+          "colorMode": "value",
+          "graphMode": "none"
+        },
+        "title": "Uptime",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "time() - node_boot_time_seconds{server=\"receiver\"}",
+            "legendFormat": "{{ server }}"
+          }
+        ]
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 7
+        },
+        "id": 101,
+        "title": "CPU & Load",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "custom": {
+              "fillOpacity": 15,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        },
+        "id": 5,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "CPU Usage Over Time",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "(1 - avg by(server)(rate(node_cpu_seconds_total{mode=\"idle\", server=\"receiver\"}[5m]))) * 100",
+            "legendFormat": "{{ server }}"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        },
+        "id": 6,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "System Load (15m avg)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "node_load15{server=\"receiver\"}",
+            "legendFormat": "{{ server }}"
+          }
+        ]
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 16
+        },
+        "id": 102,
+        "title": "Memory",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "bytes",
+            "custom": {
+              "fillOpacity": 20,
+              "lineWidth": 2,
+              "stacking": {
+                "mode": "normal"
+              }
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 17
+        },
+        "id": 7,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "Memory Breakdown",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "node_memory_MemTotal_bytes{server=\"receiver\"} - node_memory_MemAvailable_bytes{server=\"receiver\"}",
+            "legendFormat": "{{ server }} \u2014 Used"
+          },
+          {
+            "expr": "node_memory_MemAvailable_bytes{server=\"receiver\"}",
+            "legendFormat": "{{ server }} \u2014 Available"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "custom": {
+              "fillOpacity": 15,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 17
+        },
+        "id": 8,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "Memory Usage %",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "(1 - (node_memory_MemAvailable_bytes{server=\"receiver\"} / node_memory_MemTotal_bytes{server=\"receiver\"})) * 100",
+            "legendFormat": "{{ server }}"
+          }
+        ]
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 25
+        },
+        "id": 103,
+        "title": "Disk",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "custom": {
+              "fillOpacity": 15,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 26
+        },
+        "id": 9,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "Disk Usage %",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "(1 - (node_filesystem_avail_bytes{fstype!~\"tmpfs|devtmpfs\", server=\"receiver\"} / node_filesystem_size_bytes{server=\"receiver\"})) * 100",
+            "legendFormat": "{{ server }} \u2014 {{ mountpoint }}"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "Bps",
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 26
+        },
+        "id": 10,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "Disk I/O (read/write bytes)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(node_disk_read_bytes_total{server=\"receiver\"}[5m])",
+            "legendFormat": "{{ server }} read \u2014 {{ device }}"
+          },
+          {
+            "expr": "rate(node_disk_written_bytes_total{server=\"receiver\"}[5m])",
+            "legendFormat": "{{ server }} write \u2014 {{ device }}"
+          }
+        ]
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 34
+        },
+        "id": 104,
+        "title": "Network",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "Bps",
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 35
+        },
+        "id": 11,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "Network Traffic (receive / transmit)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(node_network_receive_bytes_total{device!~\"lo|docker.*\", server=\"receiver\"}[5m])",
+            "legendFormat": "{{ server }} RX \u2014 {{ device }}"
+          },
+          {
+            "expr": "-rate(node_network_transmit_bytes_total{device!~\"lo|docker.*\", server=\"receiver\"}[5m])",
+            "legendFormat": "{{ server }} TX \u2014 {{ device }}"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 35
+        },
+        "id": 12,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "Network Errors",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(node_network_receive_errs_total{server=\"receiver\"}[5m])",
+            "legendFormat": "{{ server }} RX errors \u2014 {{ device }}"
+          },
+          {
+            "expr": "rate(node_network_transmit_errs_total{server=\"receiver\"}[5m])",
+            "legendFormat": "{{ server }} TX errors \u2014 {{ device }}"
+          }
+        ]
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 43
+        },
+        "id": 106,
+        "title": "Application Metrics",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {
+                "options": {
+                  "match": "null",
+                  "result": {
+                    "text": "N/A"
+                  }
+                },
+                "type": "special"
+              }
+            ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "none"
+          }
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 6,
+          "x": 0,
+          "y": 45
+        },
+        "id": 300,
+        "options": {
+          "colorMode": "none",
+          "graphMode": "none",
+          "justifyMode": "center",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "textMode": "value"
+        },
+        "title": "Total Requests Count",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}[24h]))",
+            "legendFormat": ""
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "decimals": 0,
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "rgba(50, 172, 45, 0.97)",
+                  "value": null
+                },
+                {
+                  "color": "rgba(237, 129, 40, 0.89)",
+                  "value": 10
+                },
+                {
+                  "color": "rgba(245, 54, 54, 0.9)",
+                  "value": 40
+                }
+              ]
+            },
+            "unit": "none"
+          }
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 18,
+          "x": 6,
+          "y": 45
+        },
+        "id": 301,
+        "options": {
+          "displayMode": "basic",
+          "orientation": "horizontal",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showUnfilled": true,
+          "valueMode": "text"
+        },
+        "title": "Total Request Count by Channel",
+        "type": "bargauge",
+        "targets": [
+          {
+            "expr": "sum by (integration) (increase(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration!=\"ari-ingest-worker\"}[$__range]))",
+            "legendFormat": "{{ integration }}"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqpm",
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 0,
+          "y": 50
+        },
+        "id": 302,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "Global Request Rate by Channel (per Minute)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
+            "legendFormat": "Total (all channels)"
+          },
+          {
+            "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
+            "legendFormat": "{{ integration }}"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 12,
+          "y": 50
+        },
+        "id": 303,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "Top 10 API calls (by path) In Last 24 hours",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "topk(10, sum by (integration, path) (increase(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}[24h])))",
+            "legendFormat": "{{ integration }} {{ path }}"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqpm",
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 0,
+          "y": 59
+        },
+        "id": 310,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "$integration Requests & Errors by Channel (per Minute)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
+            "legendFormat": "Requests / min \u2014 {{ integration }}"
+          },
+          {
+            "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", status_code=~\"4..\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
+            "legendFormat": "4XX / min \u2014 {{ integration }}"
+          },
+          {
+            "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", status_code=~\"5..\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
+            "legendFormat": "5XX / min \u2014 {{ integration }}"
+          },
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", status_code=~\"4..\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
+            "legendFormat": "4XX total / min"
+          },
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", status_code=~\"5..\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
+            "legendFormat": "5XX total / min"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps",
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 12,
+          "y": 59
+        },
+        "id": 311,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "\u2014 Hyperguest Request and Error Rates (per Minute)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"hyperguest\"}[1m]))",
+            "legendFormat": "Request"
+          },
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"hyperguest\", status_code=~\"2..\"}[1m]))",
+            "legendFormat": "2XX Success"
+          },
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"hyperguest\", status_code=~\"3..\"}[1m]))",
+            "legendFormat": "3XX Success"
+          },
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"hyperguest\", status_code=~\"4..\"}[1m]))",
+            "legendFormat": "4XX Errors"
+          },
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"hyperguest\", status_code=~\"5..\"}[1m]))",
+            "legendFormat": "5XX Errors"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps",
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 0,
+          "y": 68
+        },
+        "id": 312,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "\u2014 OwnerRez Request and Error Rates (per Minute)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ownerrez\"}[1m]))",
+            "legendFormat": "Request"
+          },
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ownerrez\", status_code=~\"2..\"}[1m]))",
+            "legendFormat": "2XX Success"
+          },
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ownerrez\", status_code=~\"3..\"}[1m]))",
+            "legendFormat": "3XX Success"
+          },
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ownerrez\", status_code=~\"4..\"}[1m]))",
+            "legendFormat": "4XX Errors"
+          },
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ownerrez\", status_code=~\"5..\"}[1m]))",
+            "legendFormat": "5XX Errors"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps",
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 12,
+          "y": 68
+        },
+        "id": 313,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "\u2014 Channex Request and Error Rates (per Minute)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"channex\"}[1m]))",
+            "legendFormat": "Request"
+          },
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"channex\", status_code=~\"2..\"}[1m]))",
+            "legendFormat": "2XX Success"
+          },
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"channex\", status_code=~\"3..\"}[1m]))",
+            "legendFormat": "3XX Success"
+          },
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"channex\", status_code=~\"4..\"}[1m]))",
+            "legendFormat": "4XX Errors"
+          },
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"channex\", status_code=~\"5..\"}[1m]))",
+            "legendFormat": "5XX Errors"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps",
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 0,
+          "y": 77
+        },
+        "id": 314,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "\u2014 RateDock Request and Error Rates (per Minute)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ratedock\"}[1m]))",
+            "legendFormat": "Request"
+          },
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ratedock\", status_code=~\"2..\"}[1m]))",
+            "legendFormat": "2XX Success"
+          },
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ratedock\", status_code=~\"3..\"}[1m]))",
+            "legendFormat": "3XX Success"
+          },
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ratedock\", status_code=~\"4..\"}[1m]))",
+            "legendFormat": "4XX Errors"
+          },
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ratedock\", status_code=~\"5..\"}[1m]))",
+            "legendFormat": "5XX Errors"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps",
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 12,
+          "y": 77
+        },
+        "id": 315,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "\u2014 Localota Request and Error Rates (per Minute)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"localota\"}[1m]))",
+            "legendFormat": "Request"
+          },
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"localota\", status_code=~\"2..\"}[1m]))",
+            "legendFormat": "2XX Success"
+          },
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"localota\", status_code=~\"3..\"}[1m]))",
+            "legendFormat": "3XX Success"
+          },
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"localota\", status_code=~\"4..\"}[1m]))",
+            "legendFormat": "4XX Errors"
+          },
+          {
+            "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"localota\", status_code=~\"5..\"}[1m]))",
+            "legendFormat": "5XX Errors"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 0,
+          "y": 86
+        },
+        "id": 320,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "Request Duration (%)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", le=\"+Inf\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}[1m]))) * 100",
+            "legendFormat": "Duration < 1ms (%)"
+          },
+          {
+            "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", le=\"0.003\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}[1m]))) * 100",
+            "legendFormat": "Duration < 3ms (%)"
+          },
+          {
+            "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", le=\"0.03\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}[1m]))) * 100",
+            "legendFormat": "Duration < 30ms (%)"
+          },
+          {
+            "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", le=\"0.1\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}[1m]))) * 100",
+            "legendFormat": "Duration < 100ms (%)"
+          },
+          {
+            "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", le=\"0.3\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}[1m]))) * 100",
+            "legendFormat": "Duration < 300ms (%)"
+          },
+          {
+            "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", le=\"1.5\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}[1m]))) * 100",
+            "legendFormat": "Duration < 1500ms (%)"
+          },
+          {
+            "expr": "(sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", le=\"10\"}[1m])) / sum(irate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}[1m]))) * 100",
+            "legendFormat": "Duration < 10000ms (%)"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps",
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 12,
+          "y": 86
+        },
+        "id": 17,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "HTTP Request Rate by Route",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum by (integration, method, path) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=~\"$integration\"}[5m]))",
+            "legendFormat": "{{ integration }} {{ method }} {{ path }}"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s",
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 95
+        },
+        "id": 18,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "HTTP Latency p95 by Integration",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, sum by (integration, le) (rate(http_request_duration_seconds_bucket{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=~\"$integration\"}[5m])))",
+            "legendFormat": "{{ integration }}"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps",
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 95
+        },
+        "id": 19,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "HTTP Error Rate by Integration",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", status_code=~\"4..\", integration=~\"$integration\"}[5m]))",
+            "legendFormat": "{{ integration }} 4xx"
+          },
+          {
+            "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", status_code=~\"5..\", integration=~\"$integration\"}[5m]))",
+            "legendFormat": "{{ integration }} 5xx"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps",
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2,
+              "stacking": {
+                "mode": "normal"
+              }
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 103
+        },
+        "id": 20,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "Receiver Request Rate by Integration",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=~\"$integration\"}[5m]))",
+            "legendFormat": "{{ integration }}"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "bytes",
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 103
+        },
+        "id": 21,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "Node.js Memory by Integration",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "nodejs_heap_size_used_bytes{server=\"receiver\", integration=~\"$integration\"}",
+            "legendFormat": "{{ integration }} heap"
+          },
+          {
+            "expr": "process_resident_memory_bytes{server=\"receiver\", integration=~\"$integration\"}",
+            "legendFormat": "{{ integration }} RSS"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 111
+        },
+        "id": 22,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "Integration Scrape Status",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "max by (integration) (up{server=\"receiver\", integration=~\"$integration\"})",
+            "legendFormat": "{{ integration }}"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps",
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2,
+              "stacking": {
+                "mode": "normal"
+              }
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 111
+        },
+        "id": 23,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "HTTP 5xx Rate by Integration",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", status_code=~\"5..\", integration=~\"$integration\"}[5m]))",
+            "legendFormat": "{{ integration }}"
+          }
+        ]
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 119
+        },
+        "id": 105,
+        "title": "HTTP Probes (Blackbox)",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {
+                "options": {
+                  "0": {
+                    "color": "red",
+                    "text": "DOWN"
+                  },
+                  "1": {
+                    "color": "green",
+                    "text": "UP"
+                  }
+                },
+                "type": "value"
+              }
+            ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "green",
+                  "value": 1
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 0,
+          "y": 120
+        },
+        "id": 13,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ]
+          },
+          "colorMode": "background",
+          "graphMode": "none",
+          "textMode": "value"
+        },
+        "title": "Endpoint Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "probe_success{instance=~\"ota-receiver\"}",
+            "legendFormat": "{{ instance }}"
+          }
+        ]
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 1
+                },
+                {
+                  "color": "red",
+                  "value": 2
+                }
+              ]
+            },
+            "custom": {
+              "fillOpacity": 10,
+              "lineWidth": 2
+            }
+          }
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 12,
+          "x": 12,
+          "y": 120
+        },
+        "id": 14,
+        "options": {
+          "tooltip": {
+            "mode": "multi"
+          }
+        },
+        "title": "HTTP Response Time",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "probe_duration_seconds{instance=~\"ota-receiver\"}",
+            "legendFormat": "{{ instance }}"
+          }
+        ]
       }
-    ]
+    ],
+    "templating": {
+      "list": [
+        {
+          "allValue": ".+",
+          "current": {
+            "selected": true,
+            "text": "All",
+            "value": "$__all"
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "definition": "label_values(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}, integration)",
+          "includeAll": true,
+          "label": "Integration",
+          "multi": true,
+          "name": "integration",
+          "options": [],
+          "query": {
+            "query": "label_values(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}, integration)",
+            "refId": "StandardVariableQuery"
+          },
+          "refresh": 2,
+          "sort": 1,
+          "type": "query"
+        }
+      ]
+    },
+    "title": "Receiver \u2014 Metrics",
+    "uid": "receiver-metrics",
+    "refresh": "10s",
+    "description": "Receiver metrics (migrated channel dashboards + host metrics)"
   },
-  "title": "Receiver \u2014 Metrics",
-  "uid": "receiver-metrics",
-  "refresh": "10s",
-  "description": "Receiver metrics (migrated channel dashboards + host metrics)"
+  "folderUid": "servers-receiver",
+  "overwrite": true
 }

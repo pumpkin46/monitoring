@@ -6,11 +6,13 @@ GRAFANA_URL="${GRAFANA_URL:-http://grafana:3000}"
 USER="${GRAFANA_ADMIN_USER:-admin}"
 PASS="${GRAFANA_ADMIN_PASSWORD:?Set GRAFANA_ADMIN_PASSWORD}"
 
+auth="--auth-no-challenge --http-user=$USER --http-password=$PASS"
+
 wait_for_grafana() {
   echo "Waiting for Grafana at $GRAFANA_URL ..."
   i=0
   while [ "$i" -lt 60 ]; do
-    if curl -sf "$GRAFANA_URL/api/health" >/dev/null 2>&1; then
+    if wget -q -O- "$GRAFANA_URL/api/health" >/dev/null 2>&1; then
       echo "Grafana is up."
       return 0
     fi
@@ -30,13 +32,13 @@ upsert_folder() {
   else
     body=$(printf '{"uid":"%s","title":"%s"}' "$uid" "$title")
   fi
-  if curl -sf -u "$USER:$PASS" "$GRAFANA_URL/api/folders/$uid" >/dev/null 2>&1; then
-    curl -sf -u "$USER:$PASS" -X PUT -H "Content-Type: application/json" \
-      -d "$body" "$GRAFANA_URL/api/folders/$uid" >/dev/null
+  if wget -q -O- $auth "$GRAFANA_URL/api/folders/$uid" >/dev/null 2>&1; then
+    wget -q -O- $auth --method=PUT --header="Content-Type: application/json" \
+      --body-data="$body" "$GRAFANA_URL/api/folders/$uid" >/dev/null
     echo "Updated folder $title ($uid)"
   else
-    if curl -sf -u "$USER:$PASS" -X POST -H "Content-Type: application/json" \
-        -d "$body" "$GRAFANA_URL/api/folders" >/dev/null; then
+    if wget -q -O- $auth --method=POST --header="Content-Type: application/json" \
+        --body-data="$body" "$GRAFANA_URL/api/folders" >/dev/null 2>&1; then
       echo "Created folder $title ($uid)"
     else
       echo "Folder $title ($uid) already exists or could not be created."
@@ -44,7 +46,9 @@ upsert_folder() {
   fi
 }
 
-wait_for_grafana
+if [ "${GRAFANA_SKIP_WAIT:-0}" != "1" ]; then
+  wait_for_grafana
+fi
 upsert_folder "servers" "Servers" ""
 upsert_folder "servers-comparison" "Comparison" "servers"
 upsert_folder "servers-manager" "Manager" "servers"
@@ -52,4 +56,11 @@ upsert_folder "servers-pms-api" "PMS API" "servers"
 upsert_folder "servers-receiver" "Receiver" "servers"
 upsert_folder "servers-scraper" "Scraper" "servers"
 upsert_folder "servers-worker" "Worker" "servers"
+
+reload_dashboards() {
+  echo "Reloading dashboard provisioning..."
+  wget -q -O- $auth --method=POST \
+    "$GRAFANA_URL/api/admin/provisioning/dashboards/reload"
+}
+reload_dashboards
 

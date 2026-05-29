@@ -1105,6 +1105,37 @@ def folder_uid(server: str) -> str:
     return "servers-" + server.replace("_", "-")
 
 
+def unwrap_dashboard(data: dict) -> dict:
+    """Return inner dashboard from provisioned wrapper JSON if present."""
+    if "dashboard" in data and isinstance(data["dashboard"], dict):
+        return data["dashboard"]
+    return data
+
+
+def write_provisioned_dashboard(path: Path, dash: dict, server: str) -> None:
+    """Write Grafana file-provision format with explicit folderUid."""
+    payload = {
+        "dashboard": dash,
+        "folderUid": folder_uid(server),
+        "overwrite": True,
+    }
+    with path.open("w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2)
+        f.write("\n")
+
+
+def wrap_server_dashboards(server: str) -> None:
+    """Wrap existing dashboards under servers/<server>/ with folderUid."""
+    server_dir = OUT_DIR / server
+    if not server_dir.is_dir():
+        return
+    for path in sorted(server_dir.glob("*.json")):
+        with path.open(encoding="utf-8") as f:
+            data = json.load(f)
+        write_provisioned_dashboard(path, unwrap_dashboard(data), server)
+        print(f"Wrapped servers/{server}/{path.name}")
+
+
 def migrate_servers_layout() -> None:
     """Normalize on-disk layout to servers/<server>/*.json (flatten legacy paths)."""
     known = set(SERVERS) | HAND_MAINTAINED
@@ -1193,11 +1224,13 @@ def write_init_folders_sh() -> None:
         'USER="${GRAFANA_ADMIN_USER:-admin}"',
         'PASS="${GRAFANA_ADMIN_PASSWORD:?Set GRAFANA_ADMIN_PASSWORD}"',
         "",
+        'auth="--auth-no-challenge --http-user=$USER --http-password=$PASS"',
+        "",
         "wait_for_grafana() {",
         '  echo "Waiting for Grafana at $GRAFANA_URL ..."',
         "  i=0",
         "  while [ \"$i\" -lt 60 ]; do",
-        '    if curl -sf "$GRAFANA_URL/api/health" >/dev/null 2>&1; then',
+        '    if wget -q -O- "$GRAFANA_URL/api/health" >/dev/null 2>&1; then',
         '      echo "Grafana is up."',
         "      return 0",
         "    fi",
@@ -1217,13 +1250,13 @@ def write_init_folders_sh() -> None:
         "  else",
         '    body=$(printf \'{"uid":"%s","title":"%s"}\' "$uid" "$title")',
         "  fi",
-        '  if curl -sf -u "$USER:$PASS" "$GRAFANA_URL/api/folders/$uid" >/dev/null 2>&1; then',
-        '    curl -sf -u "$USER:$PASS" -X PUT -H "Content-Type: application/json" \\',
-        '      -d "$body" "$GRAFANA_URL/api/folders/$uid" >/dev/null',
+        '  if wget -q -O- $auth "$GRAFANA_URL/api/folders/$uid" >/dev/null 2>&1; then',
+        '    wget -q -O- $auth --method=PUT --header="Content-Type: application/json" \\',
+        '      --body-data="$body" "$GRAFANA_URL/api/folders/$uid" >/dev/null',
         '    echo "Updated folder $title ($uid)"',
         "  else",
-        '    if curl -sf -u "$USER:$PASS" -X POST -H "Content-Type: application/json" \\',
-        '        -d "$body" "$GRAFANA_URL/api/folders" >/dev/null; then',
+        '    if wget -q -O- $auth --method=POST --header="Content-Type: application/json" \\',
+        '        --body-data="$body" "$GRAFANA_URL/api/folders" >/dev/null 2>&1; then',
         '      echo "Created folder $title ($uid)"',
         "    else",
         '      echo "Folder $title ($uid) already exists or could not be created."',
@@ -1231,7 +1264,9 @@ def write_init_folders_sh() -> None:
         "  fi",
         "}",
         "",
-        "wait_for_grafana",
+        'if [ "${GRAFANA_SKIP_WAIT:-0}" != "1" ]; then',
+        "  wait_for_grafana",
+        "fi",
         'upsert_folder "servers" "Servers" ""',
     ]
     for server in sorted(SERVERS):
@@ -1239,7 +1274,18 @@ def write_init_folders_sh() -> None:
         lines.append(
             f'upsert_folder "{folder_uid(server)}" "{cfg["title"]}" "servers"'
         )
-    lines.append("")
+    lines.extend(
+        [
+            "",
+            "reload_dashboards() {",
+            '  echo "Reloading dashboard provisioning..."',
+            '  wget -q -O- $auth --method=POST \\',
+            '    "$GRAFANA_URL/api/admin/provisioning/dashboards/reload"',
+            "}",
+            "reload_dashboards",
+            "",
+        ]
+    )
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     path.chmod(0o755)
     print("Wrote init-folders.sh")
@@ -1267,7 +1313,8 @@ def main() -> None:
         server_dir = OUT_DIR / server
         server_dir.mkdir(exist_ok=True)
         if server in HAND_MAINTAINED:
-            print(f"Skipped servers/{server}/ (hand-maintained)")
+            wrap_server_dashboards(server)
+            print(f"Wrapped servers/{server}/ (hand-maintained)")
             continue
         metrics, logs = generate_split(server, cfg)
         for name, dash in (("metrics", metrics), ("logs", logs)):
@@ -1277,9 +1324,7 @@ def main() -> None:
                     child.unlink()
                 nested.rmdir()
             path = server_dir / f"{name}.json"
-            with path.open("w", encoding="utf-8") as f:
-                json.dump(dash, f, indent=2)
-                f.write("\n")
+            write_provisioned_dashboard(path, dash, server)
             print(f"Wrote servers/{server}/{path.name}")
 
     for path in legacy_flat:
