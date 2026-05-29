@@ -10,10 +10,9 @@ providers:
     options:
       path: /etc/grafana/provisioning/dashboards/overview
 
-  # servers/<server>/logs.json and metrics.json → Servers/<server>/ in Grafana
+  # servers/Servers/<server>/*.json → Grafana: Servers/<server>/ (no folder: — required)
   - name: servers
     orgId: 1
-    folder: Servers
     type: file
     disableDeletion: false
     editable: true

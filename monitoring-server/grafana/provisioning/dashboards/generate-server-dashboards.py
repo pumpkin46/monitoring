@@ -8,7 +8,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent
 METRICS_SRC = ROOT / "overview" / "server-overview.json"
-OUT_DIR = ROOT / "servers"
+SERVERS_ROOT = ROOT / "servers"
+OUT_DIR = SERVERS_ROOT / "Servers"  # → Grafana folder "Servers" via foldersFromFilesStructure
 
 # Servers whose dashboards are edited manually — never overwritten by main()
 HAND_MAINTAINED = frozenset({"receiver"})
@@ -1100,6 +1101,31 @@ def generate(server: str, cfg: dict) -> dict:
     return dash
 
 
+def migrate_servers_layout() -> None:
+    """Move servers/<name>/ → servers/Servers/<name>/ from older layouts."""
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    known = set(SERVERS) | HAND_MAINTAINED
+    for item in list(SERVERS_ROOT.iterdir()):
+        if item.name == "Servers" or not item.is_dir() or item.name not in known:
+            continue
+        dest = OUT_DIR / item.name
+        dest.mkdir(parents=True, exist_ok=True)
+        for path in item.glob("*.json"):
+            target = dest / path.name
+            if path.resolve() != target.resolve():
+                path.replace(target)
+        for sub in item.iterdir():
+            if sub.is_dir():
+                for path in sub.glob("*.json"):
+                    target = dest / path.name
+                    if not target.exists():
+                        path.replace(target)
+                sub.rmdir()
+        if not any(item.iterdir()):
+            item.rmdir()
+        print(f"Migrated servers/{item.name}/ -> servers/Servers/{item.name}/")
+
+
 def write_dashboards_yml() -> None:
     """Emit dashboards.yml: Overview + Servers (per-server subfolders from file tree)."""
     path = ROOT / "dashboards.yml"
@@ -1115,10 +1141,9 @@ providers:
     options:
       path: /etc/grafana/provisioning/dashboards/overview
 
-  # servers/<server>/logs.json and metrics.json → Servers/<server>/ in Grafana
+  # servers/Servers/<server>/*.json → Grafana: Servers/<server>/ (no folder: — required)
   - name: servers
     orgId: 1
-    folder: Servers
     type: file
     disableDeletion: false
     editable: true
@@ -1132,8 +1157,8 @@ providers:
 
 
 def main() -> None:
-    OUT_DIR.mkdir(exist_ok=True)
-    legacy_flat = list(OUT_DIR.glob("*.json"))
+    migrate_servers_layout()
+    legacy_flat = list(SERVERS_ROOT.glob("*.json"))
 
     overview_dir = ROOT / "overview"
     overview_dir.mkdir(exist_ok=True)
@@ -1153,7 +1178,7 @@ def main() -> None:
         server_dir = OUT_DIR / server
         server_dir.mkdir(exist_ok=True)
         if server in HAND_MAINTAINED:
-            print(f"Skipped servers/{server}/ (hand-maintained)")
+            print(f"Skipped servers/Servers/{server}/ (hand-maintained)")
             continue
         metrics, logs = generate_split(server, cfg)
         for name, dash in (("metrics", metrics), ("logs", logs)):
@@ -1166,7 +1191,7 @@ def main() -> None:
             with path.open("w", encoding="utf-8") as f:
                 json.dump(dash, f, indent=2)
                 f.write("\n")
-            print(f"Wrote servers/{server}/{path.name}")
+            print(f"Wrote servers/Servers/{server}/{path.name}")
 
     for path in legacy_flat:
         path.unlink()
