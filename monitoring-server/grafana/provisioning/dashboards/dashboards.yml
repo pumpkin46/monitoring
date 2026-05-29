@@ -10,13 +10,68 @@ providers:
     options:
       path: /etc/grafana/provisioning/dashboards/overview
 
-  # servers/Servers/<server>/*.json → Grafana: Servers/<server>/ (no folder: — required)
-  - name: servers
+  - name: server-comparison
     orgId: 1
+    folder: Servers/Comparison
+    folderUid: servers-comparison
     type: file
     disableDeletion: false
     editable: true
     updateIntervalSeconds: 30
     options:
-      path: /etc/grafana/provisioning/dashboards/servers
-      foldersFromFilesStructure: true
+      path: /etc/grafana/provisioning/dashboards/servers/comparison
+
+  - name: server-manager
+    orgId: 1
+    folder: Servers/Manager
+    folderUid: servers-manager
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/provisioning/dashboards/servers/manager
+
+  - name: server-pms-api
+    orgId: 1
+    folder: Servers/PMS API
+    folderUid: servers-pms-api
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/provisioning/dashboards/servers/pms-api
+
+  - name: server-receiver
+    orgId: 1
+    folder: Servers/Receiver
+    folderUid: servers-receiver
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/provisioning/dashboards/servers/receiver
+
+  - name: server-scraper
+    orgId: 1
+    folder: Servers/Scraper
+    folderUid: servers-scraper
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/provisioning/dashboards/servers/scraper
+
+  - name: server-worker
+    orgId: 1
+    folder: Servers/Worker
+    folderUid: servers-worker
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/provisioning/dashboards/servers/worker

@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).parent
 METRICS_SRC = ROOT / "overview" / "server-overview.json"
 SERVERS_ROOT = ROOT / "servers"
-OUT_DIR = SERVERS_ROOT / "Servers"  # → Grafana folder "Servers" via foldersFromFilesStructure
+OUT_DIR = SERVERS_ROOT  # servers/<server>/*.json on disk
 
 # Servers whose dashboards are edited manually — never overwritten by main()
 HAND_MAINTAINED = frozenset({"receiver"})
@@ -1101,58 +1101,90 @@ def generate(server: str, cfg: dict) -> dict:
     return dash
 
 
+def folder_uid(server: str) -> str:
+    return "servers-" + server.replace("_", "-")
+
+
+def grafana_folder(server: str, cfg: dict) -> str:
+    """Nested Grafana folder: Servers/<display title>."""
+    return f"Servers/{cfg['title']}"
+
+
 def migrate_servers_layout() -> None:
-    """Move servers/<name>/ → servers/Servers/<name>/ from older layouts."""
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    """Normalize on-disk layout to servers/<server>/*.json (flatten legacy paths)."""
     known = set(SERVERS) | HAND_MAINTAINED
-    for item in list(SERVERS_ROOT.iterdir()):
-        if item.name == "Servers" or not item.is_dir() or item.name not in known:
+    legacy_root = SERVERS_ROOT / "Servers"
+    sources = list(SERVERS_ROOT.iterdir())
+    if legacy_root.is_dir():
+        sources.append(legacy_root)
+    for item in sources:
+        if not item.is_dir():
             continue
-        dest = OUT_DIR / item.name
-        dest.mkdir(parents=True, exist_ok=True)
-        for path in item.glob("*.json"):
-            target = dest / path.name
-            if path.resolve() != target.resolve():
-                path.replace(target)
-        for sub in item.iterdir():
-            if sub.is_dir():
-                for path in sub.glob("*.json"):
-                    target = dest / path.name
-                    if not target.exists():
-                        path.replace(target)
-                sub.rmdir()
-        if not any(item.iterdir()):
-            item.rmdir()
-        print(f"Migrated servers/{item.name}/ -> servers/Servers/{item.name}/")
+        if item == legacy_root:
+            children = list(item.iterdir())
+        elif item.name == "Servers" or item.name not in known:
+            continue
+        else:
+            children = [item]
+        for child in children:
+            if not child.is_dir() or child.name not in known:
+                continue
+            dest = OUT_DIR / child.name
+            dest.mkdir(parents=True, exist_ok=True)
+            for path in child.glob("*.json"):
+                target = dest / path.name
+                if path.resolve() != target.resolve():
+                    path.replace(target)
+            for sub in child.iterdir():
+                if sub.is_dir():
+                    for path in sub.glob("*.json"):
+                        target = dest / path.name
+                        if not target.exists():
+                            path.replace(target)
+                    sub.rmdir()
+            if child != dest and child.exists() and not any(child.iterdir()):
+                child.rmdir()
+            if child != dest:
+                print(f"Migrated -> servers/{child.name}/")
+    if legacy_root.is_dir() and not any(legacy_root.iterdir()):
+        legacy_root.rmdir()
 
 
 def write_dashboards_yml() -> None:
-    """Emit dashboards.yml: Overview + Servers (per-server subfolders from file tree)."""
+    """Emit dashboards.yml: one file provider per server (nested folder via folder:)."""
     path = ROOT / "dashboards.yml"
-    content = """apiVersion: 1
-
-providers:
-  - name: overview
-    orgId: 1
-    folder: Overview
-    type: file
-    disableDeletion: true
-    editable: true
-    options:
-      path: /etc/grafana/provisioning/dashboards/overview
-
-  # servers/Servers/<server>/*.json → Grafana: Servers/<server>/ (no folder: — required)
-  - name: servers
-    orgId: 1
-    type: file
-    disableDeletion: false
-    editable: true
-    updateIntervalSeconds: 30
-    options:
-      path: /etc/grafana/provisioning/dashboards/servers
-      foldersFromFilesStructure: true
-"""
-    path.write_text(content, encoding="utf-8")
+    lines = [
+        "apiVersion: 1",
+        "",
+        "providers:",
+        "  - name: overview",
+        "    orgId: 1",
+        "    folder: Overview",
+        "    type: file",
+        "    disableDeletion: true",
+        "    editable: true",
+        "    options:",
+        "      path: /etc/grafana/provisioning/dashboards/overview",
+        "",
+    ]
+    for server in sorted(SERVERS):
+        cfg = SERVERS[server]
+        lines.extend(
+            [
+                f"  - name: server-{server}",
+                "    orgId: 1",
+                f"    folder: {grafana_folder(server, cfg)}",
+                f"    folderUid: {folder_uid(server)}",
+                "    type: file",
+                "    disableDeletion: false",
+                "    editable: true",
+                "    updateIntervalSeconds: 30",
+                "    options:",
+                f"      path: /etc/grafana/provisioning/dashboards/servers/{server}",
+                "",
+            ]
+        )
+    path.write_text("\n".join(lines), encoding="utf-8")
     print("Wrote dashboards.yml")
 
 
@@ -1178,7 +1210,7 @@ def main() -> None:
         server_dir = OUT_DIR / server
         server_dir.mkdir(exist_ok=True)
         if server in HAND_MAINTAINED:
-            print(f"Skipped servers/Servers/{server}/ (hand-maintained)")
+            print(f"Skipped servers/{server}/ (hand-maintained)")
             continue
         metrics, logs = generate_split(server, cfg)
         for name, dash in (("metrics", metrics), ("logs", logs)):
@@ -1191,7 +1223,7 @@ def main() -> None:
             with path.open("w", encoding="utf-8") as f:
                 json.dump(dash, f, indent=2)
                 f.write("\n")
-            print(f"Wrote servers/Servers/{server}/{path.name}")
+            print(f"Wrote servers/{server}/{path.name}")
 
     for path in legacy_flat:
         path.unlink()
