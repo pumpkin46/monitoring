@@ -22,3 +22,14 @@ providers:
     options:
       path: /etc/grafana/provisioning/dashboards/servers
       foldersFromFilesStructure: true
+
+  - name: manager
+    orgId: 2
+    folder: Manager
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/provisioning/dashboards/servers/manager
+      foldersFromFilesStructure: true
