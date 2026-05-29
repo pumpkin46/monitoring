@@ -10,8 +10,7 @@ providers:
     options:
       path: /etc/grafana/provisioning/dashboards/overview
 
-  # All server dashboards live under /servers/<server>/...
-  # This auto-loads everything under the servers dir (excluding overview).
+  # servers/<server>/logs.json and metrics.json → Servers/<server>/ in Grafana
   - name: servers
     orgId: 1
     folder: Servers

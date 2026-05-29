@@ -1011,7 +1011,7 @@ def split_metrics_and_logs(panels: list) -> tuple[list, list]:
 
 
 def generate_split(server: str, cfg: dict) -> tuple[dict, dict]:
-    """servers/<name>/metrics and servers/<name>/logs dashboards."""
+    """servers/<name>/metrics.json and logs.json (Grafana folder Servers/<name>/)."""
     combined = generate(server, cfg)
     metric_panels, log_panels = split_metrics_and_logs(combined["panels"])
 
@@ -1115,7 +1115,7 @@ providers:
     options:
       path: /etc/grafana/provisioning/dashboards/overview
 
-  # All server dashboards live under /servers/<server>/...
+  # servers/<server>/logs.json and metrics.json → Servers/<server>/ in Grafana
   - name: servers
     orgId: 1
     folder: Servers
@@ -1157,16 +1157,16 @@ def main() -> None:
             continue
         metrics, logs = generate_split(server, cfg)
         for name, dash in (("metrics", metrics), ("logs", logs)):
-            subdir = server_dir / name
-            subdir.mkdir(exist_ok=True)
-            legacy = server_dir / f"{name}.json"
-            if legacy.is_file():
-                legacy.unlink()
-            path = subdir / f"{name}.json"
+            nested = server_dir / name
+            if nested.is_dir():
+                for child in nested.glob("*.json"):
+                    child.unlink()
+                nested.rmdir()
+            path = server_dir / f"{name}.json"
             with path.open("w", encoding="utf-8") as f:
                 json.dump(dash, f, indent=2)
                 f.write("\n")
-            print(f"Wrote servers/{server}/{name}/{path.name}")
+            print(f"Wrote servers/{server}/{path.name}")
 
     for path in legacy_flat:
         path.unlink()
