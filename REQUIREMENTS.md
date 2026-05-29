@@ -68,7 +68,7 @@ Target Servers                     Monitoring Server (Docker)
 | D-17 | All-servers metrics overview | `overview/server-overview.json` |
 | D-18 | All-servers system/auth/kernel logs | `overview/logs-overview.json` |
 | D-19 | All-servers application logs | `overview/app-logs-overview.json` |
-| D-20 | Per-server Metrics + Logs (×6) | `servers/<name>/metrics.json`, `logs.json` |
+| D-20 | Per-server Metrics + Logs (×6) | `servers/<name>/metrics/metrics.json`, `logs/logs.json` |
 | D-21 | Receiver integration/channel panels | Generated via `generate-server-dashboards.py` |
 
 ---

@@ -1101,39 +1101,33 @@ def generate(server: str, cfg: dict) -> dict:
 
 
 def write_dashboards_yml() -> None:
-    """Emit dashboards.yml with one explicit folder provider per server."""
+    """Emit dashboards.yml: Overview + Servers (per-server subfolders from file tree)."""
     path = ROOT / "dashboards.yml"
-    lines = [
-        "apiVersion: 1",
-        "",
-        "providers:",
-        "  - name: overview",
-        "    orgId: 1",
-        "    folder: Overview",
-        "    type: file",
-        "    disableDeletion: true",
-        "    editable: true",
-        "    options:",
-        "      path: /etc/grafana/provisioning/dashboards/overview",
-        "",
-        "  # One provider per server — explicit folder (manager/Metrics, manager/Logs, …)",
-    ]
-    for server in SERVERS:
-        lines.extend(
-            [
-                f"  - name: {server}",
-                "    orgId: 1",
-                f"    folder: {server}",
-                "    type: file",
-                "    disableDeletion: false",
-                "    editable: true",
-                "    updateIntervalSeconds: 30",
-                "    options:",
-                f"      path: /etc/grafana/provisioning/dashboards/servers/{server}",
-                "",
-            ]
-        )
-    path.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
+    content = """apiVersion: 1
+
+providers:
+  - name: overview
+    orgId: 1
+    folder: Overview
+    type: file
+    disableDeletion: true
+    editable: true
+    options:
+      path: /etc/grafana/provisioning/dashboards/overview
+
+  # All server dashboards live under /servers/<server>/...
+  - name: servers
+    orgId: 1
+    folder: Servers
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/provisioning/dashboards/servers
+      foldersFromFilesStructure: true
+"""
+    path.write_text(content, encoding="utf-8")
     print("Wrote dashboards.yml")
 
 
@@ -1163,11 +1157,16 @@ def main() -> None:
             continue
         metrics, logs = generate_split(server, cfg)
         for name, dash in (("metrics", metrics), ("logs", logs)):
-            path = server_dir / f"{name}.json"
+            subdir = server_dir / name
+            subdir.mkdir(exist_ok=True)
+            legacy = server_dir / f"{name}.json"
+            if legacy.is_file():
+                legacy.unlink()
+            path = subdir / f"{name}.json"
             with path.open("w", encoding="utf-8") as f:
                 json.dump(dash, f, indent=2)
                 f.write("\n")
-            print(f"Wrote servers/{server}/{path.name}")
+            print(f"Wrote servers/{server}/{name}/{path.name}")
 
     for path in legacy_flat:
         path.unlink()

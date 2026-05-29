@@ -79,10 +79,10 @@ monitoring/
                 │   ├── server-overview.json    # All servers — metrics
                 │   ├── logs-overview.json      # All servers — system/auth/kernel logs
                 │   └── app-logs-overview.json    # All servers — application logs (generated)
-                └── servers/                    # Per-server folders (Grafana: <server>/Metrics, Logs)
+                └── servers/                    # Per-server folders (Grafana: <server>/metrics, logs)
                     ├── manager/
-                    │   ├── metrics.json
-                    │   └── logs.json
+                    │   ├── metrics/metrics.json
+                    │   └── logs/logs.json
                     ├── receiver/
                     ├── worker/
                     ├── comparison/
@@ -270,7 +270,7 @@ python generate-server-dashboards.py
 
 Commit `overview/app-logs-overview.json` and `servers/**/*.json`.
 
-**Note:** `servers/receiver/metrics.json` and `logs.json` are hand-maintained; the generator skips them (`HAND_MAINTAINED` in `generate-server-dashboards.py`). Edit those files directly for receiver panel changes.
+**Note:** `servers/receiver/metrics/metrics.json` and `logs/logs.json` are hand-maintained; the generator skips them (`HAND_MAINTAINED` in `generate-server-dashboards.py`). Edit those files directly for receiver panel changes.
 
 ### Adding a New Server
 
