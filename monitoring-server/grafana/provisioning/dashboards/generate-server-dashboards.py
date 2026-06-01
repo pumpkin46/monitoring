@@ -1188,26 +1188,21 @@ def write_dashboards_yml() -> None:
         "    folder: Overview",
         "    type: file",
         "    disableDeletion: true",
-        "    editable: true",
+        "    editable: false",
         "    options:",
         "      path: /etc/grafana/provisioning/dashboards/overview",
         "",
+        "  - name: servers",
+        "    orgId: 1",
+        "    folder: Servers",
+        "    type: file",
+        "    disableDeletion: true",
+        "    editable: false",
+        "    options:",
+        "      path: /etc/grafana/provisioning/dashboards/servers",
+        "      foldersFromFilesStructure: true",
+        "",
     ]
-    for server in sorted(SERVERS):
-        lines.extend(
-            [
-                f"  - name: server-{server}",
-                "    orgId: 1",
-                f"    folderUid: {folder_uid(server)}",
-                "    type: file",
-                "    disableDeletion: false",
-                "    editable: true",
-                "    updateIntervalSeconds: 30",
-                "    options:",
-                f"      path: /etc/grafana/provisioning/dashboards/servers/{server}",
-                "",
-            ]
-        )
     path.write_text("\n".join(lines), encoding="utf-8")
     print("Wrote dashboards.yml")
 

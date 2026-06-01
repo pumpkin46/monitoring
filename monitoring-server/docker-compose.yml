@@ -113,11 +113,9 @@ services:
     networks: [monitoring]  
     ports:  
       - "3000:3000"  
-    entrypoint: ["/bin/sh", "/entrypoint.sh"]
     volumes:  
       - grafana_data:/var/lib/grafana  
       - ./grafana/provisioning:/etc/grafana/provisioning  
-      - ./grafana/entrypoint.sh:/entrypoint.sh:ro
     env_file:
       - .env
     environment:  
