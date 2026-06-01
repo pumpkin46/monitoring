@@ -12,7 +12,7 @@ SERVERS_ROOT = ROOT / "servers"
 OUT_DIR = SERVERS_ROOT  # servers/<server>/*.json on disk
 
 # Servers whose dashboards are edited manually — never overwritten by main()
-HAND_MAINTAINED = frozenset({"receiver"})
+HAND_MAINTAINED = frozenset()
 
 # probe_url must match monitoring-server/prometheus/prometheus.yml http-probes targets
 SERVERS = {
@@ -135,6 +135,12 @@ RECEIVER_CHANNELS = [
     ("channex", "Channex"),
     ("ratedock", "RateDock"),
     ("localota", "Localota"),
+    ("igms", "iGMS"),
+    ("smoobu", "Smoobu"),
+    ("bookingpal", "BookingPal"),
+    ("booking", "Booking"),
+    ("email", "Email"),
+    ("core", "Core"),
 ]
 RECEIVER_CHANNEL_MATCH = "|".join(name for name, _ in RECEIVER_CHANNELS)
 

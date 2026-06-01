@@ -264,14 +264,14 @@
           "type": "prometheus",
           "uid": "prometheus"
         },
-        "definition": "label_values(http_request_duration_seconds_count{server=\"receiver\"}, integration)",
+        "definition": "label_values(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}, integration)",
         "includeAll": true,
         "label": "Integration",
         "multi": true,
         "name": "integration",
         "options": [],
         "query": {
-          "query": "label_values(http_request_duration_seconds_count{server=\"receiver\"}, integration)",
+          "query": "label_values(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\"}, integration)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,

@@ -608,6 +608,18 @@
       "type": "row"
     },
     {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 44
+      },
+      "id": 299,
+      "title": "Receiver Channels",
+      "type": "row"
+    },
+    {
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -719,8 +731,52 @@
       "type": "bargauge",
       "targets": [
         {
-          "expr": "sum by (integration) (increase(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration!=\"ari-ingest-worker\"}[$__range]))",
-          "legendFormat": "{{ integration }}"
+          "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"myallocator\"}[$__range]))",
+          "legendFormat": "Myallocator"
+        },
+        {
+          "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"hyperguest\"}[$__range]))",
+          "legendFormat": "Hyperguest"
+        },
+        {
+          "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ownerrez\"}[$__range]))",
+          "legendFormat": "OwnerRez"
+        },
+        {
+          "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"channex\"}[$__range]))",
+          "legendFormat": "Channex"
+        },
+        {
+          "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ratedock\"}[$__range]))",
+          "legendFormat": "RateDock"
+        },
+        {
+          "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"localota\"}[$__range]))",
+          "legendFormat": "Localota"
+        },
+        {
+          "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"igms\"}[$__range]))",
+          "legendFormat": "iGMS"
+        },
+        {
+          "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"smoobu\"}[$__range]))",
+          "legendFormat": "Smoobu"
+        },
+        {
+          "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"bookingpal\"}[$__range]))",
+          "legendFormat": "BookingPal"
+        },
+        {
+          "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"booking\"}[$__range]))",
+          "legendFormat": "Booking"
+        },
+        {
+          "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"email\"}[$__range]))",
+          "legendFormat": "Email"
+        },
+        {
+          "expr": "sum(increase(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"core\"}[$__range]))",
+          "legendFormat": "Core"
         }
       ]
     },
@@ -731,7 +787,7 @@
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "reqpm",
+          "unit": "reqps",
           "custom": {
             "fillOpacity": 10,
             "lineWidth": 2
@@ -754,12 +810,56 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
-          "legendFormat": "Total (all channels)"
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=~\"myallocator|hyperguest|ownerrez|channex|ratedock|localota|igms|smoobu|bookingpal|booking|email|core\"}[1m]))",
+          "legendFormat": "Total"
         },
         {
-          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
-          "legendFormat": "{{ integration }}"
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"myallocator\"}[1m]))",
+          "legendFormat": "Myallocator"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"hyperguest\"}[1m]))",
+          "legendFormat": "Hyperguest"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ownerrez\"}[1m]))",
+          "legendFormat": "OwnerRez"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"channex\"}[1m]))",
+          "legendFormat": "Channex"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"ratedock\"}[1m]))",
+          "legendFormat": "RateDock"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"localota\"}[1m]))",
+          "legendFormat": "Localota"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"igms\"}[1m]))",
+          "legendFormat": "iGMS"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"smoobu\"}[1m]))",
+          "legendFormat": "Smoobu"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"bookingpal\"}[1m]))",
+          "legendFormat": "BookingPal"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"booking\"}[1m]))",
+          "legendFormat": "Booking"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"email\"}[1m]))",
+          "legendFormat": "Email"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"core\"}[1m]))",
+          "legendFormat": "Core"
         }
       ]
     },
@@ -805,7 +905,7 @@
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "reqpm",
+          "unit": "reqps",
           "custom": {
             "fillOpacity": 10,
             "lineWidth": 2
@@ -824,28 +924,28 @@
           "mode": "multi"
         }
       },
-      "title": "$integration Requests & Errors by Channel (per Minute)",
+      "title": "Myallocator Request and Error Rates (per Minute)",
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
-          "legendFormat": "Requests / min \u2014 {{ integration }}"
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"myallocator\"}[1m]))",
+          "legendFormat": "Request"
         },
         {
-          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", status_code=~\"4..\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
-          "legendFormat": "4XX / min \u2014 {{ integration }}"
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"myallocator\", status_code=~\"2..\"}[1m]))",
+          "legendFormat": "2XX Success"
         },
         {
-          "expr": "sum by (integration) (rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", status_code=~\"5..\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
-          "legendFormat": "5XX / min \u2014 {{ integration }}"
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"myallocator\", status_code=~\"3..\"}[1m]))",
+          "legendFormat": "3XX Success"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", status_code=~\"4..\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
-          "legendFormat": "4XX total / min"
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"myallocator\", status_code=~\"4..\"}[1m]))",
+          "legendFormat": "4XX Errors"
         },
         {
-          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", status_code=~\"5..\", integration=~\"$integration\", integration!=\"ari-ingest-worker\"}[1m])) * 60",
-          "legendFormat": "5XX total / min"
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"myallocator\", status_code=~\"5..\"}[1m]))",
+          "legendFormat": "5XX Errors"
         }
       ]
     },
@@ -875,7 +975,7 @@
           "mode": "multi"
         }
       },
-      "title": "\u2014 Hyperguest Request and Error Rates (per Minute)",
+      "title": "Hyperguest Request and Error Rates (per Minute)",
       "type": "timeseries",
       "targets": [
         {
@@ -926,7 +1026,7 @@
           "mode": "multi"
         }
       },
-      "title": "\u2014 OwnerRez Request and Error Rates (per Minute)",
+      "title": "OwnerRez Request and Error Rates (per Minute)",
       "type": "timeseries",
       "targets": [
         {
@@ -977,7 +1077,7 @@
           "mode": "multi"
         }
       },
-      "title": "\u2014 Channex Request and Error Rates (per Minute)",
+      "title": "Channex Request and Error Rates (per Minute)",
       "type": "timeseries",
       "targets": [
         {
@@ -1028,7 +1128,7 @@
           "mode": "multi"
         }
       },
-      "title": "\u2014 RateDock Request and Error Rates (per Minute)",
+      "title": "RateDock Request and Error Rates (per Minute)",
       "type": "timeseries",
       "targets": [
         {
@@ -1079,7 +1179,7 @@
           "mode": "multi"
         }
       },
-      "title": "\u2014 Localota Request and Error Rates (per Minute)",
+      "title": "Localota Request and Error Rates (per Minute)",
       "type": "timeseries",
       "targets": [
         {
@@ -1111,7 +1211,7 @@
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "percent",
+          "unit": "reqps",
           "custom": {
             "fillOpacity": 10,
             "lineWidth": 2
@@ -1123,6 +1223,312 @@
         "w": 12,
         "x": 0,
         "y": 86
+      },
+      "id": 316,
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "title": "iGMS Request and Error Rates (per Minute)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"igms\"}[1m]))",
+          "legendFormat": "Request"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"igms\", status_code=~\"2..\"}[1m]))",
+          "legendFormat": "2XX Success"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"igms\", status_code=~\"3..\"}[1m]))",
+          "legendFormat": "3XX Success"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"igms\", status_code=~\"4..\"}[1m]))",
+          "legendFormat": "4XX Errors"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"igms\", status_code=~\"5..\"}[1m]))",
+          "legendFormat": "5XX Errors"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "fillOpacity": 10,
+            "lineWidth": 2
+          }
+        }
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 86
+      },
+      "id": 317,
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "title": "Smoobu Request and Error Rates (per Minute)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"smoobu\"}[1m]))",
+          "legendFormat": "Request"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"smoobu\", status_code=~\"2..\"}[1m]))",
+          "legendFormat": "2XX Success"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"smoobu\", status_code=~\"3..\"}[1m]))",
+          "legendFormat": "3XX Success"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"smoobu\", status_code=~\"4..\"}[1m]))",
+          "legendFormat": "4XX Errors"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"smoobu\", status_code=~\"5..\"}[1m]))",
+          "legendFormat": "5XX Errors"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "fillOpacity": 10,
+            "lineWidth": 2
+          }
+        }
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 95
+      },
+      "id": 318,
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "title": "BookingPal Request and Error Rates (per Minute)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"bookingpal\"}[1m]))",
+          "legendFormat": "Request"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"bookingpal\", status_code=~\"2..\"}[1m]))",
+          "legendFormat": "2XX Success"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"bookingpal\", status_code=~\"3..\"}[1m]))",
+          "legendFormat": "3XX Success"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"bookingpal\", status_code=~\"4..\"}[1m]))",
+          "legendFormat": "4XX Errors"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"bookingpal\", status_code=~\"5..\"}[1m]))",
+          "legendFormat": "5XX Errors"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "fillOpacity": 10,
+            "lineWidth": 2
+          }
+        }
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 95
+      },
+      "id": 319,
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "title": "Booking Request and Error Rates (per Minute)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"booking\"}[1m]))",
+          "legendFormat": "Request"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"booking\", status_code=~\"2..\"}[1m]))",
+          "legendFormat": "2XX Success"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"booking\", status_code=~\"3..\"}[1m]))",
+          "legendFormat": "3XX Success"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"booking\", status_code=~\"4..\"}[1m]))",
+          "legendFormat": "4XX Errors"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"booking\", status_code=~\"5..\"}[1m]))",
+          "legendFormat": "5XX Errors"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "fillOpacity": 10,
+            "lineWidth": 2
+          }
+        }
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 104
+      },
+      "id": 320,
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "title": "Email Request and Error Rates (per Minute)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"email\"}[1m]))",
+          "legendFormat": "Request"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"email\", status_code=~\"2..\"}[1m]))",
+          "legendFormat": "2XX Success"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"email\", status_code=~\"3..\"}[1m]))",
+          "legendFormat": "3XX Success"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"email\", status_code=~\"4..\"}[1m]))",
+          "legendFormat": "4XX Errors"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"email\", status_code=~\"5..\"}[1m]))",
+          "legendFormat": "5XX Errors"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "fillOpacity": 10,
+            "lineWidth": 2
+          }
+        }
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 104
+      },
+      "id": 321,
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "title": "Core Request and Error Rates (per Minute)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"core\"}[1m]))",
+          "legendFormat": "Request"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"core\", status_code=~\"2..\"}[1m]))",
+          "legendFormat": "2XX Success"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"core\", status_code=~\"3..\"}[1m]))",
+          "legendFormat": "3XX Success"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"core\", status_code=~\"4..\"}[1m]))",
+          "legendFormat": "4XX Errors"
+        },
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{server=\"receiver\", path!=\"/metrics\", path!=\"/readyz\", path!~\"/healthz?\", path!~\"/healthcheck?\", integration=\"core\", status_code=~\"5..\"}[1m]))",
+          "legendFormat": "5XX Errors"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "custom": {
+            "fillOpacity": 10,
+            "lineWidth": 2
+          }
+        }
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 113
       },
       "id": 320,
       "options": {
@@ -1181,7 +1587,7 @@
         "h": 8,
         "w": 8,
         "x": 12,
-        "y": 86
+        "y": 113
       },
       "id": 17,
       "options": {
@@ -1216,7 +1622,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 95
+        "y": 122
       },
       "id": 18,
       "options": {
@@ -1251,7 +1657,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 95
+        "y": 122
       },
       "id": 19,
       "options": {
@@ -1293,7 +1699,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 103
+        "y": 130
       },
       "id": 20,
       "options": {
@@ -1328,7 +1734,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 103
+        "y": 130
       },
       "id": 21,
       "options": {
@@ -1367,7 +1773,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 111
+        "y": 138
       },
       "id": 22,
       "options": {
@@ -1405,7 +1811,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 111
+        "y": 138
       },
       "id": 23,
       "options": {
@@ -1428,7 +1834,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 119
+        "y": 146
       },
       "id": 105,
       "title": "HTTP Probes (Blackbox)",
@@ -1475,7 +1881,7 @@
         "h": 6,
         "w": 12,
         "x": 0,
-        "y": 120
+        "y": 147
       },
       "id": 13,
       "options": {
@@ -1492,7 +1898,7 @@
       "type": "stat",
       "targets": [
         {
-          "expr": "probe_success{instance=~\"ota-receiver\"}",
+          "expr": "probe_success{instance=~\"ota-receiver[.]localota[.]stream\"}",
           "legendFormat": "{{ instance }}"
         }
       ]
@@ -1532,7 +1938,7 @@
         "h": 6,
         "w": 12,
         "x": 12,
-        "y": 120
+        "y": 147
       },
       "id": 14,
       "options": {
@@ -1544,7 +1950,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "probe_duration_seconds{instance=~\"ota-receiver\"}",
+          "expr": "probe_duration_seconds{instance=~\"ota-receiver[.]localota[.]stream\"}",
           "legendFormat": "{{ instance }}"
         }
       ]
