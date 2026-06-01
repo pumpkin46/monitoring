@@ -894,6 +894,5 @@
     "title": "Worker \u2014 Metrics",
     "uid": "worker-metrics"
   },
-  "folderUid": "servers-worker",
   "overwrite": true
 }

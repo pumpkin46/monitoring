@@ -1585,6 +1585,5 @@
     "refresh": "10s",
     "description": "Receiver metrics (migrated channel dashboards + host metrics)"
   },
-  "folderUid": "servers-receiver",
   "overwrite": true
 }
