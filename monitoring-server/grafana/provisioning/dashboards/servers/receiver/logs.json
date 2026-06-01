@@ -1,307 +1,304 @@
 {
-  "dashboard": {
-    "annotations": {
-      "list": []
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "links": [],
+  "schemaVersion": 39,
+  "tags": [
+    "monitoring",
+    "server",
+    "receiver"
+  ],
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 200,
+      "title": "Logs",
+      "type": "row"
     },
-    "editable": true,
-    "fiscalYearStartMonth": 0,
-    "graphTooltip": 1,
-    "links": [],
-    "schemaVersion": 39,
-    "tags": [
-      "monitoring",
-      "server",
-      "receiver"
-    ],
-    "time": {
-      "from": "now-6h",
-      "to": "now"
-    },
-    "panels": [
-      {
-        "collapsed": false,
-        "gridPos": {
-          "h": 1,
-          "w": 24,
-          "x": 0,
-          "y": 0
-        },
-        "id": 200,
-        "title": "Logs",
-        "type": "row"
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
       },
-      {
-        "datasource": {
-          "type": "loki",
-          "uid": "loki"
-        },
-        "gridPos": {
-          "h": 6,
-          "w": 24,
-          "x": 0,
-          "y": 1
-        },
-        "id": 201,
-        "fieldConfig": {
-          "defaults": {
-            "unit": "short",
-            "custom": {
-              "fillOpacity": 30,
-              "lineWidth": 1
-            }
-          }
-        },
-        "options": {
-          "tooltip": {
-            "mode": "multi"
-          }
-        },
-        "title": "Log Volume by Integration",
-        "type": "timeseries",
-        "targets": [
-          {
-            "expr": "sum by (integration) (rate({job=\"receiver\", host=\"receiver\"} |= \"${log_search}\" [5m]))",
-            "legendFormat": "{{ integration }}"
-          }
-        ]
+      "gridPos": {
+        "h": 6,
+        "w": 24,
+        "x": 0,
+        "y": 1
       },
-      {
-        "datasource": {
-          "type": "loki",
-          "uid": "loki"
-        },
-        "gridPos": {
-          "h": 8,
-          "w": 24,
-          "x": 0,
-          "y": 7
-        },
-        "id": 202,
-        "options": {
-          "showTime": true,
-          "showLabels": true,
-          "showCommonLabels": false,
-          "wrapLogMessage": true,
-          "prettifyLogMessage": false,
-          "enableLogDetails": true,
-          "sortOrder": "Descending",
-          "dedupStrategy": "none"
-        },
-        "title": "System Logs (syslog)",
-        "type": "logs",
-        "targets": [
-          {
-            "expr": "{job=\"system\", host=\"receiver\"} |= \"${log_search}\"",
-            "refId": "A"
+      "id": 201,
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "fillOpacity": 30,
+            "lineWidth": 1
           }
-        ]
+        }
       },
-      {
-        "datasource": {
-          "type": "loki",
-          "uid": "loki"
-        },
-        "gridPos": {
-          "h": 8,
-          "w": 24,
-          "x": 0,
-          "y": 15
-        },
-        "id": 203,
-        "options": {
-          "showTime": true,
-          "showLabels": true,
-          "showCommonLabels": false,
-          "wrapLogMessage": true,
-          "prettifyLogMessage": false,
-          "enableLogDetails": true,
-          "sortOrder": "Descending",
-          "dedupStrategy": "none"
-        },
-        "title": "Auth Logs (SSH, sudo)",
-        "type": "logs",
-        "targets": [
-          {
-            "expr": "{job=\"auth\", host=\"receiver\"} |= \"${log_search}\"",
-            "refId": "A"
-          }
-        ]
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        }
       },
-      {
-        "datasource": {
-          "type": "loki",
-          "uid": "loki"
-        },
-        "gridPos": {
-          "h": 8,
-          "w": 24,
-          "x": 0,
-          "y": 23
-        },
-        "id": 204,
-        "options": {
-          "showTime": true,
-          "showLabels": true,
-          "showCommonLabels": false,
-          "wrapLogMessage": true,
-          "prettifyLogMessage": false,
-          "enableLogDetails": true,
-          "sortOrder": "Descending",
-          "dedupStrategy": "none"
-        },
-        "title": "Kernel Logs (kern.log)",
-        "type": "logs",
-        "targets": [
-          {
-            "expr": "{job=\"kernel\", host=\"receiver\"} |= \"${log_search}\"",
-            "refId": "A"
-          }
-        ]
-      },
-      {
-        "datasource": {
-          "type": "loki",
-          "uid": "loki"
-        },
-        "gridPos": {
-          "h": 8,
-          "w": 24,
-          "x": 0,
-          "y": 31
-        },
-        "id": 205,
-        "options": {
-          "showTime": true,
-          "showLabels": true,
-          "showCommonLabels": false,
-          "wrapLogMessage": true,
-          "prettifyLogMessage": false,
-          "enableLogDetails": true,
-          "sortOrder": "Descending",
-          "dedupStrategy": "none"
-        },
-        "title": "Application Logs",
-        "type": "logs",
-        "targets": [
-          {
-            "expr": "{job=~\"receiver|app\", host=\"receiver\", integration=~\"$integration\"} |= \"${log_search}\"",
-            "refId": "A"
-          }
-        ]
-      },
-      {
-        "datasource": {
-          "type": "loki",
-          "uid": "loki"
-        },
-        "gridPos": {
-          "h": 8,
-          "w": 24,
-          "x": 0,
-          "y": 39
-        },
-        "id": 207,
-        "options": {
-          "showTime": true,
-          "showLabels": true,
-          "showCommonLabels": false,
-          "wrapLogMessage": true,
-          "prettifyLogMessage": false,
-          "enableLogDetails": true,
-          "sortOrder": "Descending",
-          "dedupStrategy": "none"
-        },
-        "title": "Application Error Logs",
-        "type": "logs",
-        "targets": [
-          {
-            "expr": "{job=~\"receiver|app\", host=\"receiver\", integration=~\"$integration\"} | filename=~\".*-error\\\\.log\" or stream=\"stderr\" |= \"${log_search}\"",
-            "refId": "A"
-          }
-        ]
-      },
-      {
-        "datasource": {
-          "type": "loki",
-          "uid": "loki"
-        },
-        "gridPos": {
-          "h": 8,
-          "w": 24,
-          "x": 0,
-          "y": 47
-        },
-        "id": 206,
-        "options": {
-          "showTime": true,
-          "showLabels": true,
-          "showCommonLabels": false,
-          "wrapLogMessage": true,
-          "prettifyLogMessage": false,
-          "enableLogDetails": true,
-          "sortOrder": "Descending",
-          "dedupStrategy": "none"
-        },
-        "title": "Systemd Journal (warnings+)",
-        "type": "logs",
-        "targets": [
-          {
-            "expr": "{job=\"journal\", host=\"receiver\"} |= \"${log_search}\"",
-            "refId": "A"
-          }
-        ]
-      }
-    ],
-    "templating": {
-      "list": [
+      "title": "Log Volume by Integration",
+      "type": "timeseries",
+      "targets": [
         {
-          "allValue": ".+",
-          "current": {
-            "selected": true,
-            "text": "All",
-            "value": "$__all"
-          },
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "definition": "label_values(http_request_duration_seconds_count{server=\"receiver\"}, integration)",
-          "includeAll": true,
-          "label": "Integration",
-          "multi": true,
-          "name": "integration",
-          "options": [],
-          "query": {
-            "query": "label_values(http_request_duration_seconds_count{server=\"receiver\"}, integration)",
-            "refId": "StandardVariableQuery"
-          },
-          "refresh": 2,
-          "sort": 1,
-          "type": "query"
-        },
-        {
-          "current": {
-            "selected": false,
-            "text": "",
-            "value": ""
-          },
-          "description": "Filter log lines containing this text. Leave empty to show all.",
-          "label": "Search logs",
-          "name": "log_search",
-          "options": [
-            {
-              "selected": true,
-              "text": "",
-              "value": ""
-            }
-          ],
-          "query": "",
-          "type": "textbox"
+          "expr": "sum by (integration) (rate({job=\"receiver\", host=\"receiver\"} |= \"${log_search}\" [5m]))",
+          "legendFormat": "{{ integration }}"
         }
       ]
     },
-    "title": "Receiver \u2014 Logs",
-    "uid": "receiver-logs"
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 7
+      },
+      "id": 202,
+      "options": {
+        "showTime": true,
+        "showLabels": true,
+        "showCommonLabels": false,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": false,
+        "enableLogDetails": true,
+        "sortOrder": "Descending",
+        "dedupStrategy": "none"
+      },
+      "title": "System Logs (syslog)",
+      "type": "logs",
+      "targets": [
+        {
+          "expr": "{job=\"system\", host=\"receiver\"} |= \"${log_search}\"",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 15
+      },
+      "id": 203,
+      "options": {
+        "showTime": true,
+        "showLabels": true,
+        "showCommonLabels": false,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": false,
+        "enableLogDetails": true,
+        "sortOrder": "Descending",
+        "dedupStrategy": "none"
+      },
+      "title": "Auth Logs (SSH, sudo)",
+      "type": "logs",
+      "targets": [
+        {
+          "expr": "{job=\"auth\", host=\"receiver\"} |= \"${log_search}\"",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 23
+      },
+      "id": 204,
+      "options": {
+        "showTime": true,
+        "showLabels": true,
+        "showCommonLabels": false,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": false,
+        "enableLogDetails": true,
+        "sortOrder": "Descending",
+        "dedupStrategy": "none"
+      },
+      "title": "Kernel Logs (kern.log)",
+      "type": "logs",
+      "targets": [
+        {
+          "expr": "{job=\"kernel\", host=\"receiver\"} |= \"${log_search}\"",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 31
+      },
+      "id": 205,
+      "options": {
+        "showTime": true,
+        "showLabels": true,
+        "showCommonLabels": false,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": false,
+        "enableLogDetails": true,
+        "sortOrder": "Descending",
+        "dedupStrategy": "none"
+      },
+      "title": "Application Logs",
+      "type": "logs",
+      "targets": [
+        {
+          "expr": "{job=~\"receiver|app\", host=\"receiver\", integration=~\"$integration\"} |= \"${log_search}\"",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 39
+      },
+      "id": 207,
+      "options": {
+        "showTime": true,
+        "showLabels": true,
+        "showCommonLabels": false,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": false,
+        "enableLogDetails": true,
+        "sortOrder": "Descending",
+        "dedupStrategy": "none"
+      },
+      "title": "Application Error Logs",
+      "type": "logs",
+      "targets": [
+        {
+          "expr": "{job=~\"receiver|app\", host=\"receiver\", integration=~\"$integration\"} | filename=~\".*-error\\\\.log\" or stream=\"stderr\" |= \"${log_search}\"",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 47
+      },
+      "id": 206,
+      "options": {
+        "showTime": true,
+        "showLabels": true,
+        "showCommonLabels": false,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": false,
+        "enableLogDetails": true,
+        "sortOrder": "Descending",
+        "dedupStrategy": "none"
+      },
+      "title": "Systemd Journal (warnings+)",
+      "type": "logs",
+      "targets": [
+        {
+          "expr": "{job=\"journal\", host=\"receiver\"} |= \"${log_search}\"",
+          "refId": "A"
+        }
+      ]
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "allValue": ".+",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "definition": "label_values(http_request_duration_seconds_count{server=\"receiver\"}, integration)",
+        "includeAll": true,
+        "label": "Integration",
+        "multi": true,
+        "name": "integration",
+        "options": [],
+        "query": {
+          "query": "label_values(http_request_duration_seconds_count{server=\"receiver\"}, integration)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "",
+          "value": ""
+        },
+        "description": "Filter log lines containing this text. Leave empty to show all.",
+        "label": "Search logs",
+        "name": "log_search",
+        "options": [
+          {
+            "selected": true,
+            "text": "",
+            "value": ""
+          }
+        ],
+        "query": "",
+        "type": "textbox"
+      }
+    ]
   },
-  "overwrite": true
+  "title": "Receiver \u2014 Logs",
+  "uid": "receiver-logs"
 }

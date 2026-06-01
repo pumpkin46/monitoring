@@ -1109,13 +1109,14 @@ def unwrap_dashboard(data: dict) -> dict:
 
 
 def write_provisioned_dashboard(path: Path, dash: dict) -> None:
-    """Write Grafana file-provision wrapper JSON."""
-    payload = {
-        "dashboard": dash,
-        "overwrite": True,
-    }
+    """
+    Write dashboard JSON for Grafana file provisioning.
+
+    Note: file provisioning expects the dashboard object itself at the top level,
+    not the HTTP API wrapper shape {"dashboard": {...}, "overwrite": true}.
+    """
     with path.open("w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2)
+        json.dump(dash, f, indent=2)
         f.write("\n")
 
 
