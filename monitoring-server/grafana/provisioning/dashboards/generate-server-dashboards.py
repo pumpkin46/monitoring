@@ -785,13 +785,6 @@ def receiver_legacy_panels() -> list:
     ]
 
     panels: list[dict] = [
-        {
-            "collapsed": False,
-            "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
-            "id": 299,
-            "title": "Receiver Channels",
-            "type": "row",
-        },
         prom_stat_panel(
             300,
             "Total Requests Count",
